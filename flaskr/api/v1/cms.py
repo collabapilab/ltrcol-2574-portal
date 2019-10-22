@@ -20,7 +20,7 @@ class cms_create_space_api(Resource):
 
         print(data)
         print('*****')
-        return jsonify(editor_create('cms_space', data))
+        return jsonify(editor_create('cms_spaces', data))
 
 @api.route("/get_spaces")
 class cms_get_spaces_api(Resource):
@@ -32,7 +32,7 @@ class cms_get_spaces_api(Resource):
 
 @api.route("/remove_space")
 class cms_remove_space_api(Resource):
-    def delete(self):
+    def post(self):
         """
         Returns Editor Remove
         """
@@ -41,7 +41,7 @@ class cms_remove_space_api(Resource):
         data = parse_DT_request(request.form)
 
         print(data)
-        return jsonify(editor_remove('cms_space', data))
+        return jsonify(editor_remove('cms_spaces', data))
 
 @api.route("/edit_space")
 class cms_edit_api(Resource):
@@ -54,5 +54,5 @@ class cms_edit_api(Resource):
         data = parse_DT_request(request.form)
 
         print(data)
-        return jsonify(editor_edit('cms_space', data))
+        return jsonify(editor_edit('cms_spaces', data))
 

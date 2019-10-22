@@ -17,7 +17,7 @@ Install all python requirements with:
 
 ### Step 3
 
-Now you need to start the web service with ```python app.py```. 
+Now you need to start the web service with ```python -m flask run``` in order to start the Flask development server. 
 
 ### Step 4
 
@@ -39,3 +39,26 @@ The web server is ready once these messages appear:
 
 In your browser, access the page using `http://localhost:5000`
 
+## VS Code Setup ##
+
+in your launch.json, to set breakpoints and debugs, you should have an entry such as:
+
+```
+        {
+            "name": "Start LTRCOL-2574 Portal",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "app.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload"
+            ],
+            "jinja": true
+        },        
+```

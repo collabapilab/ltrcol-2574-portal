@@ -115,7 +115,7 @@ editor = new $.fn.dataTable.Editor(
                 url:  '/api/v1/cms/edit_space?id=_id_'
             },
             remove: {
-                type: 'DELETE',
+                type: 'POST',
                 url:  '/api/v1/cms/remove_space?id=_id_'
             }
         },
@@ -128,7 +128,7 @@ editor = new $.fn.dataTable.Editor(
         {
             "name": "coSpaceID",
             "label": "coSpace ID:",
-            "type": "hidden"
+            // "type": "hidden"
         },
         {
             "name": "name",

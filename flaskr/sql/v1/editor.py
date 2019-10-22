@@ -125,11 +125,10 @@ def editor_edit(table, data):
     return {'data': result}
         
 
-
 def editor_remove(table, data):
 
     pkids = []
-    #print(data)
+    print('editor_remove data: ' + str(data))
     for pkid in data.keys():
         print(pkid)
         pkids.append(f"pkid='{pkid}'")
