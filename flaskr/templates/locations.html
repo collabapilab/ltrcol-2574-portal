@@ -1,0 +1,258 @@
+{% extends "core_base.html" %}
+{% block content %}
+<h1>Call Flows</h1>
+<div class='row'>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+        <!--
+        <div class="form-group">
+            <div class="form-group__text">
+                <select class="select2" id="manager_select_picker">
+                </select>
+            </div>
+        </div>
+        -->
+    </div>
+</div>
+
+{% include 'main_table.html' %}
+
+<script type="text/javascript">
+var editor;
+
+// Display an Editor form that allows the user to pick the CSV data to apply to each column
+function selectColumns ( editor, csv, header ) {
+    var selectEditor = new $.fn.dataTable.Editor();
+    var fields = editor.order();
+    fields = fields.filter(e => e !== 'pkid');
+ 
+    for ( var i=0 ; i<fields.length ; i++ ) {
+        var field = editor.field( fields[i] );
+ 
+        selectEditor.add( {
+            label: field.label(),
+            name: field.name(),
+            type: 'select',
+            options: header,
+            def: header[i]
+        } );
+    }
+ 
+    selectEditor.create({
+        title: 'Map CSV fields',
+        buttons: 'Import '+csv.length+' records',
+        message: 'Select the CSV column you want to use the data from for each field.'
+    });
+ 
+    selectEditor.on('submitComplete', function (e, json, data, action) {
+        // Use the host Editor instance to show a multi-row create form allowing the user to submit the data.
+        editor.create( csv.length, {
+            title: 'Confirm import',
+            buttons: 'Submit',
+            message: 'Click the <i>Submit</i> button to confirm the import of '+csv.length+' rows of data. Optionally, override the value for a field to set a common value by clicking on the field below.'
+        } );
+ 
+        for ( var i=0 ; i<fields.length ; i++ ) {
+            var field = editor.field( fields[i] );
+            var mapped = data[ field.name() ];
+ 
+            for ( var j=0 ; j<csv.length ; j++ ) {
+                field.multiSet( j, csv[j][mapped] );
+            }
+        }
+    } );
+}
+ 
+
+$(document).ready(function() {
+
+    $('.display-0').html('Locations Editor').hide();
+    $('#DT').html('Locations Table');
+
+editor = new $.fn.dataTable.Editor(
+{
+    table: "#main-table",
+    idSrc: 'pkid',
+    ajax: {
+            create: {
+                type: 'POST',
+                url:  '/api/v1/locations/create'
+            },
+            edit: {
+                type: 'PUT',
+                url:  '/api/v1/locations/edit?id=_id_'
+            },
+            remove: {
+                type: 'POST',
+                url:  '/api/v1/locations/remove?id=_id_'
+            }
+        },
+    fields: [
+        {
+            "name": "pkid",
+            "label": "PKID:",
+            type: 'hidden'
+        },
+        {
+            "name": "name",
+            "label": "Store Name:"
+        },
+        {
+            "name": "store_id",
+            "label": "Store ID:"
+        },
+        {
+            "name": "store_phone_number",
+            "label": "Store Phone Number:"
+        },
+        {
+            "name": "calling_number",
+            "label": "Base Calling Number:"
+        },
+    ]
+});
+
+    // Upload Editor - triggered from the import button. Used only for uploading a file to the browser
+    var uploadEditor = new $.fn.dataTable.Editor( {
+        fields: [ {
+            label: 'CSV file:',
+            name: 'csv',
+            type: 'upload',
+            ajax: function ( files ) {
+                // Ajax override of the upload so we can handle the file locally. Here we use Papa
+                // to parse the CSV.
+                Papa.parse(files[0], {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function (results) {
+                        if ( results.errors.length ) {
+                            console.log( results );
+                            uploadEditor.field('csv').error( 'CSV parsing error: '+ results.errors[0].message );
+                        }
+                        else {
+                            uploadEditor.close();
+                            selectColumns( editor, results.data, results.meta.fields );
+                        }
+                    }
+                });
+            }
+        } ]
+    } );
+ 
+
+var table = $("#main-table").DataTable({
+    ajax: {
+        url: "/api/v1/locations/all_locations",
+        dataSrc: ''
+    },
+    rowId: 'pkid',
+    order: [[1, 'asc']],
+    autoFill: {
+            editor:  editor
+        },
+    select: {
+        "style": "multi+shift",
+        "selector": "td:first-child"
+    },
+    columns: [
+        {
+            "data": null,
+            "defaultContent": "",
+            "className": "select-checkbox",
+            "orderable": false,
+            title: '&nbsp;&nbsp;&nbsp;'
+        },
+        {
+            "data": "pkid",
+            "title": "PKID",
+            visible: false
+        },
+        {
+            "data": "name",
+            "title": "Store Name"
+        },
+        {
+            "data": "store_id",
+            "title": "Store ID"
+        },
+        {
+            "data": "store_phone_number",
+            "title": "Store Phone Number"
+        },
+        {
+            "data": "calling_number",
+            "title": "Base Calling Number</br>EX: 91996114XX"
+        },
+
+    ]
+});
+
+    // Activate an inline edit on click of a table cell
+    $('#main-table').on( 'click', 'tbody td:not(:first-child)', function (e) {
+        editor.inline( this, {
+            onBlur: 'submit',
+        } );
+    } );
+    
+
+
+    // Display the buttons
+    new $.fn.dataTable.Buttons( table, [
+        { extend: "create", editor: editor },
+        { extend: "edit",   editor: editor },
+            {
+                extend: "selectedSingle",
+                text: 'Duplicate',
+                action: function ( e, dt, node, config ) {
+                    // Place the selected row into edit mode (but hidden),
+                    // then get the values for all fields in the form
+                    var values = editor.edit(
+                            table.row( { selected: true } ).index(),
+                            false
+                        )
+                        .val();
+
+                    // Create a new entry (discarding the previous edit) and
+                    // set the values from the read values
+                    editor
+                        .create( {
+                            title: 'Duplicate record',
+                            buttons: 'Create from existing'
+                        } )
+                        .set( values );
+                }
+            },
+        { extend: "remove", editor: editor },
+        {text: 'Import CSV',
+                action: function () {
+                    uploadEditor.create( {
+                        title: 'CSV file import'
+                    } );
+                }
+        }
+    ] );
+
+    table.buttons().container()
+        .prependTo( $(table.table().container() ) );
+
+
+    editor
+        .on( 'postCreate postRemove', function () {
+            // After create or edit, a number of other rows might have been effected -
+            // so we need to reload the table, keeping the paging in the current position
+            table.ajax.reload( null, false );
+        } )
+        .on( 'initCreate', function () {
+            // Enable order for create
+            editor.field( 'pkid' ).disable();
+        } )
+        .on( 'initEdit', function () {
+            // Disable for edit (re-ordering is performed by click and drag)
+            editor.field( 'pkid' ).disable();
+        } );
+});
+
+
+</script>
+
+
+{% endblock content %}

@@ -1,0 +1,633 @@
+{% extends "core_base.html" %}
+{% block content %}
+<h1>Validate Test Calls</h1>
+<div class='row'>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+        <span>Select Call Flow definition</span>
+        <div class="form-group">
+            <div class="form-group__text">
+                <select class="select2" id="call_flow_select_picker">
+                </select>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<div class='row'>
+        <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+            <span>Select Test</span>
+            <div class="form-group">
+                <div class="form-group__text">
+                    <select class="select2" id="select_picker">
+                    </select>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+{% include 'main_table.html' %}
+
+<script type="text/javascript">
+var editor;
+var table;
+var call_flows = {};
+//var baseNumber = '';
+var locations = {};
+var callingNumbers = [];
+var callFlowIds = [];
+var cfDupsMissing = {};
+
+
+
+function addCheckbox(name) {
+   var container = $('#extras');
+   //var inputs = container.append('input');
+   var id = 'select_all';
+
+   $('<input />', { type: 'checkbox', id: 'cb'+id, value: name }).appendTo(container);
+   $('<label />', { 'for': 'cb'+id, text: name }).appendTo(container);
+}
+
+function saveResult(data) {
+
+    data = JSON.stringify(data);
+
+    $.ajax({
+        type: "POST",
+        url: "/api/v1/results/save_results",
+        data: {data: data},
+        success: function(json) {
+            alert('Number of records inserted: ' + json.inserted);
+        }
+    });
+}
+
+
+function getCallFlows(name) {
+
+
+    $.getJSON("/api/v1/call_flows/" + name + "/get_call_flows", function (json) {
+        //console.log('call flows', json)
+
+        call_flows = json;
+
+        callFlowIds = Object.keys(call_flows);
+
+
+        //var key = Object.keys(call_flows)[0];
+
+        //baseNumber = call_flows[key].calling_number;
+
+    });        
+
+
+}
+
+
+function getLocations() {
+    $.getJSON("/api/v1/locations/all_locations", function (json) {
+        locations = {};
+        callingNumbers = [];
+
+        for (var i=0; i<json.length; i++) {
+            var location = json[i];
+            var locationKey = location.calling_number.substring(0, 8);
+
+            locations[locationKey] = location;
+            callingNumbers.push(location.calling_number);
+        }
+
+    });
+}
+
+
+
+function formatChild(d) {
+
+    //var attrs = getSvsAttrs(d.Attribute);
+
+    var table = $('#main-table').DataTable();
+    var colCount = table.columns().header().count();
+
+    var html = '';
+
+    var transcripts = d.transcript_parsed;
+    //console.log(transcripts)
+    var error = d.error;
+    var count = 1;
+
+    if (error.length > 0) {
+        html += '<tr>' +
+                        '<td></td>' +
+                        '<td class="text-left"><span class="highlight" style="font-weight:600;">Error:</span></td>' +
+                        '<td class="text-left" colspan="' + (colCount - 2) + '"><span class="highlight" style="font-weight:600;">' + error + '</span></td>' +
+                    '</tr>';
+
+    } else {
+        for (i=0; i<transcripts.length; i++) {
+            html += '<tr>' +
+                        '<td></td>' +
+                        '<td class="text-left">Transcript ' + count + ':</td>' +
+                        '<td class="text-left" colspan="' + (colCount - 2) + '">' + transcripts[i] + '</td>' +
+                    '</tr>';
+            count++;
+        }
+
+    }
+
+    return html;
+}
+
+
+function updateProgress(progress, hilite) {
+    var container = $('#progress');
+
+    if (progress) {
+        container.html('<span>' + progress + '</span>');
+        hiliteProgress(hilite);
+    } else {
+        container.html('<span>&nbsp;</span>');
+        hiliteProgress(false);
+    }
+
+}
+
+function hiliteProgress(hilite) {
+    var elm = $('#progress').find('span');
+
+    if (hilite) {
+        elm.addClass('highlight_blue');
+    } else {
+        elm.removeClass('highlight_blue');
+    }
+}
+
+
+function showDatatable(data) {
+
+    if ( $.fn.DataTable.isDataTable( '#main-table' ) ) {
+
+        table = $('#main-table').DataTable();
+        table.clear();
+
+        table.rows.add(data).draw();
+        return;
+    }
+
+    return $("#main-table").DataTable({
+        data: data,
+        rowId: 'pkid',
+        order: [[1, 'asc']],
+        pageLength: -1,
+        select: {
+            "style": "multi+shift",
+            "selector": "td:first-child"
+        },
+        columns: [
+            {
+                "data": null,
+                "defaultContent": "",
+                "className": "select-checkbox",
+                "orderable": false,
+                title: '&nbsp;&nbsp;&nbsp;'
+            },
+            {
+                "data": "timestamp",
+                "title": "Timestamp"
+            },
+            {
+                "data": "name",
+                "title": "Name"
+            },
+            {
+                "data": "status",
+                "title": "Status",
+                render: function (data, type, row) {
+
+                    return data.replace(/,/g, '</br>');
+
+                }
+            },
+            {
+                "data": 'location_name',
+                "title": "Location",
+                //render: function (data, type, row) {
+                //    //var location_id = row.filename.split('_')[1];
+                //    return data;
+                    //return locations[row.calling.substring(0, 8)].name;
+
+                //}
+            },
+            {
+                "data": "number",
+                "title": "Call Flow",
+            },
+            {
+                "data": "department",
+                "title": "Department"
+            },
+            {
+                "data": "response",
+                "title": "Response"
+            },
+            {
+                "data": "calling",
+                "title": "Calling Number",
+           },
+            {
+                "data": "ocalled",
+                "title": "Original Called Number",
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    if ( rowData.result.ocalled === 'No' ) {
+                        $(td).css('color', 'red')
+                    }
+                }
+            },
+            {
+                "data": "fcalled",
+                "title": "Final Called Number",
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    if ( rowData.result.fcalled === 'No' ) {
+                        $(td).css('color', 'red')
+                    }
+                }
+            },
+        ]
+    });
+}
+function getResults(name) {
+        if (name === ''){
+            table = showDatatable([]);
+            // Display the buttons
+            new $.fn.dataTable.Buttons( table, [
+                    {
+                        text: 'Save Results',
+                        action: function ( e, dt, node, config ) {
+                            // Place the selected row into edit mode (but hidden),
+                            // then get the values for all fields in the form
+
+                            /*
+                            var indexes = table
+                                .rows()
+                                .indexes()
+                                .filter( function ( value, index ) {
+                                    return 'Yes' === table.row(value).data().processed;
+                                } );
+                            */
+
+                            var data = table.rows().data().toArray();
+
+                            //console.log(data);
+
+                            if (data.length === 0) {
+                                alert('No results to save');
+                                return;
+                            }
+
+                            saveResult(data);
+                        }
+                    },
+            ] );
+
+            table.buttons().container()
+                .prependTo( $(table.table().container() ) );
+            return;
+        }
+        $.getJSON("/api/v1/results/" + name + "/all_results", function (json) {
+            showDatatable(json)
+        });
+    }
+
+function processRules(cf) {
+
+    location_name = cf.location_name;
+
+    store_id = '00000' + cf.store_id;
+    store_id = store_id.substr(store_id.length - 5);
+
+    department = '0000' + cf.department;
+    department = department.substr(department.length - 4);
+
+    result = {
+        ocalled: cf.ocalled === '8' + store_id + department ? 'Yes' : 'No',
+        fcalled: cf.fcalled === '8' + store_id + department ? 'Yes' : 'No',
+        
+    }
+
+    if ( !cfDupsMissing.hasOwnProperty(location_name) ) {
+        cfDupsMissing[location_name] = {
+            call_flows: [],
+            duplicates: [],
+            missing: []
+        }
+    }
+
+    cfStatus = cfDupsMissing[location_name]
+
+    cf_number = cf.number;
+
+    if ( cfStatus.call_flows.indexOf(cf_number) === -1) {
+        cfStatus.call_flows.push(cf_number);
+    } else {
+        cfStatus.duplicates.push(cf_number);
+    }
+
+    return result;
+}
+
+function getCallFiles(number, name) {
+    cfDupsMissing = {};
+
+    table = $('#main-table').DataTable();
+    table.clear().draw();
+
+    if (number.length === 0) {
+        return;
+    }
+
+    updateProgress('Looking for test calls in SME logs files please wait....', true);
+    var t0 = performance.now();
+
+    //console.log('getting', number, name)
+    $.ajax({
+        type: "POST",
+        data: {number: number},
+        url: "/api/v1/process/find_calls/" + name,
+        success: function(json) {
+            updateProgress('Processing found calls.....', true);
+            var t1 = performance.now();
+            var seconds = (((t1 - t0) % 60000) / 1000).toFixed(1);
+            //console.log("File processing took " + seconds + " seconds.");
+
+            for (var i=0; i<json.length; i++) {
+                var callingNumber = json[i].calling;
+
+                var callFlowId = callingNumber.substr(callingNumber.length - 2);
+
+                var location = locations[callingNumber.substr(0, 8)];
+
+                json[i].number = callFlowId;
+                json[i].name = call_flows[callFlowId].name;
+                json[i].department = call_flows[callFlowId].department;
+                json[i].response = call_flows[callFlowId].response;
+                json[i].location_name = location.name;
+                json[i].store_id = location.store_id;
+                json[i].store_phone = location.store_phone_number;
+                json[i].base_calling_number = location.calling_number;
+
+                result = processRules(json[i]);
+
+                json[i].result = result;
+
+                json[i].status = '';
+
+                if (result.ocalled === 'No') {
+                    json[i].status += 'Orig Called Error,'
+                }
+                if (result.fcalled === 'No') {
+                    json[i].status += 'Final Called Error,'
+                }
+            }
+
+            table.rows.add(json);
+            
+
+            for (cf in cfDupsMissing) {
+
+                cfDupsMissing[cf].missing = callFlowIds.filter(function(v) {
+                                                return !cfDupsMissing[cf].call_flows.includes(v);
+                                            })
+            }
+
+            //console.log(cfDupsMissing)
+
+            // Mark duplicate call flows
+            table.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+                var data = this.data();
+
+                dups = cfDupsMissing[data.location_name].duplicates;
+            
+                if (dups.includes(data.number)) {
+                    data.status += 'Duplicate Call Flow,';
+                }
+                        
+                this.invalidate(); // invalidate the data DataTables has cached for this row
+            } );
+
+            for (location_name in cfDupsMissing) {
+
+                missing = cfDupsMissing[location_name].missing;
+
+                for (i=0; i<missing.length; i++) {
+                    cf_number = missing[i];
+
+                    table.row.add(
+                        {
+                            timestamp: '',
+                            name: call_flows[cf_number].name,
+                            status: 'Call Flow not found',
+                            number: cf_number,
+                            department: call_flows[cf_number].department,
+                            response: call_flows[cf_number].response,
+                            calling: '',
+                            ocalled: '',
+                            fcalled: '',
+                            location_name: location_name,
+                            store_id: '',
+                            store_phone: '',
+                            base_calling_number: '',
+                            result: {
+                                ocalled: 'Yes',
+                                fcalled: 'Yes'
+                            }
+                        }
+                    )
+                }
+            }
+
+            table.draw();
+            
+            updateProgress('Complete, file processing took ' + seconds + ' seconds.', false);
+        },
+        error: function(json) {
+            updateProgress('ERROR PROCESSING FILES, check console', true);
+        }
+    });
+
+
+}
+
+function resetPage() {
+    $('#cbselect_all').prop('checked', false);
+    updateProgress('');
+
+}
+
+$(document).ready(function() {
+
+    $('.display-0').html('Test Call Processing').hide();
+    $('#DT').html('Test Call Results Table');
+
+    $('#call_flow_select_picker').select2({
+            //theme: "bootstrap4",  //Small text input with this option
+            allowClear: true,
+            placeholder: 'Select an test'
+    });
+
+    $('#location_select_picker').select2({
+            //theme: "bootstrap4",  //Small text input with this option
+            allowClear: true,
+            placeholder: 'Select an test'
+    });
+
+    $('#select_picker').select2({
+            //theme: "bootstrap4",  //Small text input with this option
+            allowClear: true,
+            placeholder: 'Select an test'
+    });
+
+
+    $.getJSON("/api/v1/call_flows/call_flow_names", function (data) {
+        
+        // Build people options using object with name as key and id as value
+        options = {
+            '': ''
+        };
+        for (x = 0; x < data.length; x++) {
+            options[data[x]] = data[x]
+        };
+
+        // Sort by the person's name
+        sortedOptions = Object.keys(options).sort();
+
+        // Build the select options with id being the value
+        for (x = 0; x < sortedOptions.length; x++) {
+            val = sortedOptions[x]
+            $("#call_flow_select_picker").append("<option value='" + options[val] + "'>" + val + "</option> ")
+        };
+
+        // If CEC ID parameter exists try to select that user.
+        //if (custId.length > 0) {
+        //    $('#customer_select_picker').val(custId).change();
+        //}
+    });
+
+
+    $.getJSON("/api/v1/upload/all_tests", function (data) {
+
+        // Build people options using object with name as key and id as value
+        options = {
+            '': ''
+        };
+        for (x = 0; x < data.length; x++) {
+            options[data[x]] = data[x]
+        };
+
+        // Sort by the person's name
+        sortedOptions = Object.keys(options).sort();
+
+        // Build the select options with id being the value
+        for (x = 0; x < sortedOptions.length; x++) {
+            val = sortedOptions[x]
+            $("#select_picker").append("<option value='" + options[val] + "'>" + val + "</option> ")
+        };
+
+        // If CEC ID parameter exists try to select that user.
+        //if (custId.length > 0) {
+        //    $('#customer_select_picker').val(custId).change();
+        //}
+    });
+
+
+
+
+    $('#call_flow_select_picker').on('change', function () {
+
+        id = $(this).val();
+        resetPage();
+
+        if (id === '') {
+            call_flows = {};
+
+            // Clear and disable test select picker.
+            $('#select_picker').val('').change();
+            $('#select_picker').attr({
+                    'disabled': 'disabled'
+                });
+            return;
+        }
+        getCallFlows(id);
+
+        // Enable test select picker.
+        if ($('#select_picker').attr('disabled')) {
+                $('#select_picker').removeAttr('disabled');
+            }
+
+    });
+
+
+    $('#select_picker').on('change', function () {
+
+
+        id = $(this).val();
+        resetPage();
+
+        if (id === '') {
+            getCallFiles('', '');
+            return;
+        }
+        /* Generates test location numbers
+        testArray = [];
+        for (i=0; i<100; i++) {
+            temp = '000' + i;
+            temp = temp.substr(temp.length - 3);
+
+            testArray.push('9199612' + temp);
+        }
+        */
+
+        //console.log(testArray)
+        getCallFiles(callingNumbers.join('|'), id);
+        //getCallFiles(testArray.concat(callingNumbers).join('|'), id);
+    });
+
+    $('#select_picker').attr({
+                    'disabled': 'disabled'
+                });
+
+
+    updateProgress(false);
+    addCheckbox(' Select All');
+    getLocations();
+    getResults('');
+
+    $('#cbselect_all').on('change', function () {
+
+        var checked = $(this).prop('checked');
+
+        if ( $.fn.DataTable.isDataTable( '#main-table' ) ) {
+
+            table = $('#main-table').DataTable();
+            if (checked) { 
+                table.rows({search: 'applied'}).select();
+            } else {
+                table.rows().deselect();
+            }
+
+        
+
+        }
+
+    });
+    
+
+
+});
+
+
+</script>
+
+
+{% endblock content %}

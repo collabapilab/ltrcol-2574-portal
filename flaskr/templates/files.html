@@ -1,0 +1,90 @@
+{% extends "core_base.html" %}
+{% block content %}
+<h1>File Upload</h1>
+<div class='row'>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-12">
+        <!--
+        <div class="form-group">
+            <div class="form-group__text">
+                <select class="select2" id="manager_select_picker">
+                </select>
+            </div>
+        </div>
+        -->
+    </div>
+</div>
+
+{% include 'main_table.html' %}
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    $('.display-0').html('Wav Files').hide();
+    $('#DT').html('Wav Files Table');
+
+
+var table = $("#main-table").DataTable({
+    ajax: {
+        url: "/api/v1/upload/wav_files",
+        dataSrc: ''
+    },
+    order: [[0, 'asc'], [1, 'asc']],
+    pageLength: 50,
+    rowGroup: {
+            dataSrc: 'name',
+            startRender: function ( rows, group ) {
+                var numFiles = rows.count();
+
+ 
+                return $('<tr/>')
+                    .append( '<td colspan="2" class="text-left">Wave Files for '+group+'</td>' )
+                    .append( '<td>Total Files: '+numFiles+'</td>' );
+            },
+       },
+    columns: [
+        {
+            "data": "name",
+            "title": "Test Name",
+            visible: false
+        },
+        {
+                data: null,
+                defaultContent: '',
+                title: 'Call Flow/Dialed Number',
+                render: function (data, type, row) {
+                    var location_id = row.filename.split('_')[1];
+                    var callFlow = row.filename.split('_')[0];
+                    callFlow = callFlow.substr(callFlow.length - 2)
+                    
+                    return callFlow + ': ' + location_id;
+                    
+                }
+            },
+            {
+                data: null,
+                defaultContent: '',
+                title: 'Play Audio',
+                render: function (data, type, row) {
+                    //var path = fileDetails[row.filename].web_path;
+                    var path = row.filename;
+
+                    return '<audio controls="controls">' +
+                        '<source src="music/' + path + '" type="audio/x-wav">' +
+                        '</audio>'
+                    
+                }
+            },
+            {
+            "data": "filename",
+            "title": "Filename"
+        },
+    ]
+});
+
+
+});
+</script>
+
+
+{% endblock content %}
