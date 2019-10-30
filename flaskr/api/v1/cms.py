@@ -113,26 +113,37 @@ class cms_get_spaces_api(Resource):
         return jsonify(get_spaces_api(ip=host, port=str(port), username=username, password=password))
 
 
-@api.route("/remove_space")
+@api.route("/delete_space")
 class cms_remove_space_api(Resource):
-    def post(self):
+    def delete(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password'], name=None, uri=None, secondaryUri=None, passcode=None, defaultLayout=None):
+        """
+        Removes a CMS space
+        """
 
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
-
-        print(data)
-        return jsonify(editor_remove('cms_spaces', data))
+        space_location = find_space(name)
+        result = delete_space_api(ip=host, port=str(port), username=username, password=password, name=name, location=space_location)
+        return result
 
 @api.route("/edit_space")
 class cms_edit_api(Resource):
-    def put(self):
+    def put(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password'], name=None, uri=None, secondaryUri=None, passcode=None, defaultLayout=None):
         """
-        Returns Editor Create
+        Edits a CMS space
         """
+        json_data = request.json
+        host = lookup_value(json_data, 'host') or host
+        port = lookup_value(json_data, 'port') or port
+        username = lookup_value(json_data, 'username') or username
+        password = lookup_value(json_data, 'password') or password
+        name = lookup_value(json_data, 'name')
+        uri = lookup_value(json_data, 'uri')
+        secondaryUri = lookup_value(json_data, 'secondaryUri')
+        passcode = lookup_value(json_data, 'passcode')
+        defaultLayout = lookup_value(json_data, 'defaultLayout')
 
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
+        space_location = find_space(name)
+        edit_space = edit_space_api(ip=host, port=str(port), username=username, password=password, name=name, location=space_location, uri=uri, secondaryUri=secondaryUri, passcode=passcode, defaultLayout=defaultLayout)
 
         print(data)
-        return jsonify(editor_edit('cms_spaces', data))
+        return jsonify(data)
 

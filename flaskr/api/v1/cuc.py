@@ -7,62 +7,45 @@ from flaskr.cuc.v1 import *
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
 @api.route("/get_version")
-class cms_get_version_api(Resource):
+class cuc_get_version_api(Resource):
     def get(self):
         """
-        Returns Editor
+        Returns CUC Version
         """
-        # print('request:\n', request.form)
-        # data = parse_DT_request(request.form)
-
-        # print(data)
-        status = get_cms_system_status(ip='10.0.131.43')
 
         return jsonify(status['status']['softwareVersion'])
 
-@api.route("/create_space")
-class cms_create_space_api(Resource):
+@api.route("/create_mailbox")
+class cuc_create_mailbox_api(Resource):
     def post(self, **kwargs):
         """
-        Returns Editor Create
+        Returns CUC Mailbox
         """
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
-        print(data)
             
         return jsonify(editor_create('cms_spaces', data))
 
-@api.route("/get_spaces")
-class cms_get_spaces_api(Resource):
+@api.route("/get_mailboxes")
+class cuc_get_mailboxes_api(Resource):
     def get(self):
         """
-        Returns Spaces.
+        Gets CUC mailboxes
         """
         return jsonify(cms_get_spaces_sql())
 
-@api.route("/remove_space")
-class cms_remove_space_api(Resource):
-    def post(self):
+@api.route("/delete_mailbox")
+class cuc_delete_mailbox_api(Resource):
+    def delete(self):
         """
-        Returns Editor Remove
+        Deletes CUC mailbox
         """
 
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
+        pass
 
-        print(data)
-        return jsonify(editor_remove('cms_spaces', data))
-
-@api.route("/edit_space")
+@api.route("/edit_mailbox")
 class cms_edit_api(Resource):
     def put(self):
         """
-        Returns Editor Create
+        Modifies a CUC mailbox
         """
-
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
-
-        print(data)
-        return jsonify(editor_edit('cms_spaces', data))
+        pass
 

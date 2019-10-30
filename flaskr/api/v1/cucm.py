@@ -7,62 +7,39 @@ from flaskr.cucm.v1 import *
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
 @api.route("/get_version")
-class cms_get_version_api(Resource):
+class cucm_get_version_api(Resource):
     def get(self):
         """
-        Returns Editor
+        Returns CUCM Software version
         """
-        # print('request:\n', request.form)
-        # data = parse_DT_request(request.form)
+        version = get_cucm_version()
 
-        # print(data)
-        status = get_cms_system_status(ip='10.0.131.43')
+        return jsonify(version)
 
-        return jsonify(status['status']['softwareVersion'])
-
-@api.route("/create_space")
-class cms_create_space_api(Resource):
+@api.route("/add_phone")
+class cucm_add_phone_api(Resource):
     def post(self, **kwargs):
         """
-        Returns Editor Create
+        Adds a phone device to CUCM
         """
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
-        print(data)
+        status = post_add_phone()
             
-        return jsonify(editor_create('cms_spaces', data))
+        return jsonify(status)
 
-@api.route("/get_spaces")
-class cms_get_spaces_api(Resource):
-    def get(self):
-        """
-        Returns Spaces.
-        """
-        return jsonify(cms_get_spaces_sql())
-
-@api.route("/remove_space")
-class cms_remove_space_api(Resource):
-    def post(self):
-        """
-        Returns Editor Remove
-        """
-
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
-
-        print(data)
-        return jsonify(editor_remove('cms_spaces', data))
-
-@api.route("/edit_space")
-class cms_edit_api(Resource):
+@api.route("/edit_phone")
+class cucm_edit_phone_api(Resource):
     def put(self):
         """
-        Returns Editor Create
+        Modifies a phone device to CUCM
         """
+        pass
 
-        print('request:\n', request.form)
-        data = parse_DT_request(request.form)
+@api.route("/delete_phone")
+class cucm_delete_phone_api(Resource):
+    def delete(self):
+        """
+        Deletes a phone device from CUCM
+        """
+        pass 
 
-        print(data)
-        return jsonify(editor_edit('cms_spaces', data))
 
