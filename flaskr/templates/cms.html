@@ -3,45 +3,15 @@
 <h1>Cisco Meeting Server</h1>
 <div class='row'>
 </div>
-
-
-<!-- <div id="contact-modal" class="modal fade" role="dialog">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal">×</a>
-				<h3>Duplicate Call Flow</h3>
-			</div>
-			<form id="contactForm" name="contact" role="form">
-				<div class="modal-body">				
-                    <div class="form-group">
-                        <div class="form-group__text">
-                            <select class="select2" id="select_picker">
-                            </select>
-                        </div>
-                    </div>
-					<div class="form-group">
-						<label for="dup">New Call Flow Name</label>
-						<input id="dup" name="dup" class="form-control"></input>
-                        <input type="text" style="display: none;">
-                    </div>		
-                    <div id="error"></div>			
-				</div>
-				<div class="modal-footer">					
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-success" id="submit">Duplicate</button>
-				</div>
-			</form>
-		</div>
-	</div>
-</div> -->
+<h2>System Status:  
+</h2>
 
 {% include 'main_table.html' %}
 
 <script type="text/javascript">
 
 var editor;
-var currentCallFlows = [];
+var currentSpaces = [];
 
 // Display an Editor form that allows the user to pick the CSV data to apply to each column
 function selectColumns ( editor, csv, header ) {
@@ -98,7 +68,7 @@ function selectColumns ( editor, csv, header ) {
 
 $(document).ready(function() {
 
-    $('.display-0').html('Call Flows Editor').hide();
+    $('.display-0').html('Spaces Editor').hide();
     $('#DT').html('Spaces');
 
 editor = new $.fn.dataTable.Editor(
@@ -152,7 +122,7 @@ editor = new $.fn.dataTable.Editor(
 
 var table = $("#main-table").DataTable({
     ajax: {
-        url: "/api/v1/cms/get_spaces",
+        url: "/api/v1/cms/create_space",
         dataSrc: ''
     },
     rowId: 'pkid',
@@ -244,7 +214,7 @@ $("#submit").on('click', function(event){
     //console.log('submit', val)
 
     if (val.length === 0) {
-        $('#error').html('Error: Call Flow not selected');
+        $('#error').html('Error: Space not selected');
         return false;
     }
 
@@ -252,12 +222,12 @@ $("#submit").on('click', function(event){
     //console.log('newVal', newVal)
 
     if (newVal.length === 0) {
-        $('#error').html('Error: New Call Flow name is blank');
+        $('#error').html('Error: New Space name is blank');
         return false;
     }
 
-    if (currentCallFlows.indexOf(newVal) >= 0) {
-        $('#error').html('Error: Duplicate Call Flow name');
+    if (currentSpaces.indexOf(newVal) >= 0) {
+        $('#error').html('Error: Duplicate Space name');
         return false;
     }
  
