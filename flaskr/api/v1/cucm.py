@@ -16,6 +16,27 @@ class cucm_get_version_api(Resource):
 
         return jsonify(version)
 
+@api.route("/list_phones")
+class cucm_add_phone_api(Resource):
+    def get(self, **kwargs):
+        """
+        Lists all phone devices to CUCM
+        """
+        phones = list_phones()
+            
+        return jsonify(phones)
+
+@api.route("/find_phone")
+class cucm_add_phone_api(Resource):
+    def get(self, **kwargs):
+        """
+        Finds a phone device in CUCM
+        """
+        phone = find_phone_api()
+            
+        return jsonify(phone)
+
+    
 @api.route("/add_phone")
 class cucm_add_phone_api(Resource):
     def post(self, **kwargs):

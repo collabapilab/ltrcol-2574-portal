@@ -24,11 +24,19 @@ class cuc_create_mailbox_api(Resource):
             
         return jsonify(editor_create('cms_spaces', data))
 
-@api.route("/get_mailboxes")
+@api.route("/list_mailboxes")
 class cuc_get_mailboxes_api(Resource):
     def get(self):
         """
-        Gets CUC mailboxes
+        Lists CUC mailboxes
+        """
+        return jsonify(cms_get_spaces_sql())
+
+@api.route("/find_mailbox")
+class cuc_get_mailboxes_api(Resource):
+    def get(self):
+        """
+        Gets CUC mailbox
         """
         return jsonify(cms_get_spaces_sql())
 
