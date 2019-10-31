@@ -1,9 +1,8 @@
-
-from flask import jsonify, request
+from flask import jsonify
+from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields
 from flaskr.cms.v1.cms import *
-
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
 system_status_data = api.model('CMS System Status', {
@@ -63,7 +62,7 @@ create_space_data = api.model('cms_space', {
     'defaultLayout': fields.String(description='The default layout to be used for new call legs in this Space.  May be allEqual | speakerOnly | telepresence | stacked', default='', required=False)
 } )
 @api.route("/create_space")
-@api.response(404, 'CMS Space not found.')
+# @api.response(404, 'CMS Space not found.')
 class cms_create_space_api(Resource):
 
     @api.expect(create_space_data)
@@ -84,6 +83,7 @@ class cms_create_space_api(Resource):
 
         * Specify the ID of the category to modify in the request URL path.
         """
+        pass
         json_data = request.json
         host = lookup_value(json_data, 'host') or host
         port = lookup_value(json_data, 'port') or port
@@ -144,6 +144,5 @@ class cms_edit_api(Resource):
         space_location = find_space(name)
         edit_space = edit_space_api(ip=host, port=str(port), username=username, password=password, name=name, location=space_location, uri=uri, secondaryUri=secondaryUri, passcode=passcode, defaultLayout=defaultLayout)
 
-        print(data)
-        return jsonify(data)
+        return jsonify(edit_space)
 

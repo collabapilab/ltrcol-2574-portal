@@ -82,6 +82,7 @@ def get_system_status_api(ip=default_cms['host'], username=default_cms['username
     return cms_parse_response(response)
 
 
+# def create_space_api(ip, username, password, port='443', parameters=None):
 def create_space_api(ip, username, password, port='443', name=None, uri=None, secondaryUri=None, 
                      passcode=None, defaultLayout=None):
     """
@@ -89,6 +90,10 @@ def create_space_api(ip, username, password, port='443', name=None, uri=None, se
     """
 
     base_url = '/api/v1/coSpaces'
+
+    # payload = "name=n1222&uri=uri1&undefined="
+    # if payload:
+    #     payload = urllib.parse.urlencode(parameters)
 
     payload = {
         'name': name, 

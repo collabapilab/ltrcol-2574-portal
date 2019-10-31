@@ -21,7 +21,7 @@ class cuc_create_mailbox_api(Resource):
         """
         Returns CUC Mailbox
         """
-            
+         
         return jsonify(editor_create('cms_spaces', data))
 
 @api.route("/list_mailboxes")
