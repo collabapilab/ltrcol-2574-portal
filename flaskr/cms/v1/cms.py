@@ -1,16 +1,13 @@
 from requests import get, post, put, delete, packages,request
 from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from requests.exceptions import RequestException
+from flask import jsonify
 import xmltodict
 from flask import render_template
 import base64
 import json
 import urllib.parse
-# import re
-# import ssl
-# import xml.parsers.expat
-# from dicttoxml import dicttoxml
-# from urllib.request import urlopen, Request
 
 packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -24,27 +21,40 @@ default_cms = {
 
 def cms_send_request(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
 
-    url = "https://" + host + ":" + port + location
+    url = "https://" + host + ":" + str(port) + str(location)
     if len(parameters) > 0:
         url = url + "?" + urllib.parse.urlencode(parameters)
     auth=HTTPBasicAuth(username, password)
-
-    payload = ''
-    if body:
-        payload = urllib.parse.urlencode(body)
-    # payload = payload.encode('ascii')
-    print(payload)
 
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
         }
     
     if request_method.lower() in ['get', 'put', 'post', 'delete']:
-        resp = request(request_method, url, auth=auth, data=payload, headers=headers, verify=False, timeout=2)
+        try:
+            resp = request(request_method, url, auth=auth, data=body, headers=headers, verify=False, timeout=2)
+            if resp:
+                if resp.status_code == 200:
+                    result = {'success': True, 'response': cms_parse_response(resp)}
+                else:
+                    failure_msg = json.loads(json.dumps(xmltodict.parse(resp.content)))
+                    result = {'success': False, 'message': failure_msg}
+            else:
+                result = {'success': False, 'message': json.loads(json.dumps(xmltodict.parse(resp.content)))}
+                # result = {'success': False, 'message': resp.reason}
+        
+        except RequestException as e:
+            result = {'success': False, 'message': str(e)}
+                        
+    else:
+        result = jsonify({'success': False, 'message': 'Invalid verb ' + request_method})
 
-    return resp
+    return result
 
 def cms_parse_response(resp):
+    # response content converted to an ordered dictionary type
+    if len(resp.content) == 0:
+        return
     resp_odict = xmltodict.parse(resp.content)
     try:
         rootName = list(resp_odict.keys())[0]
@@ -82,27 +92,14 @@ def get_system_status_api(ip=default_cms['host'], username=default_cms['username
     return cms_parse_response(response)
 
 
-# def create_space_api(ip, username, password, port='443', parameters=None):
-def create_space_api(ip, username, password, port='443', name=None, uri=None, secondaryUri=None, 
-                     passcode=None, defaultLayout=None):
+def create_space_api(ip, username, password, port='443', parameters=None):
     """
     Returns result the Space ID for a created CMS Space
     """
 
     base_url = '/api/v1/coSpaces'
-
-    # payload = "name=n1222&uri=uri1&undefined="
-    # if payload:
-    #     payload = urllib.parse.urlencode(parameters)
-
-    payload = {
-        'name': name, 
-        'uri': uri, 
-        'secondaryUri': secondaryUri, 
-        'passcode': passcode, 
-        'defaultLayout': defaultLayout
-    }
-    payload = {k: v for k, v in payload.items() if v is not None}
+    if parameters:
+        payload = urllib.parse.urlencode(parameters)
 
     return cms_send_request(host=ip, username=username, password=password, port=port, body=payload, location=base_url, request_method='POST')
 

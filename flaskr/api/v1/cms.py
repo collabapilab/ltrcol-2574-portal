@@ -3,6 +3,7 @@ from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields
 from flaskr.cms.v1.cms import *
+import xmltodict
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
 system_status_data = api.model('CMS System Status', {
@@ -21,9 +22,10 @@ class cms_system_status_api(Resource):
 
         Use this method to query for the CMS system status.
         """
-        status = get_system_status_api(ip=host, username=username, password=password, port=str(port))
+        base_url = '/api/v1/system/status'
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
 
-        return jsonify(status)
+        return result
 
 
 @api.route("/version")
@@ -35,12 +37,12 @@ class cms_version_api(Resource):
 
         Use this method to query for the CMS software version.
         """
-        status = get_system_status_api(ip=host, username=username, password=password, port=str(port))
-
-        if status:
-            return jsonify(status['status']['softwareVersion'])
+        base_url = '/api/v1/system/status'
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
+        if result['success']:
+            return jsonify({'success': True, 'version': result['response']['status']['softwareVersion']})
         else:
-            return jsonify(status)
+            return jsonify(result)
 
 
 def lookup_value(data, dict_var):
@@ -66,42 +68,47 @@ create_space_data = api.model('cms_space', {
 class cms_create_space_api(Resource):
 
     @api.expect(create_space_data)
-    def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password'], name=None, uri=None, secondaryUri=None, passcode=None, defaultLayout=None):
+    def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
         Creates a new CMS Space.
 
         Use this method to add a new Space.
 
-        * Send a JSON object with optional parameters, such as name, uri, secondaryUri, passcode, and defaultLayout in the request body.
+        * Send a JSON object with optional parameters, such as name, uri, secondaryUri, passcode, defaultLayout, etc in the request body.
 
         ```
         {
-          "name": "My New Space"
-          "uri": "User portion of the uri"
+          "name": "Name of the Space",
+          "uri": "User URI part for SIP call to reach Space",
+          "secondaryUri": "Secondary URI for SIP call to reach Space",
+          "passcode": "The security code for this Space",
+          "defaultLayout": "The default layout to be used for new call legs in this Space.  May be:  allEqual | speakerOnly | telepresence | stacked"
         }
         ```
 
-        * Specify the ID of the category to modify in the request URL path.
+        * Returns a dictionary with a 'success' (boolean) element.  If success is true, then the ID of the new Space is returned in the 'id' key.  Otherwise, a 'message element will contain error information.
         """
-        pass
-        json_data = request.json
-        host = lookup_value(json_data, 'host') or host
-        port = lookup_value(json_data, 'port') or port
-        username = lookup_value(json_data, 'username') or username
-        password = lookup_value(json_data, 'password') or password
-        name = lookup_value(json_data, 'name')
-        uri = lookup_value(json_data, 'uri')
-        secondaryUri = lookup_value(json_data, 'secondaryUri')
-        passcode = lookup_value(json_data, 'passcode')
-        defaultLayout = lookup_value(json_data, 'defaultLayout')
-        
-        new_space = create_space_api(ip=host, port=str(port), username=username, password=password, name=name, uri=uri, secondaryUri=secondaryUri, passcode=passcode, defaultLayout=defaultLayout)
-        if new_space.status_code == 200:
-            return jsonify(new_space.headers._store['location'][1])
-        else:
-            return new_space.text or new_space.reason
+        # json_data = self.api.payload
 
-@api.route("/get_spaces")
+        base_url = '/api/v1/coSpaces'
+        if self.api.payload:
+            payload = urllib.parse.urlencode(self.api.payload)
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=payload, request_method='POST')
+
+        return jsonify(result)
+
+        # new_space = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=payload, request_method='POST')
+        # if new_space:
+        #     if new_space.status_code == 200:
+        #         return jsonify({'success': True, 'id': new_space.headers._store['location'][1][len("/api/v1/coSpaces/"):]})
+        #     else:
+        #         failure_msg = json.loads(json.dumps(xmltodict.parse(new_space.content)))
+        #         return jsonify({'success': False, 'message': failure_msg})
+        # else:
+        #     return jsonify({'success': False, 'message': new_space.reason})
+
+
+@api.route("/spaces", "/coSpaces")
 class cms_get_spaces_api(Resource):
     def get(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
@@ -110,7 +117,15 @@ class cms_get_spaces_api(Resource):
         Use this method to retrieve a list of Spaces.
 
         """
-        return jsonify(get_spaces_api(ip=host, port=str(port), username=username, password=password))
+        # return jsonify(get_spaces_api(ip=host, port=port, username=username, password=password))
+        base_url = '/api/v1/coSpaces'
+
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
+
+        # if spaces_resp is not None and spaces_resp.status_code == 200:
+        #     spaces = cms_parse_response(spaces_resp)
+
+        return result
 
 
 @api.route("/delete_space")
@@ -121,28 +136,20 @@ class cms_remove_space_api(Resource):
         """
 
         space_location = find_space(name)
-        result = delete_space_api(ip=host, port=str(port), username=username, password=password, name=name, location=space_location)
+        result = delete_space_api(ip=host, port=port, username=username, password=password, name=name, location=space_location)
         return result
 
-@api.route("/edit_space")
+@api.route("/edit_space/<id>")
 class cms_edit_api(Resource):
-    def put(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password'], name=None, uri=None, secondaryUri=None, passcode=None, defaultLayout=None):
+    def put(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
         Edits a CMS space
         """
-        json_data = request.json
-        host = lookup_value(json_data, 'host') or host
-        port = lookup_value(json_data, 'port') or port
-        username = lookup_value(json_data, 'username') or username
-        password = lookup_value(json_data, 'password') or password
-        name = lookup_value(json_data, 'name')
-        uri = lookup_value(json_data, 'uri')
-        secondaryUri = lookup_value(json_data, 'secondaryUri')
-        passcode = lookup_value(json_data, 'passcode')
-        defaultLayout = lookup_value(json_data, 'defaultLayout')
+        base_url = '/api/v1/coSpaces/' + id
+        if self.api.payload:
+            payload = urllib.parse.urlencode(self.api.payload)
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=payload, request_method='PUT')
 
-        space_location = find_space(name)
-        edit_space = edit_space_api(ip=host, port=str(port), username=username, password=password, name=name, location=space_location, uri=uri, secondaryUri=secondaryUri, passcode=passcode, defaultLayout=defaultLayout)
+        return jsonify(result)
 
-        return jsonify(edit_space)
 

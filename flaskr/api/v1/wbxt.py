@@ -2,7 +2,7 @@
 from flask import jsonify, request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource
-from flaskr.wbxt.v1 import *
+from flaskr.wbxt.v1.wbxt import *
 
 api = Namespace('wbxt', description='Webex Teams APIs')
 

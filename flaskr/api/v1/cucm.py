@@ -2,7 +2,7 @@
 from flask import jsonify, request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource
-from flaskr.cucm.v1 import *
+from flaskr.cucm.v1.cucm import *
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 

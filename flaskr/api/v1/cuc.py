@@ -2,7 +2,7 @@
 from flask import jsonify, request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource
-from flaskr.cuc.v1 import *
+from flaskr.cuc.v1.cuc import *
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
