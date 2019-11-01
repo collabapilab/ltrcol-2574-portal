@@ -108,37 +108,6 @@ class cms_create_space_api(Resource):
         #     return jsonify({'success': False, 'message': new_space.reason})
 
 
-@api.route("/spaces", "/coSpaces")
-class cms_get_spaces_api(Resource):
-    def get(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
-        """
-        Retrieves CMS Spaces.
-
-        Use this method to retrieve a list of Spaces.
-
-        """
-        # return jsonify(get_spaces_api(ip=host, port=port, username=username, password=password))
-        base_url = '/api/v1/coSpaces'
-
-        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
-
-        # if spaces_resp is not None and spaces_resp.status_code == 200:
-        #     spaces = cms_parse_response(spaces_resp)
-
-        return result
-
-
-@api.route("/delete_space")
-class cms_remove_space_api(Resource):
-    def delete(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password'], name=None, uri=None, secondaryUri=None, passcode=None, defaultLayout=None):
-        """
-        Removes a CMS space
-        """
-
-        space_location = find_space(name)
-        result = delete_space_api(ip=host, port=port, username=username, password=password, name=name, location=space_location)
-        return result
-
 @api.route("/edit_space/<id>")
 class cms_edit_api(Resource):
     def put(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
@@ -151,5 +120,32 @@ class cms_edit_api(Resource):
         result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=payload, request_method='PUT')
 
         return jsonify(result)
+
+
+@api.route("/spaces", "/coSpaces", "list_spaces")
+class cms_get_spaces_api(Resource):
+    def get(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
+        """
+        Retrieves CMS Spaces.
+
+        Use this method to retrieve a list of Spaces.
+
+        """
+
+        base_url = '/api/v1/coSpaces'
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
+
+        return result
+
+
+@api.route("/delete_space/<id>")
+class cms_remove_space_api(Resource):
+    def delete(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
+        """
+        Removes a CMS space
+        """
+        base_url = '/api/v1/coSpaces/' + str(id)
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, request_method='DELETE')
+        return result
 
 
