@@ -30,12 +30,21 @@ def cms_send_request(host, username, password, port, location, parameters={}, bo
         'Content-Type': 'application/x-www-form-urlencoded'
         }
     
+    if body:
+        body = urllib.parse.urlencode(body)
+
     if request_method.lower() in ['get', 'put', 'post', 'delete']:
         try:
             resp = request(request_method, url, auth=auth, data=body, headers=headers, verify=False, timeout=2)
             if resp:
                 if resp.status_code == 200:
                     result = {'success': True, 'response': cms_parse_response(resp)}
+
+                    try:
+                        result['id'] = resp.headers._store['location'][1][len(location)+1:]
+                    except:
+                        pass
+
                 else:
                     failure_msg = json.loads(json.dumps(xmltodict.parse(resp.content)))
                     result = {'success': False, 'message': failure_msg}

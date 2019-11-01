@@ -63,6 +63,7 @@ create_space_data = api.model('cms_space', {
     'passcode': fields.String(description='The security code for this Space', default='', required=False),
     'defaultLayout': fields.String(description='The default layout to be used for new call legs in this Space.  May be allEqual | speakerOnly | telepresence | stacked', default='', required=False)
 } )
+
 @api.route("/create_space")
 # @api.response(404, 'CMS Space not found.')
 class cms_create_space_api(Resource):
@@ -91,9 +92,9 @@ class cms_create_space_api(Resource):
         # json_data = self.api.payload
 
         base_url = '/api/v1/coSpaces'
-        if self.api.payload:
-            payload = urllib.parse.urlencode(self.api.payload)
-        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=payload, request_method='POST')
+        # if self.api.payload:
+        #     payload = urllib.parse.urlencode(self.api.payload)
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=self.api.payload, request_method='POST')
 
         return jsonify(result)
 
@@ -115,11 +116,11 @@ class cms_edit_api(Resource):
         Edits a CMS space
         """
         base_url = '/api/v1/coSpaces/' + id
-        if self.api.payload:
-            payload = urllib.parse.urlencode(self.api.payload)
-        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=payload, request_method='PUT')
+        # if self.api.payload:
+        #     payload = urllib.parse.urlencode(self.api.payload)
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=self.api.payload, request_method='PUT')
 
-        return jsonify(result)
+        return result
 
 
 @api.route("/spaces", "/coSpaces", "list_spaces")
@@ -133,6 +134,22 @@ class cms_get_spaces_api(Resource):
         """
 
         base_url = '/api/v1/coSpaces'
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
+
+        return result
+
+
+@api.route("/space/<id>")
+class cms_get_space_api(Resource):
+    def get(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
+        """
+        Retrieves CMS Spaces.
+
+        Use this method to retrieve a list of Spaces.
+
+        """
+
+        base_url = '/api/v1/coSpaces/' + str(id)
         result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
 
         return result
