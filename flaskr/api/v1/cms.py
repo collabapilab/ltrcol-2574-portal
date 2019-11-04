@@ -45,13 +45,6 @@ class cms_version_api(Resource):
             return jsonify(result)
 
 
-def lookup_value(data, dict_var):
-    try:
-        return data[dict_var]
-    except:
-        return None
-
-
 create_space_data = api.model('cms_space', {
     'host': fields.String(description='CMS host/IP', default=default_cms['host'], required=False),
     'port': fields.Integer(description='port', default=default_cms['port'], required=False),
@@ -98,32 +91,8 @@ class cms_create_space_api(Resource):
 
         return jsonify(result)
 
-        # new_space = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=payload, request_method='POST')
-        # if new_space:
-        #     if new_space.status_code == 200:
-        #         return jsonify({'success': True, 'id': new_space.headers._store['location'][1][len("/api/v1/coSpaces/"):]})
-        #     else:
-        #         failure_msg = json.loads(json.dumps(xmltodict.parse(new_space.content)))
-        #         return jsonify({'success': False, 'message': failure_msg})
-        # else:
-        #     return jsonify({'success': False, 'message': new_space.reason})
 
-
-@api.route("/edit_space/<id>")
-class cms_edit_api(Resource):
-    def put(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
-        """
-        Edits a CMS space
-        """
-        base_url = '/api/v1/coSpaces/' + id
-        # if self.api.payload:
-        #     payload = urllib.parse.urlencode(self.api.payload)
-        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=self.api.payload, request_method='PUT')
-
-        return result
-
-
-@api.route("/spaces", "/coSpaces", "list_spaces")
+@api.route("/spaces")
 class cms_get_spaces_api(Resource):
     def get(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
@@ -140,7 +109,7 @@ class cms_get_spaces_api(Resource):
 
 
 @api.route("/space/<id>")
-class cms_get_space_api(Resource):
+class cms_space_api(Resource):
     def get(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
         Retrieves CMS Spaces.
@@ -154,9 +123,17 @@ class cms_get_space_api(Resource):
 
         return result
 
+    def put(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
+        """
+        Edits a CMS space
+        """
+        base_url = '/api/v1/coSpaces/' + id
+        # if self.api.payload:
+        #     payload = urllib.parse.urlencode(self.api.payload)
+        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=self.api.payload, request_method='PUT')
 
-@api.route("/delete_space/<id>")
-class cms_remove_space_api(Resource):
+        return result
+
     def delete(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
         Removes a CMS space
@@ -164,5 +141,3 @@ class cms_remove_space_api(Resource):
         base_url = '/api/v1/coSpaces/' + str(id)
         result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, request_method='DELETE')
         return result
-
-
