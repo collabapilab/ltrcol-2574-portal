@@ -1,0 +1,294 @@
+{
+	"info": {
+		"_postman_id": "19ab1a21-5f20-4884-b2c1-35b3afe27f52",
+		"name": "LTRCOL2574-Local",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CMS",
+			"item": [
+				{
+					"name": "GET system_status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/system_status",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"system_status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET version",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/version",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"version"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET spaces",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"spaces"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST create_space",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n          \"name\": \"Name of the New JUNK Space\"\n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/create_space",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"create_space"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST create_space (duplicate err)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n          \"name\": \"Name of the Space\",\n          \"uri\": \"User URI part for SIP call to reach Space\",\n          \"secondaryUri\": \"Secondary URI for SIP call to reach Space\",\n          \"passcode\": \"The security code for this Space\",\n          \"defaultLayout\": \"stacked\"\n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/create_space",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"create_space"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT space/<space_id>",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n          \"name\": \"NewName\"\n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"space",
+								"a776d217-eff4-480a-b9f5-2a1a8ec226b4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET space/<space_id>",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"space",
+								"a776d217-eff4-480a-b9f5-2a1a8ec226b4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE space/<space_id>",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cms",
+								"space",
+								"a776d217-eff4-480a-b9f5-2a1a8ec226b4"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "c1sco123",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "2e67dcba-1738-44fc-87a2-bf613b0a40b0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "64f65335-8a89-4850-b5e1-8baf3f3f4bbf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "5b15e47b-a1be-4e54-bccb-239da79bfa0a",
+			"key": "port",
+			"value": "5000",
+			"type": "string"
+		},
+		{
+			"id": "8f7bf4db-6b13-4bc2-9a17-36e5a5727d5b",
+			"key": "host",
+			"value": "0.0.0.0",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
