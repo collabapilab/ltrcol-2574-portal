@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields
 from flaskr.cms.v1.cms import *
 import xmltodict
+
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
 system_status_data = api.model('CMS System Status', {
@@ -41,8 +42,7 @@ class cms_version_api(Resource):
         result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url)
         if result['success']:
             return jsonify({'success': True, 'version': result['response']['status']['softwareVersion']})
-        else:
-            return jsonify(result)
+        return result
 
 
 create_space_data = api.model('cms_space', {
@@ -89,7 +89,7 @@ class cms_create_space_api(Resource):
         #     payload = urllib.parse.urlencode(self.api.payload)
         result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=self.api.payload, request_method='POST')
 
-        return jsonify(result)
+        return result
 
 
 @api.route("/spaces")
@@ -127,9 +127,7 @@ class cms_space_api(Resource):
         """
         Edits a CMS space
         """
-        base_url = '/api/v1/coSpaces/' + id
-        # if self.api.payload:
-        #     payload = urllib.parse.urlencode(self.api.payload)
+        base_url = '/api/v1/coSpaces/' + str(id)
         result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=self.api.payload, request_method='PUT')
 
         return result

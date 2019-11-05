@@ -11,15 +11,15 @@ import urllib.parse
 
 packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-default_cuc = {
-   'host': 'cuc1a.pod31.col.lab',
-   'port': 443,
+default_cms = {
+   'host': 'cms1a.pod31.col.lab',
+   'port': 8443,
    'username': 'admin',
    'password': 'c1sco123'
 }
 
 
-def cuc_send_request(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+def rest_send_request(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
 
     url = "https://" + host + ":" + str(port) + str(location)
     if len(parameters) > 0:
@@ -27,7 +27,7 @@ def cuc_send_request(host, username, password, port, location, parameters={}, bo
     auth=HTTPBasicAuth(username, password)
 
     headers = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/x-www-form-urlencoded'
         }
     
     if body:
@@ -38,7 +38,7 @@ def cuc_send_request(host, username, password, port, location, parameters={}, bo
             resp = request(request_method, url, auth=auth, data=body, headers=headers, verify=False, timeout=2)
             if resp:
                 if resp.status_code == 200:
-                    result = {'success': True, 'response': cuc_parse_response(resp)}
+                    result = {'success': True, 'response': rest_parse_response(resp)}
 
                     try:
                         result['id'] = resp.headers._store['location'][1][len(location)+1:]
@@ -60,8 +60,7 @@ def cuc_send_request(host, username, password, port, location, parameters={}, bo
 
     return result
 
-
-def cuc_parse_response(resp):
+def rest_parse_response(resp):
     # response content converted to an ordered dictionary type
     if len(resp.content) == 0:
         return
@@ -86,26 +85,7 @@ def cuc_parse_response(resp):
             #pp.pprint(root)
             #We need to make it a list
     except KeyError:
-        pass
+        pass 
     # convert from ordered dict to plain dict
     resp_dict = json.loads(json.dumps(resp_odict))
     return resp_dict
-
-
-def cuc_get_version(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cuc_list_mailboxes(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cuc_find_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cuc_add_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cuc_edit_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cuc_delete_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass

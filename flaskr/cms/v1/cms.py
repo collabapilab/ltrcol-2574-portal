@@ -2,8 +2,8 @@ from requests import get, post, put, delete, packages,request
 from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.exceptions import RequestException
-from flask import jsonify
 import xmltodict
+from flask import jsonify
 from flask import render_template
 import base64
 import json
@@ -89,73 +89,3 @@ def cms_parse_response(resp):
     # convert from ordered dict to plain dict
     resp_dict = json.loads(json.dumps(resp_odict))
     return resp_dict
-
-
-# def get_system_status_api(ip=default_cms['host'], username=default_cms['username'], password=default_cms['password'], port=default_cms['port']):
-#     """
-#     Returns result from CMS system status via WebAdmin
-#     """
-
-#     base_url = '/api/v1/system/status'
-#     response = cms_send_request(host=ip, username=username, password=password, port=port, location=base_url)
-#     return cms_parse_response(response)
-
-
-# def create_space_api(ip, username, password, port='443', parameters=None):
-#     """
-#     Returns result the Space ID for a created CMS Space
-#     """
-
-#     base_url = '/api/v1/coSpaces'
-#     if parameters:
-#         payload = urllib.parse.urlencode(parameters)
-
-#     return cms_send_request(host=ip, username=username, password=password, port=port, body=payload, location=base_url, request_method='POST')
-
-
-# def get_spaces_api(ip, username, password, port='443', name=None, uri=None, secondaryUri=None, 
-#                      passcode=None, defaultLayout=None):
-#     """
-#     Returns a list of CMS Spaces
-#     """
-
-#     base_url = '/api/v1/coSpaces'
-
-#     spaces_resp = cms_send_request(host=ip, username=username, password=password, port=port, location=base_url, request_method='GET')
-
-#     if spaces_resp is not None and spaces_resp.status_code == 200:
-#         spaces = cms_parse_response(spaces_resp)
-
-#     return spaces
-
-# def modify_space_api(ip, username, password, location, port='443', name=None, uri=None, secondaryUri=None, 
-#                      passcode=None, defaultLayout=None):
-#     """
-#     Modifies a CMS Space
-#     """
-
-#     base_url = '/api/v1/coSpaces'
-#     if location:
-#         base_url += location
-
-#     payload = {
-#         'name': name, 
-#         'uri': uri, 
-#         'secondaryUri': secondaryUri, 
-#         'passcode': passcode, 
-#         'defaultLayout': defaultLayout
-#     }
-#     payload = {k: v for k, v in payload.items() if v is not None}
-
-#     return cms_send_request(host=ip, username=username, password=password, port=port, body=payload, location=base_url, request_method='PUT')
-
-
-# def remove_space_api(ip, username, password, location, port='443'):
-#     """
-#     Removes a CMS Space
-#     """
-#     base_url = '/api/v1/coSpaces'
-#     if location:
-#         base_url += location
-        
-#     return cms_send_request(host=ip, username=username, password=password, port=port, body=payload, location=base_url, request_method='PUT')
