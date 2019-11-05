@@ -4,6 +4,7 @@ from flask import Blueprint
 import flask
 from flask_restplus import Namespace, Resource, fields
 from flaskr.cms.v1.cms import *
+# import flaskr.cms.v1.cms
 import xmltodict
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
@@ -25,9 +26,9 @@ class cms_system_status_api(Resource):
         Use this method to query for the CMS system status.
         """
         base_url = '/api/v1/system/status'
-        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id)
+        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url)
 
-        return result
+        return jsonify(result)
 
 
 @api.route("/version")
@@ -40,10 +41,13 @@ class cms_version_api(Resource):
         Use this method to query for the CMS software version.
         """
         base_url = '/api/v1/system/status'
-        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id)
+        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url)
         if result['success']:
-            return jsonify({'success': True, 'version': result['response']['status']['softwareVersion']})
-        return result
+            try:
+                result = {'success': True, 'version': result['response']['status']['softwareVersion']}
+            except KeyError:
+                pass
+        return jsonify(result)
 
 
 create_space_data = api.model('cms_space', {
@@ -58,10 +62,10 @@ create_space_data = api.model('cms_space', {
     'defaultLayout': fields.String(description='The default layout to be used for new call legs in this Space.  May be allEqual | speakerOnly | telepresence | stacked', default='', required=False)
 } )
 
-@api.route("/create_space/<id>")
+@api.route("/create_space")
 class cms_create_space_api(Resource):
     @api.expect(create_space_data)
-    def post(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
+    def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
         Creates a new CMS Space.
 
@@ -82,19 +86,36 @@ class cms_create_space_api(Resource):
         * Returns a dictionary with a 'success' (boolean) element.  If success is true, then the ID of the new Space is returned in the 'id' key.  Otherwise, a 'message element will contain error information.
         """
         base_url = '/api/v1/coSpaces'
-        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id, body=self.api.payload, request_method='POST')
+        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, body=self.api.payload, request_method='POST')
 
-        return result
+        return jsonify(result)
 
-@api.route("/edit_space/<id>")
-class cms_edit_api(Resource):
-    def put(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
+
+@api.route("/spaces")
+class cms_spaces_api(Resource):
+    def get(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
-        Edits a CMS space
+        Retrieves CMS Spaces.
+
+        Use this method to retrieve a list of Spaces.  If no space ID is supplied, then all results are returned.
+        The output can be filtered using the following query parameters supplied in the URL:
+
+        * offset (int) - An "offset" and "limit" can be supplied to retrieve coSpaces other than the first “page" in the notional list
+        * limit (int)
+        * filter (str) - Supply “filter=<string>” in the URI to return just those coSpaces that match the filter
+        * tenantFilter (str) - Supply tenantFilter=<tenant id> to return just those coSpaces associated with that tenant
+        * callLegProfileFilter - Supply callLegProfileFilter=<call leg profile id> to return just those coSpaces using that call leg profile
+        
+        For example:
+        ```  https://portal/spaces?filter=sales&limit=5```
         """
+
         base_url = '/api/v1/coSpaces'
-        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
-        return result
+        args = flask.request.args.to_dict()
+        result = cms_send_request(host=host, username=username, password=password,
+                                  port=port, base_url=base_url, parameters=args)
+
+        return jsonify(result)
 
 
 @api.route("/space/<id>")
@@ -118,21 +139,17 @@ class cms_space_api(Resource):
 
         base_url = '/api/v1/coSpaces'
         args = flask.request.args.to_dict()
-        if id:
-            base_url = base_url + '/' + str(id)
-
         result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id, parameters=args)
 
-        return result
+        return jsonify(result)
 
     def put(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
         Edits a CMS space
         """
-        base_url = '/api/v1/coSpaces/' + str(id)
-        result = cms_send_request(host=host, username=username, password=password, port=port, location=base_url, body=self.api.payload, request_method='PUT')
-
-        return result
+        base_url = '/api/v1/coSpaces'
+        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
+        return jsonify(result)
 
     def delete(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
@@ -140,4 +157,4 @@ class cms_space_api(Resource):
         """
         base_url = '/api/v1/coSpaces'
         result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id, request_method='DELETE')
-        return result
+        return jsonify(result)

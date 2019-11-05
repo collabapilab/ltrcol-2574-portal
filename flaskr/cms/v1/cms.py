@@ -21,11 +21,11 @@ default_cms = {
 def cms_send_request(host, username, password, port, base_url, id=None, parameters={}, body=None, request_method='GET'):
 
     if request_method.upper() in ['PUT', 'DELETE'] and not id:
-        return jsonify({'success': False, 'message': 'ID was not supplied supplied for ' + str(request_method.upper() + ' request.')})
-    
+        return {'success': False, 'message': 'ID was not supplied supplied for ' + str(request_method.upper() + ' request.')}
+ 
     url = "https://" + host + ":" + str(port) + base_url
     if id is not None:
-        url = url + '/' + id
+        url = url + '/' + str(id)
 
     if len(parameters) > 0:
         url = url + "?" + urllib.parse.urlencode(parameters)
@@ -62,7 +62,7 @@ def cms_send_request(host, username, password, port, base_url, id=None, paramete
     else:
         result = {'success': False, 'message': 'Invalid verb ' + request_method}
 
-    return jsonify(result)
+    return result
 
 def cms_parse_response(resp):
     """
@@ -102,6 +102,7 @@ def cms_parse_response(resp):
     # Maybe the @total key didn't exist; we'll just return the result
     except KeyError:
         pass 
+
     # convert from ordered dict to plain dict
     resp_dict = json.loads(json.dumps(resp_odict))
     return resp_dict
