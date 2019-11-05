@@ -3,6 +3,7 @@ from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource
 from flaskr.cuc.v1.cuc import *
+import flask
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
@@ -22,10 +23,11 @@ class cuc_get_user_api(Resource):
         Returns CUC user
         """
         base_url = '/vmrest/users'
+        args = flask.request.args.to_dict()
 
         # query = (column[is | startswith] value)
         base_url = '/vmrest/users?query=(alias%20is%20operator)'
-        result = cuc_send_request(host=host, username=username, password=password, port=port, location=base_url)
+        result = cuc_send_request(host=host, username=username, password=password, port=port, base_url=base_url)
 
         return result
 
