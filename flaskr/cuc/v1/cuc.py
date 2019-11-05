@@ -19,6 +19,69 @@ default_cuc = {
 }
 
 
+def cuc_parse_params(params):
+    if len(params) == 0:
+        return ''
+
+    # query = (column[is | startswith] value)
+    # args: -> ?query=alias&is=operator;  ?filter=operator&match=exact  query=(alias%20is%20operator)
+    # ?query=(dtmfaccessid%20startswith%2099999) <--> ?filter=2099999&match=exact
+    # base_url = '/vmrest/users?query=(alias%20is%20operator)'
+
+    # query=(alias startswith a)
+    # sort=(column [asc | desc])
+    # space = %20 ; 
+    # ?filter=2099999&match=exact&sortorder=asc
+
+    # ?column=dtmfaccessid&filter=99999&match=is
+    # ?filter=operator
+
+    # column to search
+    column = 'alias'
+    # 'startswith' or is'
+    match_method = 'startswith'
+    # what to search for
+    filter = ''
+    # sort order 'asc' or 'desc'
+    sortorder = 'asc'
+
+    # result will be:  ?query=(<column> <matchmethod> <filter>)&sortorder=(<column>=<sortorder>)
+    # (with spaces replaced with %20 ) for example:
+    # ?filter=operat  would be converted to:  ?query=(alias%20startswith%20operat)&sortorder=(alias=asc)
+    # 
+    #  ?column=dtmfaccessid&filter=99999&match=is
+
+    # ?filter=operator  - would find all users whose alias that start with operator (operator, operator1, etc)
+    # ?filter=operator&match=is  - would find a user whose alias  is exactly 'operator'
+    # ?filter=99999&column=dtmfaccessid&match=is  - would find the user with dtmfaccessid = 99999
+
+    try:
+        filter = params['filter']
+        if filter == '':
+            return ''
+    except KeyError:
+        return ''
+    try:
+        if params['match'] in ['is', 'startswith']:
+            match_method = params['match']
+    except KeyError:
+        pass
+    try:
+        column = params['column']
+    except KeyError:
+        pass
+    try:
+        if params['sortorder'] in ['asc', 'desc']:
+            sortorder = params['sortorder']
+    except KeyError:
+        pass
+
+    url_param = '?query=({}%20{}%20{})&sort=({}%20{})'.format(
+        column, match_method, filter, column, sortorder)
+
+    return url_param
+
+
 def cuc_send_request(host, username, password, port, base_url, id=None, parameters={}, body=None, request_method='GET'):
 
     if request_method.upper() in ['PUT', 'DELETE'] and not id:
@@ -28,8 +91,9 @@ def cuc_send_request(host, username, password, port, base_url, id=None, paramete
     if id is not None:
         url = url + '/' + str(id)
 
-    if len(parameters) > 0:
-        url = url + "?" + urllib.parse.urlencode(parameters)
+    # if len(parameters) > 0:
+    #     url = url + "?" + cuc_parse_params(parameters)
+    url = url + cuc_parse_params(parameters)
 
     auth = HTTPBasicAuth(username, password)
 
@@ -118,20 +182,25 @@ def cuc_parse_response(resp):
     return resp_dict
 
 
-def cuc_get_version(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+def cuc_get_version(host, username, password, port, base_url, parameters={}, body=None, request_method='GET'):
     pass
 
-def cuc_list_mailboxes(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+
+def cuc_list_mailboxes(host, username, password, port, base_url, parameters={}, body=None, request_method='GET'):
     pass
 
-def cuc_find_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+
+def cuc_find_mailbox(host, username, password, port, base_url, parameters={}, body=None, request_method='GET'):
     pass
 
-def cuc_add_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+
+def cuc_add_mailbox(host, username, password, port, base_url, parameters={}, body=None, request_method='GET'):
     pass
 
-def cuc_edit_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+
+def cuc_edit_mailbox(host, username, password, port, base_url, parameters={}, body=None, request_method='GET'):
     pass
 
-def cuc_delete_mailbox(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+
+def cuc_delete_mailbox(host, username, password, port, base_url, parameters={}, body=None, request_method='GET'):
     pass
