@@ -1,15 +1,15 @@
-from requests import get, post, put, delete, packages,request
+from requests import get, post, put, delete, request, packages
 from requests.auth import HTTPBasicAuth
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.exceptions import RequestException
 from flask import jsonify
 import xmltodict
-from flask import render_template
-import base64
 import json
 import urllib.parse
+import urllib3
+# from flask import render_template
+# import base64
 
-packages.urllib3.disable_warnings(InsecureRequestWarning)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 default_cms = {
    'host': 'cms1a.pod31.col.lab',
@@ -19,13 +19,19 @@ default_cms = {
 }
 
 
-def cms_send_request(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
+def cms_send_request(host, username, password, port, base_url, id=None, parameters={}, body=None, request_method='GET'):
 
-    url = "https://" + host + ":" + str(port) + str(location)
+    if request_method.upper() in ['PUT', 'DELETE'] and not id:
+        return jsonify({'success': False, 'message': 'ID was not supplied supplied for ' + str(request_method.upper() + ' request.')})
+    
+    url = "https://" + host + ":" + str(port) + base_url
+    if id is not None:
+        url = url + '/' + id
+
     if len(parameters) > 0:
         url = url + "?" + urllib.parse.urlencode(parameters)
-    auth=HTTPBasicAuth(username, password)
 
+    auth=HTTPBasicAuth(username, password)
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -33,7 +39,7 @@ def cms_send_request(host, username, password, port, location, parameters={}, bo
     if body:
         body = urllib.parse.urlencode(body)
 
-    if request_method.lower() in ['get', 'put', 'post', 'delete']:
+    if request_method.upper() in ['GET', 'PUT', 'POST', 'DELETE']:
         try:
             resp = request(request_method, url, auth=auth, data=body, headers=headers, verify=False, timeout=2)
             if resp:
@@ -50,112 +56,53 @@ def cms_send_request(host, username, password, port, location, parameters={}, bo
                     result = {'success': False, 'message': failure_msg}
             else:
                 result = {'success': False, 'message': json.loads(json.dumps(xmltodict.parse(resp.content)))}
-                # result = {'success': False, 'message': resp.reason}
         
         except RequestException as e:
             result = {'success': False, 'message': str(e)}
                         
     else:
-        result = jsonify({'success': False, 'message': 'Invalid verb ' + request_method})
+        result = {'success': False, 'message': 'Invalid verb ' + request_method}
 
-    return result
+    return jsonify(result)
 
 def cms_parse_response(resp):
+    """
+    Parses the response contents of the body.  This would be present after a GET operation.
+
+    Use this method to query for the CMS system status.
+    """
+
+
     # response content converted to an ordered dictionary type
     if len(resp.content) == 0:
-        return
+        try:
+            return resp.headers._store['location'][1][len(resp.request.path_url)+1:]
+        except KeyError:
+            return json.loads(json.dumps({}))
+
+    # Convert the XML to an ordered dictionary (a regular dictionary, that maintains a consisten order of 
+    # elements, similar to a list)
     resp_odict = xmltodict.parse(resp.content)
+
+    # One problem with xmltodict is that in 
     try:
+        # Get the root key from the dictionary (e.g. 'coSpaces')
         rootName = list(resp_odict.keys())[0]
-        root = resp_odict[rootName]
-        if(root["@total"] == "1"):
-            li = list()
-            childName = list(root.keys())[1]
 
-            li.append(root[childName].copy())
+        # check if there is only one element, meaning xmltodict would not have created a list
+        if(resp_odict[rootName]["@total"] == "1"):
+            # Get the child key nested under the root (e.g. 'coSpace')
+            childName = list(resp_odict[rootName].keys())[1]
+            # Force the child element to be a list
+            resp_odict = xmltodict.parse(resp.content, force_list={childName: True})
 
-            root[childName] = li
-            resp_odict[rootName] = root
+        # No elements, so just return a blank dictionary
+        elif (len(resp_odict) == 0):
+            return json.loads(json.dumps({}))
 
-            return json.loads(json.dumps(resp_odict))
-
-        elif(len(resp_odict) == 0):
-            return {}
-
-            #pp.pprint(root)
-            #We need to make it a list
+    # Maybe the @total key didn't exist; we'll just return the result
     except KeyError:
         pass 
-    # convert from ordered dict to plain dict
-    resp_dict = json.loads(json.dumps(resp_odict))
-    return resp_dict
 
-
-# def get_system_status_api(ip=default_cms['host'], username=default_cms['username'], password=default_cms['password'], port=default_cms['port']):
-#     """
-#     Returns result from CMS system status via WebAdmin
-#     """
-
-#     base_url = '/api/v1/system/status'
-#     response = cms_send_request(host=ip, username=username, password=password, port=port, location=base_url)
-#     return cms_parse_response(response)
-
-
-# def create_space_api(ip, username, password, port='443', parameters=None):
-#     """
-#     Returns result the Space ID for a created CMS Space
-#     """
-
-#     base_url = '/api/v1/coSpaces'
-#     if parameters:
-#         payload = urllib.parse.urlencode(parameters)
-
-#     return cms_send_request(host=ip, username=username, password=password, port=port, body=payload, location=base_url, request_method='POST')
-
-
-# def get_spaces_api(ip, username, password, port='443', name=None, uri=None, secondaryUri=None, 
-#                      passcode=None, defaultLayout=None):
-#     """
-#     Returns a list of CMS Spaces
-#     """
-
-#     base_url = '/api/v1/coSpaces'
-
-#     spaces_resp = cms_send_request(host=ip, username=username, password=password, port=port, location=base_url, request_method='GET')
-
-#     if spaces_resp is not None and spaces_resp.status_code == 200:
-#         spaces = cms_parse_response(spaces_resp)
-
-#     return spaces
-
-# def modify_space_api(ip, username, password, location, port='443', name=None, uri=None, secondaryUri=None, 
-#                      passcode=None, defaultLayout=None):
-#     """
-#     Modifies a CMS Space
-#     """
-
-#     base_url = '/api/v1/coSpaces'
-#     if location:
-#         base_url += location
-
-#     payload = {
-#         'name': name, 
-#         'uri': uri, 
-#         'secondaryUri': secondaryUri, 
-#         'passcode': passcode, 
-#         'defaultLayout': defaultLayout
-#     }
-#     payload = {k: v for k, v in payload.items() if v is not None}
-
-#     return cms_send_request(host=ip, username=username, password=password, port=port, body=payload, location=base_url, request_method='PUT')
-
-
-# def remove_space_api(ip, username, password, location, port='443'):
-#     """
-#     Removes a CMS Space
-#     """
-#     base_url = '/api/v1/coSpaces'
-#     if location:
-#         base_url += location
-        
-#     return cms_send_request(host=ip, username=username, password=password, port=port, body=payload, location=base_url, request_method='PUT')
+    # convert from ordered dict to plain dict and return the result
+    return json.loads(json.dumps(resp_odict))
