@@ -18,7 +18,7 @@ api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
 @api.route("/users")
 class cuc_get_user_api(Resource):
-    def get(self, op=None, val=None, host=default_cuc['host'], port=default_cuc['port'], 
+    def get(self, host=default_cuc['host'], port=default_cuc['port'], 
             username=default_cuc['username'], password=default_cuc['password']):
         """
         Searches for CUC users.  
@@ -49,6 +49,50 @@ class cuc_get_user_api(Resource):
         base_url = '/vmrest/users'
         result = cuc_send_request(host=host, username=username,
                                   password=password, port=port, base_url=base_url, parameters=args)
+
+        return result
+
+
+@api.route("/ldapusers")
+class cuc_get_ldapuser_api(Resource):
+    def get(self, host=default_cuc['host'], port=default_cuc['port'], 
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Get LDAP user synched to Unity Connection.  
+        """
+
+        # https://host:port/vmrest/import/users/ldap?query=(alias%20is%20{{user_id}})
+
+        base_url = '/vmrest/import/users/ldap'
+        args = flask.request.args.to_dict()
+
+        result = cuc_send_request(host=host, username=username,
+                                  password=password, port=port, base_url=base_url, parameters=args)
+
+        return result
+
+
+@api.route("/import_ldapuser")
+class cuc_import_ldapuser_api(Resource):
+    def post(self, host=default_cuc['host'], port=default_cuc['port'], 
+             username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Import LDAP user to Unity Connection.  
+        """
+
+        # https://{{host}}:443/vmrest/import/users/ldap?templateAlias={{templateAlias}}
+        #         body:
+        # {"alias":"sdavis","firstName":"sonya","lastName":"davis","dtmfAccessId":"12123","pkid":"c2e2bf1c-f249-40e5-b7b8-31a5b0333647"}
+        #   alias: "{{user_id}}"
+        #   pkid: "{{user_to_import.json.ImportUser.pkid}}"
+        # body_format: json
+
+
+        base_url = '/vmrest/import/users/ldap'
+        args = flask.request.args.to_dict()
+        
+        result = cuc_send_request(host=host, username=username,
+                                  password=password, port=port, base_url=base_url, parameters=args, body=self.api.payload, request_method='POST')
 
         return result
 

@@ -36,12 +36,21 @@ def cuc_parse_params(params):
     # ?column=dtmfaccessid&filter=99999&match=is
     # ?filter=operator
 
+    try:
+        filter = params['filter']
+        if filter == '':
+            return ''
+    except KeyError:
+        # No filter found.  Just encode whatever dictionary was sent
+        url_param = urllib.parse.urlencode(params)
+        if url_param:
+            url_param = '?' + url_param
+        return url_param
+
     # column to search
     column = 'alias'
     # 'startswith' or is'
     match_method = 'startswith'
-    # what to search for
-    filter = ''
     # sort order 'asc' or 'desc'
     sortorder = 'asc'
 
@@ -55,12 +64,6 @@ def cuc_parse_params(params):
     # ?filter=operator&match=is  - would find a user whose alias  is exactly 'operator'
     # ?filter=99999&column=dtmfaccessid&match=is  - would find the user with dtmfaccessid = 99999
 
-    try:
-        filter = params['filter']
-        if filter == '':
-            return ''
-    except KeyError:
-        return ''
     try:
         if params['match'] in ['is', 'startswith']:
             match_method = params['match']
@@ -99,11 +102,13 @@ def cuc_send_request(host, username, password, port, base_url, id=None, paramete
 
     # DIFFERENT FROM CMS
     headers = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Connection': 'keep-alive'
     }
 
     if body:
-        body = urllib.parse.urlencode(body)
+        # body = urllib.parse.urlencode(body)
+        body = json.dumps(body)
 
     if request_method.upper() in ['GET', 'PUT', 'POST', 'DELETE']:
         try:
@@ -119,6 +124,9 @@ def cuc_send_request(host, username, password, port, base_url, id=None, paramete
                             location)+1:]
                     except:
                         pass
+                elif resp.status_code == 201:
+                    result = {'success': True,
+                              'response': resp.content.decode("utf-8")}
 
                 else:
                     failure_msg = json.loads(
