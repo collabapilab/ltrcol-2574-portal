@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "19ab1a21-5f20-4884-b2c1-35b3afe27f52",
+		"_postman_id": "12338de0-3071-4e6f-b876-eab04c2625a0",
 		"name": "LTRCOL2574-Local",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,10 +9,14 @@
 			"name": "CMS",
 			"item": [
 				{
-					"name": "GET system_status",
+					"name": "CMS GET system_status",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/system_status",
 							"protocol": "http",
@@ -31,10 +35,14 @@
 					"response": []
 				},
 				{
-					"name": "GET version",
+					"name": "CMS GET version",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/version",
 							"protocol": "http",
@@ -53,10 +61,14 @@
 					"response": []
 				},
 				{
-					"name": "GET spaces",
+					"name": "CMS GET spaces",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces",
 							"protocol": "http",
@@ -75,7 +87,7 @@
 					"response": []
 				},
 				{
-					"name": "POST create_space",
+					"name": "CMS POST create_space",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -88,12 +100,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "        {\n          \"name\": \"Name of the New JUNK Space\"\n        }\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "        {\n          \"name\": \"Name of the New JUNK Space\"\n        }\n"
 						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/create_space",
@@ -113,7 +120,7 @@
 					"response": []
 				},
 				{
-					"name": "POST create_space (duplicate err)",
+					"name": "CMS POST create_space (duplicate err)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -126,12 +133,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "        {\n          \"name\": \"Name of the Space\",\n          \"uri\": \"User URI part for SIP call to reach Space\",\n          \"secondaryUri\": \"Secondary URI for SIP call to reach Space\",\n          \"passcode\": \"The security code for this Space\",\n          \"defaultLayout\": \"stacked\"\n        }\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "        {\n          \"name\": \"Name of the Space\",\n          \"uri\": \"User URI part for SIP call to reach Space\",\n          \"secondaryUri\": \"Secondary URI for SIP call to reach Space\",\n          \"passcode\": \"The security code for this Space\",\n          \"defaultLayout\": \"stacked\"\n        }\n"
 						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/create_space",
@@ -151,7 +153,7 @@
 					"response": []
 				},
 				{
-					"name": "PUT space/<space_id>",
+					"name": "CMS PUT space/<space_id>",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -164,12 +166,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "        {\n          \"name\": \"NewName\"\n        }\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "        {\n          \"name\": \"NewName\"\n        }\n"
 						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
@@ -190,10 +187,14 @@
 					"response": []
 				},
 				{
-					"name": "GET space/<space_id>",
+					"name": "CMS GET space/<space_id>",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
 							"protocol": "http",
@@ -213,10 +214,14 @@
 					"response": []
 				},
 				{
-					"name": "DELETE space/<space_id>",
+					"name": "CMS DEL space/<space_id>",
 					"request": {
 						"method": "DELETE",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
 							"protocol": "http",
@@ -235,8 +240,320 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
+		},
+		{
+			"name": "CUC",
+			"item": [
+				{
+					"name": "CUC GET Users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c1sco123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Python URL encoding",
+									"type": "text"
+								},
+								{
+									"key": "uri",
+									"value": "uri1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cuc/users",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cuc",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CUC GET LDAP Users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c1sco123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Python URL encoding",
+									"type": "text"
+								},
+								{
+									"key": "uri",
+									"value": "uri1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cuc/ldapusers?filter=pod{{pn}}user4",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cuc",
+								"ldapusers"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "pod{{pn}}user4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CUC POST Import LDAP user",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c1sco123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"alias\": \"pod31user4\",\n    \"pkid\": \"a85082b0-adee-e39a-7026-605479e2c965\"\n}"
+						},
+						"url": {
+							"raw": "https://10.0.131.42:443/vmrest/import/users/ldap?templateAlias=voicemailusertemplate",
+							"protocol": "https",
+							"host": [
+								"10",
+								"0",
+								"131",
+								"42"
+							],
+							"port": "443",
+							"path": [
+								"vmrest",
+								"import",
+								"users",
+								"ldap"
+							],
+							"query": [
+								{
+									"key": "templateAlias",
+									"value": "voicemailusertemplate"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CUC PUT Change PIN",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c1sco123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Credential\": {\n\t\t\"Credentials\": \"635241\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cuc/update_pin/94159e85-722c-4315-9b35-da052f06fcb0",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cuc",
+								"update_pin",
+								"94159e85-722c-4315-9b35-da052f06fcb0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CUC DEL User",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "c1sco123",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Python URL encoding",
+									"type": "text"
+								},
+								{
+									"key": "uri",
+									"value": "uri1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{host}}:{{port}}/api/v1/cuc/user/94159e85-722c-4315-9b35-da052f06fcb0",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"v1",
+								"cuc",
+								"user",
+								"94159e85-722c-4315-9b35-da052f06fcb0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
@@ -278,17 +595,22 @@
 	],
 	"variable": [
 		{
-			"id": "5b15e47b-a1be-4e54-bccb-239da79bfa0a",
+			"id": "e6c0e747-b82f-47f2-9da4-82fa3d0c23be",
 			"key": "port",
 			"value": "5000",
 			"type": "string"
 		},
 		{
-			"id": "8f7bf4db-6b13-4bc2-9a17-36e5a5727d5b",
+			"id": "b2835135-f955-417e-9ddb-4665c1a6588b",
 			"key": "host",
 			"value": "0.0.0.0",
 			"type": "string"
+		},
+		{
+			"id": "acf2825e-52c3-42f3-b96b-b30303124ae4",
+			"key": "pn",
+			"value": "31",
+			"type": "string"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

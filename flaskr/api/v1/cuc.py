@@ -97,6 +97,43 @@ class cuc_import_ldapuser_api(Resource):
         return result
 
 
+@api.route("/update_pin/<id>")
+class cuc_update_pin_api(Resource):
+    def put(self, id, host=default_cuc['host'], port=default_cuc['port'], 
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Updates user from Unity Connection.  
+        """
+
+        base_url = '/vmrest/users' 
+        id = id + '/credential/pin'
+        # args = flask.request.args.to_dict()
+        
+        result = cuc_send_request(host=host, username=username, password=password, port=port, 
+                                  base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
+
+        return result
+
+
+@api.route("/user/<id>")
+class cuc_import_ldapuser_api(Resource):
+    def delete(self, id, host=default_cuc['host'], port=default_cuc['port'], 
+               username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Delete user from Unity Connection.  
+        """
+
+        # "https://{{host}}:443/vmrest/users/{{User.ObjectId}}"
+
+        base_url = '/vmrest/users'
+        # args = flask.request.args.to_dict()
+        
+        result = cuc_send_request(host=host, username=username, password=password, port=port, 
+                                  base_url=base_url, id=id, request_method='DELETE')
+
+        return result
+
+
 # @api.route("/create_mailbox")
 # class cuc_create_mailbox_api(Resource):
 #     def post(self, **kwargs):

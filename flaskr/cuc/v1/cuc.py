@@ -124,10 +124,9 @@ def cuc_send_request(host, username, password, port, base_url, id=None, paramete
                             location)+1:]
                     except:
                         pass
-                elif resp.status_code == 201:
+                elif resp.status_code in [201, 204]:
                     result = {'success': True,
                               'response': resp.content.decode("utf-8")}
-
                 else:
                     failure_msg = json.loads(
                         json.dumps(xmltodict.parse(resp.content)))
