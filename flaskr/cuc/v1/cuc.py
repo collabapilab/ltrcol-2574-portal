@@ -89,7 +89,6 @@ def cuc_send_request(host, username, password, port, base_url, id=None, paramete
 
     if request_method.upper() in ['PUT', 'DELETE'] and not id:
         return {'success': False, 'message': 'ID was not supplied supplied for ' + str(request_method.upper() + ' request.')}
-
     url = "https://" + host + ":" + str(port) + base_url
     if id is not None:
         url = url + '/' + str(id)

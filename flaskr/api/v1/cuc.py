@@ -116,11 +116,11 @@ class cuc_update_pin_api(Resource):
 
 
 @api.route("/user/<id>")
-class cuc_import_ldapuser_api(Resource):
-    def delete(self, id, host=default_cuc['host'], port=default_cuc['port'], 
-               username=default_cuc['username'], password=default_cuc['password']):
+class cuc_user_api(Resource):
+    def get(self, id, host=default_cuc['host'], port=default_cuc['port'], 
+            username=default_cuc['username'], password=default_cuc['password']):
         """
-        Delete user from Unity Connection.  
+        Get user from Unity Connection using user ID.
         """
 
         # "https://{{host}}:443/vmrest/users/{{User.ObjectId}}"
@@ -129,49 +129,76 @@ class cuc_import_ldapuser_api(Resource):
         # args = flask.request.args.to_dict()
         
         result = cuc_send_request(host=host, username=username, password=password, port=port, 
+                                  base_url=base_url, id=id)
+
+        return result
+
+    def delete(self, id, host=default_cuc['host'], port=default_cuc['port'], 
+               username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Delete user from Unity Connection.  
+        """
+
+        # "https://{{host}}:443/vmrest/users/{{User.ObjectId}}"
+
+        base_url = '/vmrest/users'        
+        result = cuc_send_request(host=host, username=username, password=password, port=port, 
                                   base_url=base_url, id=id, request_method='DELETE')
 
         return result
 
 
-# @api.route("/create_mailbox")
-# class cuc_create_mailbox_api(Resource):
-#     def post(self, **kwargs):
-#         """
-#         Returns CUC Mailbox
-#         """
-         
-#         return jsonify(editor_create('cms_spaces', data))
+@api.route("/location/<path:location>")
+class cuc_generic_api(Resource):
+    def get(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Generic GET to Unity Connection, given location url/path.
+        """
 
-# @api.route("/list_mailboxes")
-# class cuc_get_mailboxes_api(Resource):
-#     def get(self):
-#         """
-#         Lists CUC mailboxes
-#         """
-#         return jsonify(cms_get_spaces_sql())
+        base_url = '/'+ location
+        args = flask.request.args.to_dict()
+        result = cuc_send_request(host=host, username=username, password=password, port=port, 
+                                  base_url=base_url, parameters=args)
 
-# @api.route("/find_mailbox")
-# class cuc_get_mailboxes_api(Resource):
-#     def get(self):
-#         """
-#         Gets CUC mailbox
-#         """
-#         return jsonify(cms_get_spaces_sql())
+        return result
 
-# @api.route("/delete_mailbox")
-# class cuc_delete_mailbox_api(Resource):
-#     def delete(self):
-#         """
-#         Deletes CUC mailbox
-#         """
+    def post(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+             username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Generic POST (create) to Unity Connection, given location url/path.  
+        """
 
-#         pass
+        base_url = '/'+ location                
+        args = flask.request.args.to_dict()
+        
+        result = cuc_send_request(host=host, username=username, password=password, port=port, 
+                                  base_url=base_url, parameters=args, body=self.api.payload, 
+                                  request_method='POST')
 
-# @api.route("/edit_mailbox")
-# class cms_edit_api(Resource):
-#     def put(self):
-#         """
-#         Modifies a CUC mailbox
-#         """
-#         pass
+        return result
+
+
+    def put(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Generic PUT (update) to Unity Connection, given location url/path.  
+        """
+
+        base_url = '/'+ location                
+        result = cuc_send_request(host=host, username=username, password=password, port=port, 
+                                  base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
+
+        return result
+
+    def delete(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+               username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Generic DELETE to Unity Connection, given location url/path.
+        """
+
+        base_url = '/'+ location        
+        result = cuc_send_request(host=host, username=username, password=password, port=port, 
+                                  base_url=base_url, request_method='DELETE')
+
+        return result
