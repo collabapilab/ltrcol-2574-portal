@@ -4,7 +4,6 @@ from flask import Blueprint
 import flask
 from flask_restplus import Namespace, Resource, fields
 from flaskr.cms.v1.cms import *
-# import flaskr.cms.v1.cms
 import xmltodict
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
@@ -158,3 +157,58 @@ class cms_space_api(Resource):
         base_url = '/api/v1/coSpaces'
         result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url, id=id, request_method='DELETE')
         return jsonify(result)
+
+
+# @api.route("/location/<path:location>")
+# class cms_generic_api(Resource):
+#     def get(self, location, host=default_cms['host'], port=default_cms['port'],
+#             username=default_cms['username'], password=default_cms['password']):
+#         """
+#         Generic GET to Unity Connection, given location url/path.
+#         """
+
+#         base_url = '/' + location
+#         args = flask.request.args.to_dict()
+#         result = cms_send_request(host=host, username=username, password=password, port=port,
+#                                   base_url=base_url, parameters=args)
+
+#         return result
+
+#     def post(self, location, host=default_cms['host'], port=default_cms['port'],
+#              username=default_cms['username'], password=default_cms['password']):
+#         """
+#         Generic POST (create) to Unity Connection, given location url/path.  
+#         """
+
+#         base_url = '/' + location
+#         args = flask.request.args.to_dict()
+
+#         result = cms_send_request(host=host, username=username, password=password, port=port,
+#                                   base_url=base_url, parameters=args, body=self.api.payload,
+#                                   request_method='POST')
+
+#         return result
+
+#     def put(self, location, host=default_cms['host'], port=default_cms['port'],
+#             username=default_cms['username'], password=default_cms['password']):
+#         """
+#         Generic PUT (update) to Unity Connection, given location url/path.  
+#         """
+
+#         base_url = '/' + location
+#         result = cms_send_request(host=host, username=username, password=password, port=port,
+#                                   base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
+
+#         return result
+
+#     def delete(self, location, host=default_cms['host'], port=default_cms['port'],
+#                username=default_cms['username'], password=default_cms['password']):
+#         """
+#         Generic DELETE to Unity Connection, given location url/path.
+#         """
+
+#         base_url = '/' + location
+#         result = cms_send_request(host=host, username=username, password=password, port=port,
+#                                   base_url=base_url, request_method='DELETE')
+
+#         return result

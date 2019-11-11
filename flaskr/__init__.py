@@ -13,6 +13,4 @@ app.register_blueprint(core, url_prefix='/')
 app.register_blueprint(v1_blueprint, url_prefix='/api/v1')
 
 if __name__ == "__main__":
-
-    
-    app.run(host='0.0.0.0', debug=False, threaded=True)
+    app.run(host='0.0.0.0', debug=True, threaded=True)
