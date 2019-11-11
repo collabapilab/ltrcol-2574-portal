@@ -20,7 +20,7 @@ class cms_system_status_api(Resource):
     # @api.expect(system_status_data)
     def get(self,host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
-        Retrieves the CMS system status.
+        Retrieves CMS system status.
 
         Use this method to query for the CMS system status.
         """
@@ -94,7 +94,7 @@ class cms_create_space_api(Resource):
 class cms_spaces_api(Resource):
     def get(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
-        Retrieves CMS Spaces.
+        Retrieves all CMS Spaces with optional filters.
 
         Use this method to retrieve a list of Spaces.  If no space ID is supplied, then all results are returned.
         The output can be filtered using the following query parameters supplied in the URL:
@@ -121,7 +121,7 @@ class cms_spaces_api(Resource):
 class cms_space_api(Resource):
     def get(self, id, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
         """
-        Retrieves CMS Spaces.
+        Retrieves a CMS Space by ID.
 
         Use this method to retrieve a list of Spaces.  If no space ID is supplied, then all results are returned.
         The output can be filtered using the following query parameters supplied in the URL:
