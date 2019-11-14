@@ -6,8 +6,6 @@ import json
 import urllib.parse
 import urllib3
 import xml.etree.ElementTree as ET
-# from flask import render_template
-# import base64
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -70,45 +68,58 @@ cms_error_codes = {
 
 def cms_send_request(host, username, password, port, base_url, id=None, parameters={}, body=None, request_method='GET'):
 
-    # t = cms_error_codes
+    # Check if a PUT or DELETE method does not have a required ID
     if request_method.upper() in ['PUT', 'DELETE'] and not id:
-        return {'success': False, 'message': 'ID was not supplied supplied for ' + str(request_method.upper() + ' request.')}
- 
-    url = "https://" + host + ":" + str(port) + base_url
+        return {'success': False, 'message': 'ID was not supplied supplied for {} request.'.format(request_method.upper())}
+
+    # Set the URL to be called
+    url = "https://{}:{}{}".format(host, port,  base_url)
+
+    # Append the ID, if present
     if id is not None:
-        url = url + '/' + str(id)
+        url = "{}/{}".format(url, id)
 
+    # Set the authentcation parameters
     if len(parameters) > 0:
-        url = url + "?" + urllib.parse.urlencode(parameters)
+        url = "{}?{}".format(url,  urllib.parse.urlencode(parameters))
 
-    auth=HTTPBasicAuth(username, password)
+    # Set the required header information, including authentication parameters
+    auth = HTTPBasicAuth(username, password)
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
         }
     
+    # Encode the body, if present
     if body:
         body = urllib.parse.urlencode(body)
 
+    # Verify if the supplied request method (GET, PUT, POST, or DELETE) is valid
     if request_method.upper() in ['GET', 'PUT', 'POST', 'DELETE']:
         try:
-            resp = request(request_method, url, auth=auth, data=body, headers=headers, verify=False, timeout=2)
-            if resp:
-                if resp.status_code == 200:
-                    result = {'success': True, 'response': cms_parse_response(resp)}
+            # Send the request and handle any exception that may occur
+            response = request(request_method, url, auth=auth,
+                           data=body, headers=headers, verify=False, timeout=2)
 
-                    try:
-                        result['id'] = resp.headers._store['location'][1][len(location)+1:]
-                    except:
-                        pass
+            # Raise HTTPError error for non-2XX responses
+            response.raise_for_status()
 
-                else:
-                    failure_msg = json.loads(json.dumps(xmltodict.parse(resp.content)))
-                    result = {'success': False, 'message': failure_msg}
+            # Check for expected response and set the result accordingly
+            if response.status_code == 200:
+                result = {'success': True,
+                          'response': cms_parse_response(response)}
+
+                try:
+                    result['id'] = response.headers._store['location'][1][len(
+                        location)+1:]
+                except:
+                    pass
+
             else:
                 # seed result with the default response
-                result = {'success': False, 'message': json.loads(json.dumps(xmltodict.parse(resp.content)))}
+                result = {'success': False, 'message': json.loads(
+                    json.dumps(xmltodict.parse(response.content)))}
                 try:
-                    root = ET.fromstring(resp.content)
+                    root = ET.fromstring(response.content)
                     error_tag = root[0].tag   
                     try:
                         result['message'] = error_tag + ': ' + cms_error_codes[error_tag]
@@ -126,27 +137,29 @@ def cms_send_request(host, username, password, port, base_url, id=None, paramete
             result = {'success': False, 'message': str(e)}
                         
     else:
-        result = {'success': False, 'message': 'Invalid verb ' + request_method}
+        result = {'success': False,
+                  'message': 'Invalid request method: {}'.format(request_method)}
 
     return result
 
-def cms_parse_response(resp):
+
+def cms_parse_response(response):
     """
     Parses the response contents of the body.  This would be present after a GET operation.
 
     Use this method to query for the CMS system status.
     """
 
-    # response content converted to an ordered dictionary type
-    if len(resp.content) == 0:
+    # If response contains any content in the body, convert to an ordered dictionary type
+    if len(response.content) == 0:
         try:
-            return resp.headers._store['location'][1][len(resp.request.path_url)+1:]
+            return response.headers._store['location'][1][len(response.request.path_url)+1:]
         except KeyError:
             return json.loads(json.dumps({}))
 
     # Convert the XML to an ordered dictionary (a regular dictionary, that maintains a consisten order of 
     # elements, similar to a list)
-    resp_odict = xmltodict.parse(resp.content)
+    resp_odict = xmltodict.parse(response.content)
 
     # One problem with xmltodict is that in 
     try:
@@ -158,7 +171,8 @@ def cms_parse_response(resp):
             # Get the child key nested under the root (e.g. 'coSpace')
             childName = list(resp_odict[rootName].keys())[1]
             # Force the child element to be a list
-            resp_odict = xmltodict.parse(resp.content, force_list={childName: True})
+            resp_odict = xmltodict.parse(
+                response.content, force_list={childName: True})
 
         # No elements, so just return a blank dictionary
         elif (len(resp_odict) == 0):
@@ -171,3 +185,5 @@ def cms_parse_response(resp):
     # convert from ordered dict to plain dict
     resp_dict = json.loads(json.dumps(resp_odict))
     return resp_dict
+
+    return response

@@ -17,15 +17,15 @@ system_status_data = api.model('CMS System Status', {
 
 @api.route("/system_status")
 class cms_system_status_api(Resource):
-    # @api.expect(system_status_data)
-    def get(self,host=default_cms['host'], port=default_cms['port'], username=default_cms['username'], password=default_cms['password']):
+    def get(self):
         """
         Retrieves CMS system status.
 
         Use this method to query for the CMS system status.
         """
         base_url = '/api/v1/system/status'
-        result = cms_send_request(host=host, username=username, password=password, port=port, base_url=base_url)
+        result = cms_send_request(host=default_cms['host'], port=default_cms['port'], username=default_cms['username'],
+                                  password=default_cms['password'], base_url=base_url)
 
         return jsonify(result)
 
