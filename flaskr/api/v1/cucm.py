@@ -1,20 +1,33 @@
-
-from flask import jsonify, request
+from flask import jsonify
+from flask import request
 from flask import Blueprint
-from flask_restplus import Namespace, Resource
+import flask
+from flask_restplus import Namespace, Resource, fields
 from flaskr.cucm.v1.cucm import *
+import xmltodict
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
+system_status_data = api.model('CUCM System', {
+    'host': fields.String(description='CUCM host/IP', default=default_cucm['host'], required=False),
+    'port': fields.Integer(description='port', default=default_cucm['port'], required=False),
+    'username': fields.String(description='CUCM API user name', default=default_cucm['username'], required=False),
+    'password': fields.String(description='CUCM API user password', default='********', required=False),
+})
+
 @api.route("/get_version")
 class cucm_get_version_api(Resource):
-    def get(self):
+    def get(self, host=default_cucm['host'], port=default_cucm['port'], username=default_cucm['username'], password=default_cucm['password']):
         """
-        Returns CUCM Software version
+        Returns CUCM Active Software version
         """
-        version = get_cucm_version()
-
-        return jsonify(version)
+        result = cucm_get_version(host=host, username=username, password=password, port=port)
+        if result['success']:
+            try:
+                result = {'success': True, 'version': result['response']['version']}
+            except KeyError:
+                pass
+        return jsonify(result)
 
 @api.route("/list_phones")
 class cucm_add_phone_api(Resource):
