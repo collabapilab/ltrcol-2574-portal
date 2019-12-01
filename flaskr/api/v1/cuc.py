@@ -2,16 +2,23 @@ from flask import jsonify
 from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource
-from flaskr.cuc.v1.cuc import *
-import flask
+from flaskr.cuc.v1.cupi import CUPI
+# import flask
+# from flaskr.rest.v1.rest import *
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
+
+default_cuc = {
+    'host': 'cuc1a.pod31.col.lab',
+    'port': 443,
+    'username': 'admin',
+    'password': 'c1sco123'
+}
 
 
 @api.route("/users")
 class cuc_get_user_api(Resource):
-    def get(self, host=default_cuc['host'], port=default_cuc['port'], 
-            username=default_cuc['username'], password=default_cuc['password']):
+    def get(self):
         """
         Searches for CUC users with optional search and sort filters.
 
@@ -29,14 +36,9 @@ class cuc_get_user_api(Resource):
         If filter is not specified (or blank), then all other parameters are ignored and all users are returned.
         
         """
-        base_url = '/vmrest/users'
-        args = flask.request.args.to_dict()
-
-        base_url = '/vmrest/users'
-        result = cuc_send_request(host=host, username=username,
-                                  password=password, port=port, base_url=base_url, parameters=args)
-
-        return result
+        args = request.args.to_dict()
+        cuc = CUPI(default_cuc['host'], default_cuc['username'], default_cuc['password'], port=default_cuc['port'])
+        return cuc.get_users(parameters=args)
 
 
 @api.route("/ldapusers")
@@ -45,7 +47,6 @@ class cuc_get_ldapuser_api(Resource):
             username=default_cuc['username'], password=default_cuc['password']):
         """
         Retrieves LDAP user synched to Unity Connection with optional filters.
-
 
 
         You can filter using the following query parameters (start with ? then add & for each additional element pair):
@@ -65,13 +66,17 @@ class cuc_get_ldapuser_api(Resource):
 
         # https://host:port/vmrest/import/users/ldap?query=(alias%20is%20{{user_id}})
 
-        base_url = '/vmrest/import/users/ldap'
-        args = flask.request.args.to_dict()
+        # base_url = '/vmrest/import/users/ldap'
+        # args = request.args.to_dict()
 
-        result = cuc_send_request(host=host, username=username,
-                                  password=password, port=port, base_url=base_url, parameters=args)
+        # result = cuc_send_request(host=host, username=username,
+        #                           password=password, port=port, base_url=base_url, parameters=args)
 
-        return result
+        # return result
+        args = request.args.to_dict()
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.get_ldapusers(parameters=args)
 
 
 @api.route("/import_ldapuser")
@@ -90,13 +95,17 @@ class cuc_import_ldapuser_api(Resource):
         # body_format: json
 
 
-        base_url = '/vmrest/import/users/ldap'
-        args = flask.request.args.to_dict()
+        # base_url = '/vmrest/import/users/ldap'
+        # args = request.args.to_dict()
         
-        result = cuc_send_request(host=host, username=username,
-                                  password=password, port=port, base_url=base_url, parameters=args, body=self.api.payload, request_method='POST')
+        # result = cuc_send_request(host=host, username=username,
+        #                           password=password, port=port, base_url=base_url, parameters=args, body=self.api.payload, request_method='POST')
 
-        return result
+        # return result
+        args = request.args.to_dict()
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.import_ldapuser(parameters=args, payload=self.api.payload)
 
 
 @api.route("/update_pin/<id>")
@@ -107,14 +116,18 @@ class cuc_update_pin_api(Resource):
         Updates user from Unity Connection.  
         """
 
-        base_url = '/vmrest/users' 
-        id = id + '/credential/pin'
-        # args = flask.request.args.to_dict()
+        # base_url = '/vmrest/users' 
+        # id = id + '/credential/pin'
+        # # args = request.args.to_dict()
         
-        result = cuc_send_request(host=host, username=username, password=password, port=port, 
-                                  base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
+        # result = cuc_send_request(host=host, username=username, password=password, port=port, 
+        #                           base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
 
-        return result
+        # return result
+
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.update_pin(id=id, payload=self.api.payload)
 
 
 @api.route("/user/<id>")
@@ -127,80 +140,92 @@ class cuc_user_api(Resource):
 
         # "https://{{host}}:443/vmrest/users/{{User.ObjectId}}"
 
-        base_url = '/vmrest/users'
-        # args = flask.request.args.to_dict()
+        # base_url = '/vmrest/users'
+        # # args = request.args.to_dict()
         
-        result = cuc_send_request(host=host, username=username, password=password, port=port, 
-                                  base_url=base_url, id=id)
+        # result = cuc_send_request(host=host, username=username, password=password, port=port, 
+        #                           base_url=base_url, id=id)
 
-        return result
+        # return result
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.get_user(id=id)
+
+    def put(self, id, host=default_cuc['host'], port=default_cuc['port'],
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Update user from Unity Connection using user ID.
+        """
+
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.update_user(id=id, payload=self.api.payload)
 
     def delete(self, id, host=default_cuc['host'], port=default_cuc['port'], 
                username=default_cuc['username'], password=default_cuc['password']):
         """
         Delete user from Unity Connection.  
         """
-
-        # "https://{{host}}:443/vmrest/users/{{User.ObjectId}}"
-
-        base_url = '/vmrest/users'        
-        result = cuc_send_request(host=host, username=username, password=password, port=port, 
-                                  base_url=base_url, id=id, request_method='DELETE')
-
-        return result
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.delete_user(id=id)
 
 
-@api.route("/location/<path:location>")
-class cuc_generic_api(Resource):
-    def get(self, location, host=default_cuc['host'], port=default_cuc['port'], 
-            username=default_cuc['username'], password=default_cuc['password']):
-        """
-        Generic GET to Unity Connection, given location url/path.
-        """
+# @api.route("/location/<path:location>")
+# class cuc_generic_api(Resource):
+#     def get(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+#             username=default_cuc['username'], password=default_cuc['password']):
+#         """
+#         Generic GET to Unity Connection, given location url/path.
+#         """
 
-        base_url = '/'+ location
-        args = flask.request.args.to_dict()
-        result = cuc_send_request(host=host, username=username, password=password, port=port, 
-                                  base_url=base_url, parameters=args)
+#         # base_url = '/'+ location
+#         # args = request.args.to_dict()
+#         # result = cuc_send_request(host=host, username=username, password=password, port=port, 
+#         #                           base_url=base_url, parameters=args)
 
-        return result
+#         # return result
+#         cuc = CUPI(default_cuc['host'], default_cuc['username'],
+#                    default_cuc['password'], port=default_cuc['port'])
+#         return cuc.update_pin(id=id, payload=self.api.payload)
 
-    def post(self, location, host=default_cuc['host'], port=default_cuc['port'], 
-             username=default_cuc['username'], password=default_cuc['password']):
-        """
-        Generic POST (create) to Unity Connection, given location url/path.  
-        """
 
-        base_url = '/'+ location                
-        args = flask.request.args.to_dict()
+#     def post(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+#              username=default_cuc['username'], password=default_cuc['password']):
+#         """
+#         Generic POST (create) to Unity Connection, given location url/path.  
+#         """
+
+#         base_url = '/'+ location                
+#         args = request.args.to_dict()
         
-        result = cuc_send_request(host=host, username=username, password=password, port=port, 
-                                  base_url=base_url, parameters=args, body=self.api.payload, 
-                                  request_method='POST')
+#         result = cuc_send_request(host=host, username=username, password=password, port=port, 
+#                                   base_url=base_url, parameters=args, body=self.api.payload, 
+#                                   request_method='POST')
 
-        return result
+#         return result
 
 
-    def put(self, location, host=default_cuc['host'], port=default_cuc['port'], 
-            username=default_cuc['username'], password=default_cuc['password']):
-        """
-        Generic PUT (update) to Unity Connection, given location url/path.  
-        """
+#     def put(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+#             username=default_cuc['username'], password=default_cuc['password']):
+#         """
+#         Generic PUT (update) to Unity Connection, given location url/path.  
+#         """
 
-        base_url = '/'+ location                
-        result = cuc_send_request(host=host, username=username, password=password, port=port, 
-                                  base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
+#         base_url = '/'+ location                
+#         result = cuc_send_request(host=host, username=username, password=password, port=port, 
+#                                   base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
 
-        return result
+#         return result
 
-    def delete(self, location, host=default_cuc['host'], port=default_cuc['port'], 
-               username=default_cuc['username'], password=default_cuc['password']):
-        """
-        Generic DELETE to Unity Connection, given location url/path.
-        """
+#     def delete(self, location, host=default_cuc['host'], port=default_cuc['port'], 
+#                username=default_cuc['username'], password=default_cuc['password']):
+#         """
+#         Generic DELETE to Unity Connection, given location url/path.
+#         """
 
-        base_url = '/'+ location        
-        result = cuc_send_request(host=host, username=username, password=password, port=port, 
-                                  base_url=base_url, request_method='DELETE')
+#         base_url = '/'+ location        
+#         result = cuc_send_request(host=host, username=username, password=password, port=port, 
+#                                   base_url=base_url, request_method='DELETE')
 
-        return result
+#         return result

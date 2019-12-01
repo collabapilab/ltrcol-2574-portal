@@ -112,15 +112,14 @@ def cuc_send_request(host, username, password, port, base_url, id=None, paramete
     if request_method.upper() in ['GET', 'PUT', 'POST', 'DELETE']:
         try:
             resp = request(request_method, url, auth=auth,
-                           data=body, headers=headers, verify=False, timeout=2)
+                           data=body, headers=headers, verify=False, timeout=5)
             if resp:
                 if resp.status_code == 200:
                     result = {'success': True,
                               'response': cuc_parse_response(resp)}
 
                     try:
-                        result['id'] = resp.headers._store['location'][1][len(
-                            location)+1:]
+                        result['id'] = resp.headers._store['location'][1][len(location)+1:]
                     except:
                         pass
                 elif resp.status_code in [201, 204]:
@@ -135,7 +134,8 @@ def cuc_send_request(host, username, password, port, base_url, id=None, paramete
                     json.dumps(xmltodict.parse(resp.content)))}
 
         except RequestException as e:
-            result = {'success': False, 'message': str(e)}
+            result = {'success': False, 'message': 'EXCEPTION: ' + str(e)}
+            print(result['message'])
 
     else:
         result = {'success': False,
