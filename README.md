@@ -3,6 +3,7 @@
 The following contains a sample web portal with skeleton code that allows you to perform certain administrative and/or user functions on Cisco Unified Collaboration products.
 
 
+
 ## Steps to start
 
 ### Step 1
