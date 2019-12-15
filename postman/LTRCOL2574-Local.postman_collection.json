@@ -40,7 +40,13 @@
 							"name": "GET LDAP Users to import",
 							"request": {
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "https://{{cuc}}/vmrest/import/users/ldap",
 									"protocol": "https",
@@ -65,12 +71,11 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
-										"type": "text",
-										"disabled": true
+										"type": "text"
 									}
 								],
 								"url": {
-									"raw": "https://{{cuc}}/vmrest/import/users/ldap?query=(alias%20is%20pod31user1)\"",
+									"raw": "https://{{cuc}}/vmrest/import/users/ldap?query=(alias%20is%20pod{{pod_num}}user1)\"",
 									"protocol": "https",
 									"host": [
 										"{{cuc}}"
@@ -84,7 +89,7 @@
 									"query": [
 										{
 											"key": "query",
-											"value": "(alias%20is%20pod31user1)\""
+											"value": "(alias%20is%20pod{{pod_num}}user1)\""
 										}
 									]
 								}
@@ -110,7 +115,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"alias\": \"pod31user1\",\n    \"firstName\": \"Pod31\",\n    \"lastName\": \"User1\",\n    \"dtmfAccessId\": \"12345\",\n    \"pkid\": \"dbc37047-7565-6b29-3327-18850f64d406\"\n}",
+									"raw": "{\n    \"dtmfAccessId\": \"12345\",\n    \"pkid\": \"dbc37047-7565-6b29-3327-18850f64d406\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -141,6 +146,37 @@
 							"response": []
 						},
 						{
+							"name": "GET user",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/users?query=(alias%20is%20pod{{pod_num}}user1)",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"users"
+									],
+									"query": [
+										{
+											"key": "query",
+											"value": "(alias%20is%20pod{{pod_num}}user1)"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Modify CUC user",
 							"request": {
 								"method": "PUT",
@@ -159,7 +195,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"DisplayName\": \"Pod31 New2 User\",\n    \"ListInDirectory\": \"false\"\n}",
+									"raw": "{\n    \"DisplayName\": \"Updated User\",\n    \"ListInDirectory\": \"false\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -167,7 +203,7 @@
 									}
 								},
 								"url": {
-									"raw": "https://{{cuc}}/vmrest/users/32139706-1743-4729-a4e7-7684a5345fe5",
+									"raw": "https://{{cuc}}/vmrest/users/3967c91f-30ee-4656-83ac-3bc4600ee0dd",
 									"protocol": "https",
 									"host": [
 										"{{cuc}}"
@@ -175,7 +211,7 @@
 									"path": [
 										"vmrest",
 										"users",
-										"32139706-1743-4729-a4e7-7684a5345fe5"
+										"3967c91f-30ee-4656-83ac-3bc4600ee0dd"
 									]
 								},
 								"description": "When successful, returns 204 No Content"
@@ -183,7 +219,7 @@
 							"response": []
 						},
 						{
-							"name": "Modify CUC user PIN",
+							"name": "Modify CUC user Credentials",
 							"request": {
 								"method": "PUT",
 								"header": [
@@ -195,13 +231,13 @@
 									{
 										"key": "Content-Type",
 										"name": "Content-Type",
-										"type": "text",
-										"value": "application/json"
+										"value": "application/json",
+										"type": "text"
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"Credentials\": \"14235834\"\n}",
+									"raw": "{\n    \"Credentials\": \"14235834\",\n    \"HackCount\": 0,\n\t\"TimeHacked\": []\n}\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -209,7 +245,7 @@
 									}
 								},
 								"url": {
-									"raw": "https://{{cuc}}/vmrest/users/0d03f075-faa9-4cca-9d35-75c5ef7edf69",
+									"raw": "https://{{cuc}}/vmrest/users/3967c91f-30ee-4656-83ac-3bc4600ee0dd/credential/pin",
 									"protocol": "https",
 									"host": [
 										"{{cuc}}"
@@ -217,41 +253,12 @@
 									"path": [
 										"vmrest",
 										"users",
-										"0d03f075-faa9-4cca-9d35-75c5ef7edf69"
+										"3967c91f-30ee-4656-83ac-3bc4600ee0dd",
+										"credential",
+										"pin"
 									]
 								},
 								"description": "When successful, returns 204 No Content"
-							},
-							"response": []
-						},
-						{
-							"name": "GET user",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "https://{{cuc}}/vmrest/users?query=(alias%20is%20pod31user1)",
-									"protocol": "https",
-									"host": [
-										"{{cuc}}"
-									],
-									"path": [
-										"vmrest",
-										"users"
-									],
-									"query": [
-										{
-											"key": "query",
-											"value": "(alias%20is%20pod31user1)"
-										}
-									]
-								}
 							},
 							"response": []
 						},
@@ -282,7 +289,7 @@
 									}
 								},
 								"url": {
-									"raw": "https://{{cuc}}/vmrest/users/32139706-1743-4729-a4e7-7684a5345fe5",
+									"raw": "https://{{cuc}}/vmrest/users/3967c91f-30ee-4656-83ac-3bc4600ee0dd",
 									"protocol": "https",
 									"host": [
 										"{{cuc}}"
@@ -290,7 +297,7 @@
 									"path": [
 										"vmrest",
 										"users",
-										"32139706-1743-4729-a4e7-7684a5345fe5"
+										"3967c91f-30ee-4656-83ac-3bc4600ee0dd"
 									]
 								},
 								"description": "When successful, returns 204 No Content"
@@ -332,17 +339,17 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/system_status",
-									"protocol": "http",
+									"raw": "https://{{cms}}:8443/api/v1/system/status",
+									"protocol": "https",
 									"host": [
-										"{{host}}"
+										"{{cms}}"
 									],
-									"port": "{{port}}",
+									"port": "8443",
 									"path": [
 										"api",
 										"v1",
-										"cms",
-										"system_status"
+										"system",
+										"status"
 									]
 								}
 							},
@@ -429,12 +436,12 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
-									"protocol": "http",
+									"raw": "https://{{cms}}:8443/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
+									"protocol": "https",
 									"host": [
-										"{{host}}"
+										"{{cms}}"
 									],
-									"port": "{{port}}",
+									"port": "8443",
 									"path": [
 										"api",
 										"v1",
@@ -576,11 +583,40 @@
 					"_postman_isSubFolder": true
 				}
 			],
+			"description": "These requests are for products, such as CUC, CMS, and Webex Teams, which already have REST APIs.  We will simply use these examples to test operations directly to those servers/services.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "cebe0540-434c-4892-ac28-213b02a449da",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a34aa4da-499f-45ae-9b83-bda02df88a8a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Via Portal",
+			"name": "Via API Gateway",
 			"item": [
+				{
+					"name": "CUCM",
+					"item": [],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
 				{
 					"name": "CUC",
 					"item": [
@@ -1305,6 +1341,29 @@
 					"_postman_isSubFolder": true
 				}
 			],
+			"description": "These requests will be directed to our central API gateway host, which will the perform the requested API operation, be it CUCM AXL, CUPI REST API, etc.  It may also implement operations that leverage multiple different requests and/or API types to the backend servers/services.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "433e9afd-e751-4771-bcc1-bfa733d4cd0f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0ce7f768-8996-495f-8242-0e21058dc465",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
 			"protocolProfileBehavior": {}
 		}
 	],
@@ -1347,33 +1406,39 @@
 	],
 	"variable": [
 		{
-			"id": "4d8c0868-7323-4c9b-babf-ca3d174f931a",
-			"key": "port",
-			"value": "5000",
+			"id": "3a09094b-0a87-4c9f-b35a-57fb9ea1573b",
+			"key": "pod_num",
+			"value": "31",
 			"type": "string"
 		},
 		{
-			"id": "46ed464a-4947-4c26-8476-4346e58eb359",
+			"id": "3020e8b4-4908-4c9a-b16e-f98b68c2b589",
+			"key": "cuc",
+			"value": "cuc1a.pod{{pod_num}}.col.lab",
+			"type": "string"
+		},
+		{
+			"id": "a6c382be-2cb6-4f49-aa4c-01030bb1f767",
+			"key": "cms",
+			"value": "cms1a.pod{{pod_num}}.col.lab",
+			"type": "string"
+		},
+		{
+			"id": "b9e5c59a-a61e-49fa-827e-507ee3f13823",
+			"key": "webexteams_access_token",
+			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
+			"type": "string"
+		},
+		{
+			"id": "dab06127-0cfc-4754-9dc3-29a96c2e3aee",
 			"key": "host",
 			"value": "0.0.0.0",
 			"type": "string"
 		},
 		{
-			"id": "99d6a425-a523-4b8d-baf2-24bb68fe8d92",
-			"key": "cuc",
-			"value": "cuc1a.pod31.col.lab",
-			"type": "string"
-		},
-		{
-			"id": "c582f28b-96b5-4692-86a2-5d6320110c82",
-			"key": "cms",
-			"value": "cms1a.pod31.col.lab",
-			"type": "string"
-		},
-		{
-			"id": "bdcd1ce3-6767-486b-8b43-3c07636721bb",
-			"key": "webexteams_access_token",
-			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
+			"id": "a36809a8-0f6d-450d-bfd3-af9e89eebcf6",
+			"key": "port",
+			"value": "5000",
 			"type": "string"
 		}
 	],
