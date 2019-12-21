@@ -1,5 +1,6 @@
 import json
 from flaskr.rest.v1.rest import REST
+from base64 import b64encode
 
 class CUPI(REST):
     """The CUPI Server class
@@ -26,11 +27,20 @@ class CUPI(REST):
         super().__init__(host, username, password, base_url='/vmrest', port=port)
 
         self.headers = {
+            'Authorization': "Basic " +  b64encode(str.encode(username + ":" + password)).decode("utf-8"),
             'Accept': 'application/json',
             'Connection': 'keep-alive',
             'Content-Type': 'application/json'
         }
 
+    def _cupi_request(self, api_method, parameters={}, payload=None, HTTPmethod='GET'):
+        # Create a line of URL paramters from the dictionary, however only convert the spaces to %20
+        # parameters = "&".join("{}={}".format(*i) for i in parameters.items()).replace(' ', '%20')
+        resp = self._send_request(api_method, parameters=parameters, payload=json.dumps(
+            payload), headers=self.headers, HTTPmethod=HTTPmethod)
+        if resp['success']:
+            resp = self._cupi_parse_response(resp)
+        return resp
 
     def _cupi_parse_response(self, resp):
         '''
@@ -61,14 +71,6 @@ class CUPI(REST):
             result['message'] = resp['response'].content.decode()
 
         return result
-
-    def _cupi_request(self, api_method, parameters={}, payload=None, HTTPmethod='GET'):
-        # Create a line of URL paramters from the dictionary, however only convert the spaces to %20
-        # parameters = "&".join("{}={}".format(*i) for i in parameters.items()).replace(' ', '%20')
-        resp = self._send_request(api_method, parameters=parameters, payload=json.dumps(payload), headers=self.headers, HTTPmethod=HTTPmethod)
-        if resp['success']:
-            resp = self._cupi_parse_response(resp)
-        return resp
 
     def get_users(self, parameters={}):
         """Get a list of users on the Unity Connection system.

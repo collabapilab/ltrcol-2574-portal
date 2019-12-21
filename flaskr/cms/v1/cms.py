@@ -3,6 +3,7 @@ import json
 import urllib.parse
 import xml.etree.ElementTree as ET
 from flaskr.rest.v1.rest import REST
+from base64 import b64encode
 import xml.parsers.expat
 
 
@@ -27,6 +28,7 @@ class CMS(REST):
     def __init__(self, host, username, password, port=443):
         super().__init__(host, username, password, base_url='/api/v1', port=port)
         self.headers = {
+            'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
             'Accept': 'application/xml',
             'Connection': 'keep-alive',
             'Content-Type': 'application/json'
@@ -80,6 +82,17 @@ class CMS(REST):
             "userDoesNotExist": "You tried to modify or remove a user using an ID that did not correspond to a valid user",
             "userProfileDoesNotExist": "You tried to modify a user profile using an ID that did not correspond to a valid user profile"
         }
+
+
+    def _cms_request(self, method, parameters={}, payload=None, HTTPmethod='GET'):
+        # Change the parameters from dictionary to an encoded string
+        parameters = urllib.parse.urlencode(parameters)
+        resp = self._send_request(method, parameters=parameters,
+                                  payload=payload, headers=self.headers, HTTPmethod=HTTPmethod)
+        if resp['success']:
+            resp = self._cms_parse_response(resp)
+        return resp
+
 
     def _cms_parse_response(self, resp):
 
@@ -142,15 +155,6 @@ class CMS(REST):
                 result = resp['response'].headers['Date']
 
         return result
-
-    def _cms_request(self, method, parameters={}, payload=None, HTTPmethod='GET'):
-        # Change the parameters from dictionary to an encoded string
-        parameters = urllib.parse.urlencode(parameters)
-        resp = self._send_request(method, parameters=parameters,
-                                  payload=payload, headers=self.headers, HTTPmethod=HTTPmethod)
-        if resp['success']:
-            resp = self._cms_parse_response(resp)
-        return resp
 
     def get_system_status(self):
         """Get information on the current system status, e.g. software version, uptime etc.

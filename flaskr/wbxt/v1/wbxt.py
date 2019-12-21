@@ -13,14 +13,11 @@ class WBXT(REST):
 
     """
 
-
     def __init__(self):
-        super().__init__(host='api.ciscospark.com',
-                         access_token=wbxt_access_token, base_url='/v1')
-
-        # self.access_token = 'ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8'
+        super().__init__(host='api.ciscospark.com', base_url='/v1')
 
         self.headers = {
+            'Authorization': "Bearer " + wbxt_access_token,
             'Content-Type': 'application/json;charset=utf-8'
         }
 
