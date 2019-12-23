@@ -1979,6 +1979,10 @@ class PawsToolkit:
         active_version = self.service.getActiveVersion()
         return active_version
 
+    def get_inactive_version(self):
+        inactive_version = self.service.getInactiveVersion()
+        return inactive_version
+
     def get_installed_products(self):
         installed_prod = self.service.getInstalledProducts()
         return installed_prod
