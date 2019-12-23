@@ -1,12 +1,19 @@
 from flask import jsonify
 from flask import request
 from flask import Blueprint
-import flask
 from flask_restplus import Namespace, Resource, fields
-from flaskr.cucm.v1.cucm import *
+from flaskr.cucm.v1.cucm import AXL, PAWS
 import xmltodict
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
+
+default_cucm = {
+#    'host': 'cucm1a.pod31.col.lab',
+   'host': '10.0.131.41',
+   'port': 8443,
+   'username': 'admin',
+   'password': 'c1sco123'
+}
 
 system_status_data = api.model('CUCM System', {
     'host': fields.String(description='CUCM host/IP', default=default_cucm['host'], required=False),
@@ -15,19 +22,38 @@ system_status_data = api.model('CUCM System', {
     'password': fields.String(description='CUCM API user password', default='********', required=False),
 })
 
+myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['password'])
+myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
+
 @api.route("/get_version")
 class cucm_get_version_api(Resource):
-    def get(self, host=default_cucm['host'], port=default_cucm['port'], username=default_cucm['username'], password=default_cucm['password']):
+    def get(self):
         """
         Returns CUCM Active Software version
         """
-        result = cucm_get_version(host=host, username=username, password=password, port=port)
-        if result['success']:
+        try:
+            version_info = myPAWSVersionService.get_version()
+        except Exception as e:
+            result = {'success': False, 'message': str(e)}
+            return jsonify(result)
+        if version_info['version']:
             try:
-                result = {'success': True, 'version': result['response']['version']}
+                result = {'success': True, 'version': version_info['version']}
             except KeyError:
                 pass
         return jsonify(result)
+@api.route("/get_phone/<device_name>")
+class cucm_get_phone_api(Resource):
+    def get(self, device_name):
+        """
+        Finds a phone device in CUCM
+        """
+        try:
+            phone = myAXL.get_phone(device_name)
+        except Exception as e:
+            result = {'success': False, 'message': str(e)}
+            return jsonify(result)
+        return jsonify(phone)
 
 @api.route("/list_phones")
 class cucm_add_phone_api(Resource):
@@ -38,18 +64,6 @@ class cucm_add_phone_api(Resource):
         phones = list_phones()
             
         return jsonify(phones)
-
-@api.route("/find_phone")
-class cucm_add_phone_api(Resource):
-    def get(self, **kwargs):
-        """
-        Finds a phone device in CUCM
-        """
-        phone = find_phone_api()
-            
-        return jsonify(phone)
-
-    
 @api.route("/add_phone")
 class cucm_add_phone_api(Resource):
     def post(self, **kwargs):
