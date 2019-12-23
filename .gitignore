@@ -253,3 +253,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# flaskr Database
+flaskr/data/
