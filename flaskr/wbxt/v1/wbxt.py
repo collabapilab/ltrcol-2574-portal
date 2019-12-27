@@ -14,15 +14,15 @@ class WBXT(REST):
     """
 
     def __init__(self):
-        super().__init__(host='api.ciscospark.com', base_url='/v1')
-
-        self.headers = {
+        headers = {
             'Authorization': "Bearer " + wbxt_access_token,
             'Content-Type': 'application/json;charset=utf-8'
         }
+        super().__init__(host='api.ciscospark.com', base_url='/v1', headers = headers)
+
 
     def _wbxt_parse_response(self, resp):
-        result = self._check_non2XX_response(resp)
+        result = self._check_response(resp)
         try:
             # parse response
             response = json.loads(resp['response'].content.decode("utf-8"))
@@ -36,7 +36,7 @@ class WBXT(REST):
 
     def _wbxt_request(self, api_method, parameters={}, payload=None, HTTPmethod='GET'):
         resp = self._send_request(api_method, parameters=parameters,
-                                  payload=json.dumps(payload), headers=self.headers, HTTPmethod=HTTPmethod)
+                                  payload=json.dumps(payload), HTTPmethod=HTTPmethod)
         
         if resp['success']:
             resp = self._wbxt_parse_response(resp)
