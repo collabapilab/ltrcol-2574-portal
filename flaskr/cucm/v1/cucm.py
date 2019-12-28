@@ -29,7 +29,7 @@ def serialize_object(obj, target_cls=OrderedDict):
 
     if isinstance(obj, etree._Element):
         def recursive_dict(element):
-            return {element.tag[element.tag.find('}') + 1:]: dict(map(recursive_dict, element)) or element.text}
+            return element.tag[element.tag.find('}') + 1:], dict(map(recursive_dict, element)) or element.text
         return recursive_dict(obj)
 
     if isinstance(obj, (dict, CompoundValue)):
@@ -129,7 +129,8 @@ class AXL:
     @axl_result_check
     @axl_setup
     def get_phone(self, name=None):
-        return self.axlclient.get_phone(name)
+        axl_result = self.axlclient.get_phone(name)
+        return axl_result['return']
 
 class PAWS:
     """
