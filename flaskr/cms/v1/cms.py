@@ -26,13 +26,13 @@ class CMS(REST):
     """
 
     def __init__(self, host, username, password, port=443):
-        super().__init__(host, username, password, base_url='/api/v1', port=port)
-        self.headers = {
+        headers = {
             'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
             'Accept': 'application/xml',
             'Connection': 'keep-alive',
             'Content-Type': 'application/json'
         }
+        super().__init__(host, base_url='/api/v1', headers = headers, port=port)
 
         self.error_codes = {
             "accessMethodDoesNotExist": "You tried to modify or remove an accessMethod using an ID that did not correspond to a valid access method",
@@ -87,8 +87,7 @@ class CMS(REST):
     def _cms_request(self, method, parameters={}, payload=None, HTTPmethod='GET'):
         # Change the parameters from dictionary to an encoded string
         parameters = urllib.parse.urlencode(parameters)
-        resp = self._send_request(method, parameters=parameters,
-                                  payload=payload, headers=self.headers, HTTPmethod=HTTPmethod)
+        resp = self._send_request(method, parameters=parameters, payload=payload, HTTPmethod=HTTPmethod)
         if resp['success']:
             resp = self._cms_parse_response(resp)
         return resp
@@ -96,7 +95,7 @@ class CMS(REST):
 
     def _cms_parse_response(self, resp):
 
-        result = self._check_non2XX_response(resp)
+        result = self._check_response(resp)
 
         try:
             if resp['response'].status_code in list(range(200, 300)):
@@ -133,7 +132,7 @@ class CMS(REST):
                     root = ET.fromstring(resp['response'].content)
                     error_tag = root[0].tag
                     try:
-                        result['success']: False
+                        result['success'] = False
                         result['message'] = error_tag + \
                             ': ' + self.error_codes[error_tag]
                     except KeyError:
@@ -144,7 +143,7 @@ class CMS(REST):
                     pass
                 except ET.ParseError:
                     # We couldn't parse the XML
-                    result['success']: False
+                    result['success'] = False
                     result['message'] = 'Invalid XML received from device'
 
         except xml.parsers.expat.ExpatError:

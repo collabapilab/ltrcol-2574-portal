@@ -21,54 +21,67 @@ class CUPI(REST):
     """
 
     def __init__(self, host, username, password, port=443):
-        # Create a super class, where the CUPI class inherits from the REST class.  This will allow us to 
-        # add CUPI-specific items.
-        # Reference:  https://realpython.com/python-super/
-        super().__init__(host, username, password, base_url='/vmrest', port=port)
-
-        self.headers = {
-            'Authorization': "Basic " +  b64encode(str.encode(username + ":" + password)).decode("utf-8"),
+        # Define the header structure for CUPI
+        headers = {
+            'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
             'Accept': 'application/json',
             'Connection': 'keep-alive',
             'Content-Type': 'application/json'
         }
 
+        # Create a super class, where the CUPI class inherits from the REST class.  This will allow us to 
+        # add CUPI-specific items.
+        # Reference:  https://realpython.com/python-super/
+        super().__init__(host, base_url='/vmrest', headers=headers, port=port)
+
+
     def _cupi_request(self, api_method, parameters={}, payload=None, HTTPmethod='GET'):
         # Create a line of URL paramters from the dictionary, however only convert the spaces to %20
         # parameters = "&".join("{}={}".format(*i) for i in parameters.items()).replace(' ', '%20')
-        resp = self._send_request(api_method, parameters=parameters, payload=json.dumps(
-            payload), headers=self.headers, HTTPmethod=HTTPmethod)
+        # json.loads(json.dumps(xml... in order to convert from OrderedDict to dict
+        resp = self._send_request(api_method, parameters=parameters, 
+                                  payload=json.dumps(payload), HTTPmethod=HTTPmethod)
+
+
         if resp['success']:
-            resp = self._cupi_parse_response(resp)
+            # Check for non-2XX response code
+            resp = self._check_response(resp)
+            if resp['success']:
+                resp = self._cupi_parse_response(resp)
         return resp
 
-    def _cupi_parse_response(self, resp):
+    def _cupi_parse_response(self, raw_resp):
         '''
+        This function takes a raw response from _cupi_request and attempts to convert the response key
+        to a dict type (from its original Response type).  Within this response, based on the @total
+        key, the contents may either be a list of dictionaries or just a dictionary (if @total=1).
+        For ease of processing later on, we will always return a list of dictionaries.
+
         When requested, CUPI will respond with JSON payload.  However in some cases, such as importing a user, the payload
         may just be a binary string, since it is only returning the object's ID.
         '''
 
-        result = self._check_non2XX_response(resp)
         try:
-            # parse response
-            # json.loads(json.dumps(xml... in order to convert from OrderedDict to dict
-            response = json.loads(resp['response'].content.decode("utf-8"))
+            # Attempt to parse the response into JSON format from the Response type from the requests
+            # module to a dictionary
+            parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
             try:
                 # check if there is only one element, meaning xmltodict would not have created a list
-                if(str(response["@total"]) == "1"):
+                if(str(parsed_response["@total"]) == "1"):
                     # Get the child key nested under the root (e.g. 'Users')
-                    rootobj = [key for key in response.keys() if key not in '@total'][0]
+                    rootobj = [key for key in parsed_response.keys() if key not in '@total'][0]
                     # Force the child element to be a list
-                    response[rootobj] = [response[rootobj]]
+                    parsed_response[rootobj] = [parsed_response[rootobj]]
 
-            # Maybe the @total key didn't exist; we'll just return the result
+            # If the @total key didn't exist, just return the result
             except KeyError:
                 pass
-            result['results'] = json.loads(json.dumps(response))
-                
+            # Replace the response value with our parsed_response
+            result['response'] = parsed_response
+
         except json.decoder.JSONDecodeError:
-            # Could not decode as JSON; that means the result was most likely a binary string
-            result['message'] = resp['response'].content.decode()
+            # Could not decode as JSON;  raw response  was likely a binary string; convert it to regular string type.
+            result['message'] = raw_resp['response'].content.decode()
 
         return result
 
