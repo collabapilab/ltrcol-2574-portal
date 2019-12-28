@@ -4,7 +4,6 @@ from flaskr.routes import core
 from flaskr.api.v1 import v1_blueprint
 
 app = Flask(__name__)
-app.secret_key = 'my unobvious secret key'  #workaround for Flask flash()
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True

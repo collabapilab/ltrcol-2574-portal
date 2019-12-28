@@ -18,6 +18,7 @@ class REST:
     :type headers: Dict
     :returns: return an REST object
     :rtype: REST
+
     """
 
     def __init__(self, host, base_url=None, headers={}, port=443):
@@ -51,35 +52,14 @@ class REST:
 
         # Set the URL using the parameters of the object and the api_method requested
         # in a format such as: https//host:port/api/v1/api_method
-        url = "https://{}:{}{}/{}".format(self.host, self.port, self.base_url, api_method)
+
 
         # Send the request and handle RequestException that may occur
-        try:
-            raw_response = request(http_method, url, data=payload, params=parameters,
-                                   headers=self.headers, verify=False, timeout=2)
-
-            result = {
-                'success': True,
-                'response': raw_response,
-                'message': 'Successful {} request to: {}'.format(http_method, url)
-            }
-
-        except RequestException as e:
-            result = {
-                'success': False,
-                'message': 'RequestException: {}'.format(e)
-            }
-        return result
+        pass
 
     def _check_response(self, raw_response):
         """
         Check the response status.  If it has a non-2XX value, then set the 'success' result
         to false and place the exception in the 'message'
         """
-        try:
-            # Raise HTTPError error for non-2XX responses
-            raw_response['response'].raise_for_status()
-        except HTTPError as e:
-            raw_response['success'] = False
-            raw_response['message'] = 'HTTPError Exception: {}'.format(e)
-        return raw_response
+        pass

@@ -32,7 +32,7 @@ class CMS(REST):
             'Connection': 'keep-alive',
             'Content-Type': 'application/json'
         }
-        super().__init__(host, base_url='/api/v1', headers = headers, port=port)
+        super().__init__(host, base_url='/api/v1', headers=headers, port=port)
 
         self.error_codes = {
             "accessMethodDoesNotExist": "You tried to modify or remove an accessMethod using an ID that did not correspond to a valid access method",
@@ -83,15 +83,13 @@ class CMS(REST):
             "userProfileDoesNotExist": "You tried to modify a user profile using an ID that did not correspond to a valid user profile"
         }
 
-
-    def _cms_request(self, method, parameters={}, payload=None, HTTPmethod='GET'):
+    def _cms_request(self, method, parameters={}, payload=None, http_method='GET'):
         # Change the parameters from dictionary to an encoded string
         parameters = urllib.parse.urlencode(parameters)
-        resp = self._send_request(method, parameters=parameters, payload=payload, HTTPmethod=HTTPmethod)
+        resp = self._send_request(method, parameters=parameters, payload=payload, http_method=http_method)
         if resp['success']:
             resp = self._cms_parse_response(resp)
         return resp
-
 
     def _cms_parse_response(self, resp):
 
@@ -105,7 +103,7 @@ class CMS(REST):
                 if len(response) == 0:
                     try:
                         result['location'] = response.headers._store['location']
-                    except:
+                    except KeyError:
                         # No location header present
                         pass
                     result['message'] = json.loads(json.dumps(response))
@@ -157,14 +155,13 @@ class CMS(REST):
 
     def get_system_status(self):
         """Get information on the current system status, e.g. software version, uptime etc.
-        
+
         :Example:
             >>> print(a.get_system_status())
 
         .. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=68
         .. note:: v1.8 upward
         """
-        # return self._send_request("system/status")
         return self._cms_request("system/status")
 
     def get_coSpaces(self, parameters={}):
@@ -172,7 +169,7 @@ class CMS(REST):
 
         :param parameters: A dictionary of parameters, per the Acano API.
         :type parameters: Dict
-        
+
         :Example:
             >>> print(a.get_coSpaces())
 
@@ -193,7 +190,7 @@ class CMS(REST):
 
         :param payload: Details the initial state of the newly created coSpace
         :type payload: Dict
-        
+
         :Example:
             >>> print(a.create_coSpace())
 
@@ -207,17 +204,18 @@ class CMS(REST):
         .. note:: v1.8 upward
 
         """
-        return self._cms_request("coSpaces", payload=payload, HTTPmethod='POST')
+        return self._cms_request("coSpaces", payload=payload, http_method='POST')
 
     def update_coSpace(self, id, payload):
         """Make changes to an existing coSpace, using the coSpace ID as the identifier.
 
-        :param coSpace_id: The ID of the coSpace to modify. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
+        :param coSpace_id: The ID of the coSpace to modify. This can be returned from the
+         get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
         :type coSpace_id: String
 
         :param payload: Details the new state of the identified coSpace
         :type payload: Dict
-        
+
         :Example:
             >>>	print(a.modify_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90", payload = {
             >>>	"name" : "Modified coSpace"
@@ -226,17 +224,18 @@ class CMS(REST):
         .. seealso:: https://www.acano.com/publications/2015/09/Solution-API-Reference-R1_8.pdf#page=25
         .. note:: v1.8 upward
         """
-        return self._cms_request("coSpaces/" + id, payload=payload, HTTPmethod='PUT')
+        return self._cms_request("coSpaces/" + id, payload=payload, http_method='PUT')
 
     def get_coSpace(self, id):
         """Get the details of a coSpace, using the coSpace ID as the identifier.
 
-        :param coSpace_id: The ID of the coSpace to modify. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
+        :param coSpace_id: The ID of the coSpace to modify. This can be returned from the
+         get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
         :type coSpace_id: String
 
         :param parameters: Filters for the query
         :type parameters: Dict
-        
+
         :Example:
             >>> print(a.get_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
@@ -248,13 +247,14 @@ class CMS(REST):
     def delete_coSpace(self, id):
         """Delete a coSpace, using the coSpace ID as the identifier.
 
-        :param coSpace_id: The ID of the coSpace to delete. This can be returned from the get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
+        :param coSpace_id: The ID of the coSpace to delete. This can be returned from the
+         get_coSpaces()["coSpaces"]["coSpace"][i]["@id"]
         :type coSpace_id: String
-        
+
         :Example:
             >>> print(a.delete_coSpace("3b8dfa05-f7b6-41f2-b14a-739a0d015b90"))
 
         .. note:: This function is not explicitly described in the Acano API reference
         .. note:: v1.8 upward
         """
-        return self._cms_request("coSpaces/" + id, HTTPmethod="DELETE")
+        return self._cms_request("coSpaces/" + id, http_method="DELETE")

@@ -24,31 +24,17 @@ class CUPI(REST):
     def __init__(self, host, username, password, port=443):
         # Define the header structure for CUPI
         headers = {
-            'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
-            'Accept': 'application/json',
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/json'
         }
 
         # Create a super class, where the CUPI class inherits from the REST class.  This will allow us to
         # add CUPI-specific items.
         # Reference:  https://realpython.com/python-super/
-        super().__init__(host, base_url='/vmrest', headers=headers, port=port)
 
     def _cupi_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         # Create a line of URL paramters from the dictionary, however only convert the spaces to %20
         # parameters = "&".join("{}={}".format(*i) for i in parameters.items()).replace(' ', '%20')
         # json.loads(json.dumps(xml... in order to convert from OrderedDict to dict
-        resp = self._send_request(api_method, parameters=parameters,
-                                  payload=json.dumps(payload), http_method=http_method)
-
-        if resp['success']:
-            # Check for non-2XX response code
-            resp = self._check_response(resp)
-            if resp['success']:
-                # We have a valid response in the 2XX range, parse this response
-                resp = self._cupi_parse_response(resp)
-        return resp
+        pass
 
     def _cupi_parse_response(self, raw_resp):
         '''
@@ -61,27 +47,6 @@ class CUPI(REST):
         a user, the payload may just be a binary string, since it is only returning the object's ID.
         '''
         result = {}
-        try:
-            # Attempt to parse the response into JSON format from the Response type from the requests
-            # module to a dictionary
-            parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
-            try:
-                # check if there is only one element, meaning xmltodict would not have created a list
-                if(str(parsed_response["@total"]) == "1"):
-                    # Get the child key nested under the root (e.g. 'Users')
-                    rootobj = [key for key in parsed_response.keys() if key not in '@total'][0]
-                    # Force the child element to be a list
-                    parsed_response[rootobj] = [parsed_response[rootobj]]
-
-            # If the @total key didn't exist, just return the result
-            except KeyError:
-                pass
-            # Replace the response value with our parsed_response
-            result['response'] = parsed_response
-
-        except json.decoder.JSONDecodeError:
-            # Could not decode as JSON;  raw response  was likely a binary string; convert it to regular string type.
-            result['message'] = raw_resp['response'].content.decode()
 
         return result
 
@@ -144,5 +109,4 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011110.html#reference_B32245DBC67A42228AA514C41D708368
         """
-
         return self._cupi_request('users/' + str(id) + '/credential/pin', payload=payload, http_method='PUT')

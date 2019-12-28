@@ -5,6 +5,7 @@ from flaskr.rest.v1.rest import REST
 # https://developer.webex.com/docs/api/getting-started/accounts-and-authentication
 wbxt_access_token = 'ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8'
 
+
 class WBXT(REST):
     """The WBXT Server class
 
@@ -18,8 +19,7 @@ class WBXT(REST):
             'Authorization': "Bearer " + wbxt_access_token,
             'Content-Type': 'application/json;charset=utf-8'
         }
-        super().__init__(host='api.ciscospark.com', base_url='/v1', headers = headers)
-
+        super().__init__(host='api.ciscospark.com', base_url='/v1', headers=headers)
 
     def _wbxt_parse_response(self, resp):
         result = self._check_response(resp)
@@ -34,10 +34,10 @@ class WBXT(REST):
 
         return result
 
-    def _wbxt_request(self, api_method, parameters={}, payload=None, HTTPmethod='GET'):
+    def _wbxt_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         resp = self._send_request(api_method, parameters=parameters,
-                                  payload=json.dumps(payload), HTTPmethod=HTTPmethod)
-        
+                                  payload=json.dumps(payload), http_method=http_method)
+
         if resp['success']:
             resp = self._wbxt_parse_response(resp)
         return resp
@@ -46,4 +46,4 @@ class WBXT(REST):
         return self._wbxt_request("rooms")
 
     def create_message(self, payload=None):
-        return self._wbxt_request("messages", payload=payload, HTTPmethod="POST")
+        return self._wbxt_request("messages", payload=payload, http_method="POST")
