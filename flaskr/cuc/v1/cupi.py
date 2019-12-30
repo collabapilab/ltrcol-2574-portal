@@ -45,9 +45,9 @@ class CUPI(REST):
         if resp['success']:
             # Check for non-2XX response code
             resp = self._check_response(resp)
-            if resp['success']:
-                # We have a valid response in the 2XX range, parse this response
-                resp = self._cupi_parse_response(resp)
+            # if resp['success']:
+            #     # We have a valid response in the 2XX range, parse this response
+            resp = self._cupi_parse_response(resp)
         return resp
 
     def _cupi_parse_response(self, raw_resp):
@@ -62,6 +62,7 @@ class CUPI(REST):
         '''
         result = {}
         try:
+            result['success'] = raw_resp['success']
             # Attempt to parse the response into JSON format from the Response type from the requests
             # module to a dictionary
             parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))

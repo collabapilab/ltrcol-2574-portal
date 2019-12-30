@@ -36,18 +36,20 @@ class REST:
         specified base_url + api_method.  Any specified parameters and payload, where applicable,
         will be included.
 
-        :param api_method: The Hostname / IP Address of the server
-        :param parameters: (optiona) The server port for API access (default: 443)
+        :param api_method: API method, such as "users" requested. Will be combined with base_url
+        :param parameters: (optional) Any URL parameters, such as {'filter': 'blah'}
         :param payload: (optional) A body/payload to be included in the request.
         :param http_method: (optional) The type of method (GET, PUT, POST, DELETE)
 
-        :type host: String
-        :type port: Integer
+        :type api_method: String
+        :type parameters: Dict
+        :type payload: String (usually JSON-encoded)
+        :type http_method: String (GET, PUT, POST, DELETE)
 
         :returns: returns a dictionary indicating success with the raw response or
                   a message indicating the error encountered.
 
-        :rtype: Dict with 'success' and either 'response' or 'message' exception occurred
+        :rtype: Dict
         """
 
         # Set the URL using the parameters of the object and the api_method requested
