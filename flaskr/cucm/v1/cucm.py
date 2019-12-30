@@ -125,12 +125,24 @@ class AXL:
         else:
             if self.axlclient.last_exception:
                 raise Exception("Exception with get_ccm_version --- " + str(self.axlclient.last_exception))
-    
+
+    @axl_result_check
+    @axl_setup
+    def add_phone(self, phone_data=None):
+        axl_result = self.axlclient.add_phone(phone_data=phone_data)
+        return axl_result
+
     @axl_result_check
     @axl_setup
     def get_phone(self, name=None):
         axl_result = self.axlclient.get_phone(name)
-        return axl_result['return']
+        return axl_result
+    
+    @axl_result_check
+    @axl_setup
+    def delete_phone(self, name=None):
+        axl_result = self.axlclient.remove_phone(name)
+        return axl_result
 
 class PAWS:
     """
