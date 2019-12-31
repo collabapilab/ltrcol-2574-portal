@@ -113,9 +113,10 @@ update_pin_args.add_argument('payload', type=str, required=True, location='json'
 {\n\
   "Credentials": "14235834",\n\
   "HackCount": 0,\n\
-	"TimeHacked": []\n\
+  "TimeHacked": []\n\
 }\
-                                      </pre>')
+</pre>')
+
 
 @api.route("/update_pin/<pkid>")
 class cuc_update_pin_api(Resource):
@@ -131,9 +132,6 @@ class cuc_update_pin_api(Resource):
 
 
 user_put_args = reqparse.RequestParser()
-user_put_args.add_argument('templateAlias', type=str, required=True,
-                                 help='User template alias (default=voicemailusertemplate)',
-                                 default='voicemailusertemplate')
 user_put_args.add_argument('payload', type=str, required=True, location='json',
                                  help='Desired user object settings in JSON format. Sample payload:\n<pre>\
 {\n\

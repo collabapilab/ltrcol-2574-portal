@@ -1,4 +1,5 @@
 import json
+import re
 from flaskr.rest.v1.rest import REST
 from base64 import b64encode
 
@@ -81,8 +82,16 @@ class CUPI(REST):
             result['response'] = parsed_response
 
         except json.decoder.JSONDecodeError:
-            # Could not decode as JSON;  raw response  was likely a binary string; convert it to regular string type.
-            result['message'] = raw_resp['response'].content.decode()
+            # Could not decode as JSON;  raw response was likely a binary string; convert it to regular string type.
+            decoded_response = raw_resp['response'].content.decode()
+            # This string may be a a string response, as in after a valid POST. Or it could be an error web page.
+            # If it's the latter, look for an Exception tag to give us more information.
+            regex = r"<b>\s*Exception:\s*</b>\s*<pre>\s*(.*?)\s+</pre>"
+            exception_match = re.search(regex, decoded_response)
+            if exception_match:
+                result['message'] = exception_match[1]
+            else:
+                result['message'] = decoded_response
 
         return result
 
