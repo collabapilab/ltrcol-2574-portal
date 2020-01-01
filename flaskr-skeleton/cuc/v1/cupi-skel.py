@@ -56,7 +56,7 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         """
-        return self._cupi_request("users", parameters=parameters)
+        pass
 
     def get_ldapusers(self, parameters={}):
         """Get a list of users on the Unity Connection system.
@@ -64,7 +64,7 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         """
-        return self._cupi_request("import/users/ldap", parameters=parameters)
+        pass
 
     def import_ldapuser(self, parameters={}, payload=None):
         """Get a list of users on the Unity Connection system.
@@ -72,7 +72,7 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         """
-        return self._cupi_request("import/users/ldap", parameters=parameters, payload=payload, http_method='POST')
+        pass
 
     def get_user(self, id):
         """Get a voicemail user from the Unity Connection system by user id.
@@ -80,7 +80,7 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         """
-        return self._cupi_request("users/" + str(id))
+        pass
 
     def update_user(self, id, payload=None):
         """Modify a user on the Unity Connection system.
@@ -88,7 +88,7 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         """
-        return self._cupi_request("users/" + str(id), payload=payload, http_method='PUT')
+        pass
 
     def delete_user(self, id):
         """Delete a user from the Unity Connection system.
@@ -96,7 +96,7 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         """
-        return self._cupi_request("users/" + str(id), http_method='DELETE')
+        pass
 
     def update_pin(self, id, payload=None):
         """Modify a user on the Unity Connection system.
@@ -109,4 +109,4 @@ class CUPI(REST):
         See also:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011110.html#reference_B32245DBC67A42228AA514C41D708368
         """
-        return self._cupi_request('users/' + str(id) + '/credential/pin', payload=payload, http_method='PUT')
+        pass

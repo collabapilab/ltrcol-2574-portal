@@ -68,7 +68,7 @@ class WBXT(REST):
         Return a parsed dictionary with the response from the raw response from _wbxt_request.
 
         : param raw_resp: Dictionary with minimally the following key:
-           'response': rtype: requests.models.Response: The raw response from the requests library.
+           'response': type: requests.models.Response: The raw response from the requests library.
         : rtype Dict
 
         : returns: return a dictionary with the following keys:
