@@ -32,12 +32,9 @@ class CMS(REST):
         # Define the header structure for CMS. CMS returns text/xml and except for the layoutTemplates,
         # requires Content-Type to be x-www-form-urlencoded
         headers = {
-            'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
-            'Accept': 'text/xml',
-            'Content-Type': 'x-www-form-urlencoded'
         }
-        super().__init__(host, base_url='/api/v1', headers=headers, port=port)
 
+        # CMS documents its error codes in its API documentation. We have simply converted it to a dict
         # CMS documents its error codes in its API documentation. We have simply converted it to a dict
         self.error_codes = {
             "accessMethodDoesNotExist": "You tried to modify or remove an accessMethod using an ID that did not correspond to a valid access method",
@@ -99,14 +96,8 @@ class CMS(REST):
            'response' (dict) - the parsed response, converted from the XML of the raw response.
         '''
         # Change the parameters from dictionary to an encoded string
-        parameters = urllib.parse.urlencode(parameters)
 
-        resp = self._send_request(method, parameters=parameters, payload=payload, http_method=http_method)
-        if resp['success']:
-            resp = self._check_response(resp)
-            resp = self._cms_parse_response(resp)
-        return resp
-
+        pass
 
     def _cms_parse_response(self, raw_resp):
         '''
@@ -121,55 +112,6 @@ class CMS(REST):
            'response' (dict) - the parsed response, converted from the XML of the raw response.
         '''
         result = {'success': False, 'message': '', 'response': ''}
-        try:
-            result['success'] = raw_resp['success']
-
-            if raw_resp['response'].status_code in list(range(200, 300)):
-                # Convert the XML to a OrderedDict
-                parsed_response = xmltodict.parse(raw_resp['response'].content.decode("utf-8"))
-                try:
-                    # Get the root key from the dictionary (e.g. 'coSpaces')
-                    rootobj = list(parsed_response.keys())[0]
-
-                    # check if there is only one element, meaning xmltodict would not have created a list of dicts
-                    if(parsed_response[rootobj]["@total"] == "1"):
-                        # Get the child key nested under the root (e.g. 'coSpace')
-                        childobj = list(parsed_response[rootobj].keys())[1]
-                        # Force the child element to be a list
-                        parsed_response = xmltodict.parse(raw_resp['response'].content, force_list={childobj: True})
-
-                # The @total key does not exist; just return the result
-                except KeyError:
-                    pass
-                # Replace the response value with our parsed_response, converting the OrderedDict to dict
-                result['response'] = json.loads(json.dumps(parsed_response))
-            else:
-                # Error codes for CMS. These are returned with a 400 response code
-                try:
-                    # Parse the response to get the error buried in the XML
-                    rootobj = ET.fromstring(raw_resp['response'].content)
-                    error_tag = rootobj[0].tag
-                    try:
-                        # Map a known CMS error code
-                        result['message'] = error_tag + ': ' + self.error_codes[error_tag]
-                    except KeyError:
-                        # We couldn't map that error code, so just return the tag
-                        result['message'] = error_tag
-                except IndexError:
-                    # We couldn't find the root element item
-                    pass
-                except ET.ParseError:
-                    # We couldn't parse the XML received from CMS
-                    result['success'] = False
-                    result['message'] = 'Invalid XML received from server'
-
-        except xml.parsers.expat.ExpatError:
-            try:
-                # Return the string from the location header, if present
-                result['message'] = raw_resp['response'].headers['location'].split(
-                                    "/")[len(raw_resp['response'].headers['location'].split("/"))-1]
-            except:
-                pass
 
         return result
 
@@ -177,7 +119,7 @@ class CMS(REST):
         """
         Get information on the current system status, e.g. software version, uptime etc.
         """
-        return self._cms_request("system/status")
+        pass
 
     def get_coSpaces(self, parameters={}):
         """
@@ -186,16 +128,16 @@ class CMS(REST):
         :param parameters: A dictionary of parameters
         :type parameters: Dict
         """
-        return self._cms_request("coSpaces", parameters=parameters)
+        pass
 
     def create_coSpace(self, payload={}):
         """
         Create a new coSpace
 
-        :param payload: Settings for the new coSpace
+        :param payload: Details the initial state of the newly created coSpace
         :type payload: Dict
         """
-        return self._cms_request("coSpaces", payload=payload, http_method='POST')
+        pass
 
     def update_coSpace(self, id, payload):
         """
@@ -207,7 +149,7 @@ class CMS(REST):
         :param payload: Updated settings for the new coSpace. A parameter not specified will not be changed
         :type payload: Dict
         """
-        return self._cms_request("coSpaces/" + id, payload=payload, http_method='PUT')
+        pass
 
     def get_coSpace(self, id):
         """
@@ -219,7 +161,7 @@ class CMS(REST):
         :param parameters: Filters for the query
         :type parameters: Dict
         """
-        return self._cms_request(("coSpaces/" + id))
+        pass
 
     def delete_coSpace(self, id):
         """
@@ -228,4 +170,4 @@ class CMS(REST):
         :param coSpace_id: The ID of the coSpace to modify.
         :type coSpace_id: String
         """
-        return self._cms_request("coSpaces/" + id, http_method="DELETE")
+        pass

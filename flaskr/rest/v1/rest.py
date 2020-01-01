@@ -2,7 +2,6 @@ from requests import get, post, put, delete, packages, request
 from requests.exceptions import RequestException, HTTPError
 from requests.auth import HTTPBasicAuth
 
-
 class REST:
     """
     The REST Server class
@@ -29,6 +28,7 @@ class REST:
         self.base_url = base_url
         self.headers = headers
 
+
     def _send_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         """
         Used to send a REST request using the desired http_method (GET, PUT, POST, DELETE) to the
@@ -50,7 +50,6 @@ class REST:
 
         :rtype: Dict
         """
-
         # Set the URL using the parameters of the object and the api_method requested
         # in a format such as: https//host:port/api/v1/api_method
         url = "https://{}:{}{}/{}".format(self.host, self.port, self.base_url, api_method)

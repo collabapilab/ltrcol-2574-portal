@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask import request
 from flask import Blueprint
-from flask_restplus import Namespace, Resource, fields
+from flask_restplus import Namespace, Resource, reqparse, fields
 from flaskr.cms.v1.cms import CMS
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
@@ -12,13 +12,6 @@ default_cms = {
     'username': 'admin',
     'password': 'c1sco123'
 }
-
-system_status_data = api.model('CMS System Status', {
-    'host': fields.String(description='CMS host/IP', default=default_cms['host'], required=False),
-    'port': fields.Integer(description='port', default=default_cms['port'], required=False),
-    'username': fields.String(description='CMS API user name', default=default_cms['username'], required=False),
-    'password': fields.String(description='CMS API user password', default='********', required=False),
-})
 
 
 @api.route("/system_status")
@@ -58,10 +51,20 @@ create_space_data = api.model('cms_space', {
                                                default='', required=False)
 })
 
+space_args = reqparse.RequestParser()
+space_args.add_argument('name', type=str, required=False, help='Name of the Space')
+space_args.add_argument('uri', type=str, required=False, help='User URI part for SIP call to reach Space')
+space_args.add_argument('secondaryUri', type=str, required=False, help='Secondary URI for SIP call to reach Space')
+space_args.add_argument('passcode', type=str, required=False, help='Security code for this Space')
+space_args.add_argument('defaultLayout', type=str, required=False, help='Default Layout for this Space',
+                        choices=['automatic', 'allEqual', 'speakerOnly', 'telepresence', 'stacked', 'allEqualQuarters'],
+                        default='automatic')
+
 
 @api.route("/create_space")
 class cms_create_space_api(Resource):
-    @api.expect(create_space_data)
+    # @api.expect(create_space_data)
+    @api.expect(space_args)
     def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'],
              password=default_cms['password']):
         """
@@ -79,20 +82,27 @@ class cms_create_space_api(Resource):
             "secondaryUri": "Secondary URI for SIP call to reach Space",
             "passcode": "The security code for this Space",
             "defaultLayout": "The default layout to be used for new call legs in this Space.
-                            May be:  allEqual | speakerOnly | telepresence | stacked"
+                            May be:  automatic | allEqual | speakerOnly | telepresence | stacked | allEqualQuarters"
         }
         ```
 
         * Returns a dictionary with a 'success' (boolean) element.  If success is true, then the ID of
-          the new Space is returned in the 'id' key.  Otherwise, a 'message element will contain error information.
+          the new Space is returned in the 'id' key.  Otherwise, a 'message' element will contain error information.
         """
 
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
         return cms.create_coSpace(payload=self.api.payload)
 
 
+get_spaces_args = reqparse.RequestParser()
+get_spaces_args.add_argument('filter', type=str, required=False, help='Search string')
+get_spaces_args.add_argument('limit', type=int, required=False, help='How many results to return. \
+  Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
+get_spaces_args.add_argument('offset', type=int, required=False, help='Return results starting with the offset specified', default=0)
+
 @api.route("/spaces")
 class cms_spaces_api(Resource):
+    @api.expect(get_spaces_args)
     def get(self):
         """
         Retrieves all CMS Spaces with optional filters.
@@ -104,12 +114,9 @@ class cms_spaces_api(Resource):
           first “page" in the notional list
         * limit (int)
         * filter (str) - Supply “filter=<string>” in the URI to return just those coSpaces that match the filter
-        * tenantFilter (str) - Supply tenantFilter=<tenant id> to return just those coSpaces associated with that tenant
-        * callLegProfileFilter - Supply callLegProfileFilter=<call leg profile id> to return just those
-          coSpaces using that call leg profile
 
         For example:
-        ```  https://portal/spaces?filter=sales&limit=5```
+        ```  https://portal/api/v1/spaces?filter=sales&limit=5```
         """
 
         args = request.args.to_dict()
@@ -123,21 +130,6 @@ class cms_space_api(Resource):
     def get(self, id):
         """
         Retrieves a CMS Space by ID.
-
-        Use this method to retrieve a list of Spaces.  If no space ID is supplied, then all results are returned.
-        The output can be filtered using the following query parameters supplied in the URL:
-
-        * offset (int) - An "offset" and "limit" can be supplied to retrieve coSpaces other than
-          the first “page" in the notional list
-        * limit (int)
-        * filter (str) - Supply “filter=<string>” in the URI to return just those coSpaces that match the filter
-        * tenantFilter (str) - Supply tenantFilter=<tenant id> to return just those coSpaces associated
-          with that tenant
-        * callLegProfileFilter - Supply callLegProfileFilter=<call leg profile id> to return just those
-          coSpaces using that call leg profile
-
-        For example:
-        ```  https://portal/spaces?filter=sales&limit=5```
         """
 
         # base_url = '/api/v1/coSpaces'
@@ -149,6 +141,7 @@ class cms_space_api(Resource):
         result = cms.get_coSpace(id=id)
         return jsonify(result)
 
+    @api.expect(space_args)
     def put(self, id):
         """
         Edits a CMS space

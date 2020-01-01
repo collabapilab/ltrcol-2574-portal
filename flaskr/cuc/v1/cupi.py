@@ -46,8 +46,6 @@ class CUPI(REST):
         if resp['success']:
             # Check for non-2XX response code
             resp = self._check_response(resp)
-            # if resp['success']:
-            #     # We have a valid response in the 2XX range, parse this response
             resp = self._cupi_parse_response(resp)
         return resp
 
@@ -61,7 +59,7 @@ class CUPI(REST):
         When requested, CUPI will respond with JSON payload.  However in some cases, such as importing
         a user, the payload may just be a binary string, since it is only returning the object's ID.
         '''
-        result = {}
+        result = {'success': False, 'message': '', 'response': ''}
         try:
             result['success'] = raw_resp['success']
             # Attempt to parse the response into JSON format from the Response type from the requests
@@ -75,7 +73,7 @@ class CUPI(REST):
                     # Force the child element to be a list
                     parsed_response[rootobj] = [parsed_response[rootobj]]
 
-            # If the @total key didn't exist, just return the result
+            # The @total key does not exist; just return the result
             except KeyError:
                 pass
             # Replace the response value with our parsed_response

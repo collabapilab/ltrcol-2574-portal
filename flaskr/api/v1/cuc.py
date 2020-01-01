@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask import request
 from flask import Blueprint
-from flask_restplus import Namespace, Resource, reqparse, fields
+from flask_restplus import Namespace, Resource, reqparse
 from flaskr.cuc.v1.cupi import CUPI
 # import flask
 # from flaskr.rest.v1.rest import *
@@ -34,19 +34,17 @@ def get_search_params(args):
 
 # CUC querying arguments
 query_args = reqparse.RequestParser()
-# query_args.add_argument('query', type=str, required=False,
-#                               help='String to search for, such as: (alias%20is%20operator) \
-#                                    or (dtmfaccessid%20startswith%2055512)')
-query_args.add_argument('column', type=str, required=False, help='Column to search', default='alias')
+query_args.add_argument('column', type=str, required=False,
+                        help='Column to search', default='alias')
 query_args.add_argument('match_type', type=str, required=False, choices=[
                         'startswith', 'is'], help='Order of return values', default='is')
 query_args.add_argument('search', type=str, required=False, help='Query string')
 query_args.add_argument('sortorder', type=str, required=False, choices=[
                         'asc', 'desc'], help='Order of return values', default='asc')
 query_args.add_argument('rowsPerPage', type=int, required=False,
-                        help='Number of rows to return (default=100)', default=100)
+                        help='Number of rows to return', default=100)
 query_args.add_argument('pageNumber', type=int, required=False,
-                        help='Page # to return (default=1)', default=1)
+                        help='Page # to return', default=1)
 
 
 @api.route("/users")
@@ -82,7 +80,7 @@ class cuc_get_ldapuser_api(Resource):
 
 ldapusers_post_args = reqparse.RequestParser()
 ldapusers_post_args.add_argument('templateAlias', type=str, required=True,
-                                 help='User template alias (default=voicemailusertemplate)',
+                                 help='User template alias',
                                  default='voicemailusertemplate')
 ldapusers_post_args.add_argument('payload', type=str, required=True, location='json', 
                                  help='Desired user object settings in JSON format. The pkid value is \
