@@ -25,12 +25,9 @@ class WBXT(REST):
         '''
         # Define the header structure for Webex Teams
         headers = {
-            'Authorization': "Bearer " + access_token,
-            'Content-Type': 'application/json;charset=utf-8'
         }
 
         # Create a super class, where the CMS class inherits from the REST class.
-        super().__init__(host='api.ciscospark.com', base_url='/v1', headers=headers)
 
     def _wbxt_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         '''
@@ -53,15 +50,8 @@ class WBXT(REST):
            'response' :rtype:Dict:   The parsed response, converted from the raw response.
         :rtype: Dict
         '''
-        resp = self._send_request(api_method, parameters=parameters,
-                                  payload=json.dumps(payload), http_method=http_method)
 
-        if resp['success']:
-            # Check for non-2XX response code
-            resp = self._check_response(resp)
-            resp = self._wbxt_parse_response(resp)
-
-        return resp
+        pass
 
     def _wbxt_parse_response(self, raw_resp):
         '''
@@ -79,15 +69,6 @@ class WBXT(REST):
         '''
         result = {'success': False, 'message': '', 'response': ''}
 
-        try:
-            # parse response
-            parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
-            result['results'] = json.loads(json.dumps(parsed_response))
-
-        except json.decoder.JSONDecodeError:
-            # Could not decode as JSON; try to decode as a binary string
-            result['message'] = raw_resp['response'].content.decode()
-
         return result
 
     def get_rooms(self, parameters={}):
@@ -104,7 +85,7 @@ class WBXT(REST):
 
         Reference: https://developer.webex.com/docs/api/v1/rooms/list-rooms
         '''
-        return self._wbxt_request("rooms", parameters=parameters)
+        pass
 
     def create_message(self, payload=None):
         '''
@@ -117,4 +98,4 @@ class WBXT(REST):
 
         Reference:  https://developer.webex.com/docs/api/v1/messages/create-a-message
         '''
-        return self._wbxt_request("messages", payload=payload, http_method="POST")
+        pass

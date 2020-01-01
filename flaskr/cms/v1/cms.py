@@ -8,9 +8,10 @@ import xml.parsers.expat
 
 
 class CMS(REST):
-    """The CMS Server class
+    '''
+    The CMS Server class
 
-    Use this class to connect and make API calls to an most REST-based devices.
+    Use this class to connect and make API calls to an most Cisco Meeting Server devices.
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
@@ -22,8 +23,7 @@ class CMS(REST):
     :type port: Integer
     :returns: return an CMS object
     :rtype: CMS
-
-    """
+    '''
 
     def __init__(self, host, username, password, port=443):
         '''
@@ -36,6 +36,8 @@ class CMS(REST):
             'Accept': 'text/xml',
             'Content-Type': 'x-www-form-urlencoded'
         }
+
+        # Create a super class, where the CMS class inherits from the REST class.
         super().__init__(host, base_url='/api/v1', headers=headers, port=port)
 
         # CMS documents its error codes in its API documentation. We have simply converted it to a dict
@@ -83,25 +85,36 @@ class CMS(REST):
             "tenantParticipantLimitReached": "You tried to add a new participant beyond the maximum number allowed for the owning tenant",
             "tooManyCdrReceivers": "You tried to add a new CDR receiver when the maximum number were already present. R1.8 supports up to 2 CDR receivers",
             "tooManyLdapSyncs": "A method to create a new LDAP synchronization method failed. Try again later",
-            "unrecognizedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you tried to perform a GET on /api/v1/system/profile rather than (the correct) /api/v1/system/profiles",
+            "unrecognisedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you specified the wrong object ID in the URI",
             "userDoesNotExist": "You tried to modify or remove a user using an ID that did not correspond to a valid user",
             "userProfileDoesNotExist": "You tried to modify a user profile using an ID that did not correspond to a valid user profile"
         }
 
-    def _cms_request(self, method, parameters={}, payload=None, http_method='GET'):
+    def _cms_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         '''
         Send a request to a CMS server using the given parameters, payload, and method. Check results for
         HTTP-response errors, then parse the CMS response and return its value.
 
-        Returns a dictionionary consisting of the following keys:
-           'success' (bool) - whether the response received from the server is deemed a success
-           'message' (str) - contains error information, either from the server or from the CMS, if available
-           'response' (dict) - the parsed response, converted from the XML of the raw response.
+        :param api_method:  The API method, such as "coSpaces" that will be used with the existing base_url to form a
+                            complete url, such as "/api/v1/coSpaces"
+        :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}, which would become
+                            "?filter=sales" as part of the URL. 
+        :param payload:     The payload to be sent, typically with a POST or PUT
+        :param http_method: The request verb. CMS only supports 'GET', 'PUT', 'POST', and 'DELETE'
+        :type method: String
+        :type parameters: Dict
+        :type payload: String
+        :type http_method: String
+        :returns: return a response dictionary with the following keys:
+           'success'  :rtype:Bool:   Whether the response received from the server is deemed a success
+           'message'  :rtype:String: Contains error information, either from the server or from the CMS, if available
+           'response' :rtype:Dict:   The parsed response, converted from the XML of the raw response.
+        :rtype: Dict
         '''
         # Change the parameters from dictionary to an encoded string
         parameters = urllib.parse.urlencode(parameters)
 
-        resp = self._send_request(method, parameters=parameters, payload=payload, http_method=http_method)
+        resp = self._send_request(api_method, parameters=parameters, payload=payload, http_method=http_method)
         if resp['success']:
             resp = self._check_response(resp)
             resp = self._cms_parse_response(resp)
@@ -110,15 +123,22 @@ class CMS(REST):
 
     def _cms_parse_response(self, raw_resp):
         '''
+        Return a parsed dictionary with the response from the raw response from _cms_request.
+
         This function takes a raw response from _cms_request and attempts to convert the response key
         to a dict type (from its original Response type).  Within this response, based on the @total
         key, the contents may either be a list of dictionaries or just a dictionary (if @total=1).
         For ease of processing later on, we will always return a list of dictionaries.
 
-        Returns a result dictionionary consisting of the following keys:
-           'success' (bool) - whether the response is deemed successful or if there may have been an error
-           'message' (str) - contains error information, if available
-           'response' (dict) - the parsed response, converted from the XML of the raw response.
+        :param raw_resp: Dictionary with minimally the following key:
+           'response' :rtype:requests.models.Response: The raw response from the requests library.
+        :rtype Dict
+
+        :returns: return a dictionary with the following keys:
+           'success' :rtype:Bool:  Whether the response received from the server is deemed a success
+           'message' :rtype:String: Contains error information, either from the server or from the CMS, if available
+           'response' :rtype:Dict: The parsed response, converted from the XML of the raw response.
+        :rtype: Dict
         '''
         result = {'success': False, 'message': '', 'response': ''}
         try:
@@ -151,7 +171,8 @@ class CMS(REST):
                     error_tag = rootobj[0].tag
                     try:
                         # Map a known CMS error code
-                        result['message'] = error_tag + ': ' + self.error_codes[error_tag]
+                        result['message'] = error_tag + ': ' + self.error_codes[error_tag] + \
+                                            ' : URL:' + raw_resp['response'].request.url
                     except KeyError:
                         # We couldn't map that error code, so just return the tag
                         result['message'] = error_tag
@@ -174,31 +195,31 @@ class CMS(REST):
         return result
 
     def get_system_status(self):
-        """
+        '''
         Get information on the current system status, e.g. software version, uptime etc.
-        """
+        '''
         return self._cms_request("system/status")
 
     def get_coSpaces(self, parameters={}):
-        """
+        '''
         Get the coSpaces within CMS
 
         :param parameters: A dictionary of parameters
         :type parameters: Dict
-        """
+        '''
         return self._cms_request("coSpaces", parameters=parameters)
 
     def create_coSpace(self, payload={}):
-        """
+        '''
         Create a new coSpace
 
         :param payload: Settings for the new coSpace
         :type payload: Dict
-        """
+        '''
         return self._cms_request("coSpaces", payload=payload, http_method='POST')
 
     def update_coSpace(self, id, payload):
-        """
+        '''
         Modify a coSpace, using the coSpace ID.
 
         :param coSpace_id: The ID of the coSpace to modify.
@@ -206,11 +227,11 @@ class CMS(REST):
 
         :param payload: Updated settings for the new coSpace. A parameter not specified will not be changed
         :type payload: Dict
-        """
+        '''
         return self._cms_request("coSpaces/" + id, payload=payload, http_method='PUT')
 
     def get_coSpace(self, id):
-        """
+        '''
         Get the details of a coSpace, using the coSpace ID.
 
         :param coSpace_id: The ID of the coSpace to modify.
@@ -218,14 +239,14 @@ class CMS(REST):
 
         :param parameters: Filters for the query
         :type parameters: Dict
-        """
+        '''
         return self._cms_request(("coSpaces/" + id))
 
     def delete_coSpace(self, id):
-        """
+        '''
         Delete a coSpace, using the coSpace ID.
 
         :param coSpace_id: The ID of the coSpace to modify.
         :type coSpace_id: String
-        """
+        '''
         return self._cms_request("coSpaces/" + id, http_method="DELETE")

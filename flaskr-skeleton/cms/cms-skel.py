@@ -80,7 +80,7 @@ class CMS(REST):
             "tenantParticipantLimitReached": "You tried to add a new participant beyond the maximum number allowed for the owning tenant",
             "tooManyCdrReceivers": "You tried to add a new CDR receiver when the maximum number were already present. R1.8 supports up to 2 CDR receivers",
             "tooManyLdapSyncs": "A method to create a new LDAP synchronization method failed. Try again later",
-            "unrecognizedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you tried to perform a GET on /api/v1/system/profile rather than (the correct) /api/v1/system/profiles",
+            "unrecognisedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you tried to perform a GET on /api/v1/system/profile rather than (the correct) /api/v1/system/profiles",
             "userDoesNotExist": "You tried to modify or remove a user using an ID that did not correspond to a valid user",
             "userProfileDoesNotExist": "You tried to modify a user profile using an ID that did not correspond to a valid user profile"
         }
