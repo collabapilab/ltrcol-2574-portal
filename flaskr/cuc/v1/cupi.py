@@ -47,7 +47,7 @@ class CUPI(REST):
         :param api_method:  The API method, such as "users" that will be used with the existing base_url to form a
                             complete url, such as "/vmrest/users"
         :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}, which would become
-                            "?filter=sales" as part of the URL. 
+                            "?filter=sales" as part of the URL.
         :param payload:     The payload to be sent, typically with a POST or PUT
         :param http_method: The request verb. CUPI only supports 'GET', 'PUT', 'POST', and 'DELETE'
         :type method: String
@@ -127,7 +127,7 @@ class CUPI(REST):
         '''
         Get a list of users on the Unity Connection system.
 
-        Reference: 
+        Reference:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         '''
         return self._cupi_request("users", parameters=parameters)
@@ -136,7 +136,7 @@ class CUPI(REST):
         '''
         Get a list of users on the Unity Connection system.
 
-        Reference: 
+        Reference:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         '''
         return self._cupi_request("import/users/ldap", parameters=parameters)
@@ -145,7 +145,7 @@ class CUPI(REST):
         '''
         Get a list of users on the Unity Connection system.
 
-        Reference: 
+        Reference:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         '''
         return self._cupi_request("import/users/ldap", parameters=parameters, payload=payload, http_method='POST')
@@ -154,7 +154,7 @@ class CUPI(REST):
         '''
         Get a voicemail user from the Unity Connection system by user id.
 
-        Reference: 
+        Reference:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         '''
         return self._cupi_request("users/" + str(id))
@@ -163,7 +163,7 @@ class CUPI(REST):
         '''
         Modify a user on the Unity Connection system.
 
-        Reference: 
+        Reference:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         '''
         return self._cupi_request("users/" + str(id), payload=payload, http_method='PUT')
@@ -172,7 +172,7 @@ class CUPI(REST):
         '''
         Delete a user from the Unity Connection system.
 
-        Reference: 
+        Reference:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
         '''
         return self._cupi_request("users/" + str(id), http_method='DELETE')
@@ -186,7 +186,7 @@ class CUPI(REST):
             "Credentials":"14235834"
         }
 
-        Reference: 
+        Reference:
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011110.html#reference_B32245DBC67A42228AA514C41D708368
         '''
 

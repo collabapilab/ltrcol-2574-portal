@@ -17,19 +17,19 @@ default_cuc = {
 
 
 def get_search_params(args):
-  """
-    Returns search parameters from request arguments and returns them in a parameter
-    dictionary. Determines if all the column/match_type/search string have been
-    supplied to build a query parameter
-  """
-  params = {'sortorder': args.get('sortorder'),
-            'rowsPerPage': args.get('rowsPerPage'),
-            'pageNumber': args.get('pageNumber')}
+    """
+      Returns search parameters from request arguments and returns them in a parameter
+      dictionary. Determines if all the column/match_type/search string have been
+      supplied to build a query parameter
+    """
+    params = {'sortorder': args.get('sortorder'),
+              'rowsPerPage': args.get('rowsPerPage'),
+              'pageNumber': args.get('pageNumber')}
 
-  if args.get('search') is not None:
-    params['query'] = '({} {} {})'.format(args.get('column'), args.get('match_type'), args.get('search'))
+    if args.get('search') is not None:
+      params['query'] = '({} {} {})'.format(args.get('column'), args.get('match_type'), args.get('search'))
 
-  return params
+    return params
 
 
 # CUC querying arguments

@@ -98,7 +98,7 @@ class CMS(REST):
         :param api_method:  The API method, such as "coSpaces" that will be used with the existing base_url to form a
                             complete url, such as "/api/v1/coSpaces"
         :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}, which would become
-                            "?filter=sales" as part of the URL. 
+                            "?filter=sales" as part of the URL.
         :param payload:     The payload to be sent, typically with a POST or PUT
         :param http_method: The request verb. CMS only supports 'GET', 'PUT', 'POST', and 'DELETE'
         :type method: String
@@ -119,7 +119,6 @@ class CMS(REST):
             resp = self._check_response(resp)
             resp = self._cms_parse_response(resp)
         return resp
-
 
     def _cms_parse_response(self, raw_resp):
         '''

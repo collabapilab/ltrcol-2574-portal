@@ -98,7 +98,9 @@ get_spaces_args = reqparse.RequestParser()
 get_spaces_args.add_argument('filter', type=str, required=False, help='Search string')
 get_spaces_args.add_argument('limit', type=int, required=False, help='How many results to return. \
   Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
-get_spaces_args.add_argument('offset', type=int, required=False, help='Return results starting with the offset specified', default=0)
+get_spaces_args.add_argument('offset', type=int, required=False,
+                             help='Return results starting with the offset specified', default=0)
+
 
 @api.route("/spaces")
 class cms_spaces_api(Resource):

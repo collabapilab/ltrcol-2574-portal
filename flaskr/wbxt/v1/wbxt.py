@@ -40,7 +40,7 @@ class WBXT(REST):
         :param api_method:  The API method, such as "messages" that will be used with the existing base_url to form a
                             complete url, such as "/v1/messages"
         :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}, which would become
-                            "?filter=sales" as part of the URL. 
+                            "?filter=sales" as part of the URL.
         :param payload:     The payload to be sent, typically with a POST or PUT
         :param http_method: The request verb. Webex Teams only supports 'GET', 'PUT', 'POST', and 'DELETE'
         :type method: String
@@ -66,7 +66,7 @@ class WBXT(REST):
     def _wbxt_parse_response(self, raw_resp):
         '''
         Return a parsed dictionary with the response from the raw response from _wbxt_request.
-        
+
         : param raw_resp: Dictionary with minimally the following key:
            'response': rtype: requests.models.Response: The raw response from the requests library.
         : rtype Dict
@@ -94,7 +94,7 @@ class WBXT(REST):
         '''
         Get Webex Teams Rooms (Spaces)
 
-        :param parameters: Dictionary of parameters, such as 
+        :param parameters: Dictionary of parameters, such as
             teamId :type String: List rooms associated with a team, by ID.
             type   :type String: List rooms by type.  :Values: direct, group.
             sortBy :type String: Sort results.  :Values: id, lastactivity, created

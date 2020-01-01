@@ -2,6 +2,7 @@ from requests import get, post, put, delete, packages, request
 from requests.exceptions import RequestException, HTTPError
 from requests.auth import HTTPBasicAuth
 
+
 class REST:
     """
     The REST Server class
@@ -27,7 +28,6 @@ class REST:
         self.port = str(port)
         self.base_url = base_url
         self.headers = headers
-
 
     def _send_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         """
