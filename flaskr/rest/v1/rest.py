@@ -53,6 +53,7 @@ class REST:
            'response' :rtype:requests.models.Response:   The raw response from the python requests library
         :rtype: Dict
         """
+        result = {'success': False, 'message': '', 'response': ''}
         # Set the URL using the parameters of the object and the api_method requested
         # in a format such as: https//host:port/api/v1/api_method
         url = "https://{}:{}{}/{}".format(self.host, self.port, self.base_url, api_method)
@@ -71,7 +72,6 @@ class REST:
         except RequestException as e:
             result = {
                 'success': False,
-                'response': None,
                 'message': 'RequestException: {}'.format(e)
             }
         return result

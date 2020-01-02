@@ -82,13 +82,14 @@ ldapusers_post_args = reqparse.RequestParser()
 ldapusers_post_args.add_argument('templateAlias', type=str, required=True,
                                  help='User template alias',
                                  default='voicemailusertemplate')
-ldapusers_post_args.add_argument('payload', type=str, required=True, location='json', 
-                                 help='Desired user object settings in JSON format. The pkid value is \
-                                      <strong>required</strong>. Example:\n<pre>\
-{\n\
-    "pkid": "dbc37047-7565-6b29-3327-18850f64d406"\n\
-}\
-                                      </pre>')
+ldapusers_post_args.add_argument('pkid', type=str, required=True,
+                                 help='PKID of the user to be imported')
+ldapusers_post_args.add_argument('dtmfAccessId', type=int, required=False,
+                                 help='Extension of the user')
+ldapusers_post_args.add_argument('listindirectory', type=str, required=False,
+                                 help='List In Directory', choices=['true', 'false'],
+                                 default='true')
+
 
 @api.route("/import_ldapuser")
 class cuc_import_ldapuser_api(Resource):
@@ -106,14 +107,16 @@ class cuc_import_ldapuser_api(Resource):
 
 
 update_pin_args = reqparse.RequestParser()
-update_pin_args.add_argument('payload', type=str, required=True, location='json',
-                                 help='User PIN settings in JSON format. Sample payload:\n<pre>\
-{\n\
-  "Credentials": "14235834",\n\
-  "HackCount": 0,\n\
-  "TimeHacked": []\n\
-}\
-</pre>')
+update_pin_args.add_argument('Credentials', type=int, required=True, help='PIN of the voicemail box')
+update_pin_args.add_argument('ResetMailbox', type=bool, required=False, help='Reset mailbox', default=True)
+# update_pin_args.add_argument('payload', type=str, required=True, location='json',
+#                                  help='User PIN settings in JSON format. Sample payload:\n<pre>\
+# {\n\
+#   "Credentials": "14235834",\n\
+#   "HackCount": 0,\n\
+#   "TimeHacked": []\n\
+# }\
+# </pre>')
 
 
 @api.route("/update_pin/<pkid>")
@@ -124,19 +127,21 @@ class cuc_update_pin_api(Resource):
         """
         Update Unity Connection user PIN credential settings using user object ID.
         """
+        args = request.args.to_dict()
+        payload = {'Credentials': args['Credentials']}
+        if args['ResetMailbox']:
+            payload['HackCount'] = 0
+            payload['TimeHacked'] = []
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        return cuc.update_pin(id=pkid, payload=self.api.payload)
+        return cuc.update_pin(id=pkid, payload=payload)
 
 
 user_put_args = reqparse.RequestParser()
-user_put_args.add_argument('payload', type=str, required=True, location='json',
-                                 help='Desired user object settings in JSON format. Sample payload:\n<pre>\
-{\n\
-    "DisplayName": "Modified User Display Name",\n\
-    "ListInDirectory": "false"\n\
-}\
-                                      </pre>')
+user_put_args.add_argument('dtmfAccessId', type=int, required=False, help='Extension of the user')
+user_put_args.add_argument('DisplayName', type=str, required=False, help='User Display Name')
+user_put_args.add_argument('ListInDirectory', type=str, required=False, help='List In Directory', 
+                           choices=['true', 'false'], default='true')
 
 
 @api.route("/user/<pkid>")

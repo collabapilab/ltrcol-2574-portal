@@ -89,9 +89,8 @@ class CUPI(REST):
            'response' :rtype:Dict: The parsed response, converted from the XML of the raw response.
         :rtype: Dict
         '''
-        result = {'success': False, 'message': '', 'response': ''}
+        result = {'success': raw_resp['success'], 'message': raw_resp['message'], 'response': ''}
         try:
-            result['success'] = raw_resp['success']
             # Attempt to parse the response into JSON format from the Response type from the requests
             # module to a dictionary
             parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
