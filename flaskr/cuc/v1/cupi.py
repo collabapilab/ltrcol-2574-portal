@@ -31,7 +31,6 @@ class CUPI(REST):
         headers = {
             'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
             'Accept': 'application/json',
-            'Connection': 'keep-alive',
             'Content-Type': 'application/json'
         }
 
