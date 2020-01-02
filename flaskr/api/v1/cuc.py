@@ -52,7 +52,7 @@ class cuc_get_user_api(Resource):
     @api.expect(query_args, validate=True)
     def get(self):
         """
-        Returns list of Unity Connection users (with and without voicemail mailboxes).
+        Returns Unity Connection users (with and without voicemail mailboxes).
         """
         args = query_args.parse_args(request)
         params = get_search_params(args)
@@ -168,7 +168,7 @@ class cuc_user_api(Resource):
     def delete(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
                username=default_cuc['username'], password=default_cuc['password']):
         """
-        Delete user from Unity Connection.
+        Delete user from Unity Connection using user object ID.
         """
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])

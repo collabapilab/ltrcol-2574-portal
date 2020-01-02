@@ -17,7 +17,11 @@ default_cms = {
 @api.route("/system_status")
 class cms_system_status_api(Resource):
     def get(self):
-        cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
+        """
+        Retrieves CMS system status.
+        """
+        cms = CMS(default_cms['host'], default_cms['username'],
+                  default_cms['password'], port=default_cms['port'])
         return cms.get_system_status()
 
 
@@ -37,20 +41,6 @@ class cms_version_api(Resource):
         return cms_status
 
 
-create_space_data = api.model('cms_space', {
-    'host': fields.String(description='CMS host/IP', default=default_cms['host'], required=False),
-    'port': fields.Integer(description='port', default=default_cms['port'], required=False),
-    'username': fields.String(description='CMS API user name', default=default_cms['username'], required=False),
-    'password': fields.String(description='CMS API user password', default='********', required=False),
-    'name': fields.String(description='Name of the Space', default='', required=False),
-    'uri': fields.String(description='User URI part for SIP call to reach Space', default='', required=False),
-    'secondaryUri': fields.String(description='Secondary URI for SIP call to reach Space', default='', required=False),
-    'passcode': fields.String(description='The security code for this Space', default='', required=False),
-    'defaultLayout': fields.String(description='The default layout to be used for new call legs in this Space. ' +
-                                               'May be allEqual | speakerOnly | telepresence | stacked',
-                                               default='', required=False)
-})
-
 space_args = reqparse.RequestParser()
 space_args.add_argument('name', type=str, required=False, help='Name of the Space')
 space_args.add_argument('uri', type=str, required=False, help='User URI part for SIP call to reach Space')
@@ -69,29 +59,10 @@ class cms_create_space_api(Resource):
              password=default_cms['password']):
         """
         Creates a new CMS Space.
-
-        Use this method to add a new Space.
-
-        * Send a JSON object with optional parameters, such as name, uri, secondaryUri, passcode,
-          defaultLayout, etc in the request body.
-
-        ```
-        {
-            "name": "Name of the Space",
-            "uri": "User URI part for SIP call to reach Space",
-            "secondaryUri": "Secondary URI for SIP call to reach Space",
-            "passcode": "The security code for this Space",
-            "defaultLayout": "The default layout to be used for new call legs in this Space.
-                            May be:  automatic | allEqual | speakerOnly | telepresence | stacked | allEqualQuarters"
-        }
-        ```
-
-        * Returns a dictionary with a 'success' (boolean) element.  If success is true, then the ID of
-          the new Space is returned in the 'id' key.  Otherwise, a 'message' element will contain error information.
         """
-
+        args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        return cms.create_coSpace(payload=self.api.payload)
+        return cms.create_coSpace(payload=args)
 
 
 get_spaces_args = reqparse.RequestParser()
@@ -107,20 +78,8 @@ class cms_spaces_api(Resource):
     @api.expect(get_spaces_args)
     def get(self):
         """
-        Retrieves all CMS Spaces with optional filters.
-
-        Use this method to retrieve a list of Spaces.  If no space ID is supplied, then all results are returned.
-        The output can be filtered using the following query parameters supplied in the URL:
-
-        * offset (int) - An "offset" and "limit" can be supplied to retrieve coSpaces other than the
-          first “page" in the notional list
-        * limit (int)
-        * filter (str) - Supply “filter=<string>” in the URI to return just those coSpaces that match the filter
-
-        For example:
-        ```  https://portal/api/v1/spaces?filter=sales&limit=5```
+        Retrieves CMS Spaces.
         """
-
         args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
         result = cms.get_coSpaces(parameters=args)
@@ -131,7 +90,7 @@ class cms_spaces_api(Resource):
 class cms_space_api(Resource):
     def get(self, id):
         """
-        Retrieves a CMS Space by ID.
+        Retrieves a CMS Space by object id.
         """
 
         # base_url = '/api/v1/coSpaces'
@@ -146,7 +105,7 @@ class cms_space_api(Resource):
     @api.expect(space_args)
     def put(self, id):
         """
-        Edits a CMS space
+        Edits a CMS space by object id
         """
         # base_url = '/api/v1/coSpaces'
         # result = cms_send_request(host=host, username=username, password=password, port=port,
@@ -159,7 +118,7 @@ class cms_space_api(Resource):
 
     def delete(self, id):
         """
-        Removes a CMS space
+        Removes a CMS space by object id
         """
         # base_url = '/api/v1/coSpaces'
         # result = cms_send_request(host=host, username=username, password=password, port=port,
