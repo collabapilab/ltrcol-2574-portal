@@ -1,7 +1,5 @@
-from flask import jsonify
 from flask import request
-from flask import Blueprint
-from flask_restplus import Namespace, Resource, reqparse, fields
+from flask_restplus import Namespace, Resource, reqparse
 from flaskr.cms.v1.cms import CMS
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
@@ -53,7 +51,6 @@ space_args.add_argument('defaultLayout', type=str, required=False, help='Default
 
 @api.route("/create_space")
 class cms_create_space_api(Resource):
-    # @api.expect(create_space_data)
     @api.expect(space_args)
     def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'],
              password=default_cms['password']):
@@ -82,8 +79,7 @@ class cms_spaces_api(Resource):
         """
         args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        result = cms.get_coSpaces(parameters=args)
-        return jsonify(result)
+        return cms.get_coSpaces(parameters=args)
 
 
 @api.route("/space/<id>")
@@ -92,39 +88,23 @@ class cms_space_api(Resource):
         """
         Retrieves a CMS Space by object id.
         """
-
-        # base_url = '/api/v1/coSpaces'
-        # args = request.args.to_dict()
-        # result = cms_send_request(host=host, username=username, password=password, port=port,
-        #                           base_url=base_url, id=id, parameters=args)
-        # return jsonify(result)
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        result = cms.get_coSpace(id=id)
-        return jsonify(result)
+        return cms.get_coSpace(id=id)
 
     @api.expect(space_args)
     def put(self, id):
         """
         Edits a CMS space by object id
         """
-        # base_url = '/api/v1/coSpaces'
-        # result = cms_send_request(host=host, username=username, password=password, port=port,
-        #                           base_url=base_url, id=id, body=self.api.payload, request_method='PUT')
-        # return jsonify(result)
+        args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
-        result = cms.update_coSpace(id=id, payload=self.api.payload)
-        return jsonify(result)
+        return cms.update_coSpace(id=id, payload=args)
 
     def delete(self, id):
         """
         Removes a CMS space by object id
         """
-        # base_url = '/api/v1/coSpaces'
-        # result = cms_send_request(host=host, username=username, password=password, port=port,
-        #                           base_url=base_url, id=id, request_method='DELETE')
-        # return jsonify(result)
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
-        result = cms.delete_coSpace(id=id)
-        return jsonify(result)
+        return cms.delete_coSpace(id=id)

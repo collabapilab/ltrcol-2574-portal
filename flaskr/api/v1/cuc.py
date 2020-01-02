@@ -1,10 +1,6 @@
-from flask import jsonify
 from flask import request
-from flask import Blueprint
 from flask_restplus import Namespace, Resource, reqparse
 from flaskr.cuc.v1.cupi import CUPI
-# import flask
-# from flaskr.rest.v1.rest import *
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
@@ -102,21 +98,12 @@ class cuc_import_ldapuser_api(Resource):
         args = request.args.to_dict()
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        # return cuc.import_ldapuser(parameters=args, payload=request.json)
-        return cuc.import_ldapuser(parameters=args, payload=self.api.payload)
+        return cuc.import_ldapuser(parameters={'templateAlias': args['templateAlias']}, payload=args)
 
 
 update_pin_args = reqparse.RequestParser()
 update_pin_args.add_argument('Credentials', type=int, required=True, help='PIN of the voicemail box')
 update_pin_args.add_argument('ResetMailbox', type=bool, required=False, help='Reset mailbox', default=True)
-# update_pin_args.add_argument('payload', type=str, required=True, location='json',
-#                                  help='User PIN settings in JSON format. Sample payload:\n<pre>\
-# {\n\
-#   "Credentials": "14235834",\n\
-#   "HackCount": 0,\n\
-#   "TimeHacked": []\n\
-# }\
-# </pre>')
 
 
 @api.route("/update_pin/<pkid>")
@@ -161,9 +148,10 @@ class cuc_user_api(Resource):
         """
         Update user from Unity Connection using user object ID.
         """
+        args = request.args.to_dict()
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        return cuc.update_user(id=pkid, payload=self.api.payload)
+        return cuc.update_user(id=pkid, payload=args)
 
     def delete(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
                username=default_cuc['username'], password=default_cuc['password']):
