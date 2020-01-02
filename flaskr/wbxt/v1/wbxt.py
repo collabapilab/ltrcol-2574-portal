@@ -3,7 +3,7 @@ from flaskr.rest.v1.rest import REST
 
 # Retrieve access token from:
 # https://developer.webex.com/docs/api/getting-started/accounts-and-authentication
-wbxt_access_token = 'ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8'
+wbxt_access_token = 'MWJiY2U5YmItNDE3Mi00ZTllLTkzYzgtZDdlYmNlODgxODA5OTEyYTZiMmEtM2Vm_PF84_consumer'
 
 
 class WBXT(REST):
@@ -80,6 +80,7 @@ class WBXT(REST):
         result = {'success': False, 'message': '', 'response': ''}
 
         try:
+            result = raw_resp['success']
             # parse response
             parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
             result['results'] = json.loads(json.dumps(parsed_response))

@@ -29,7 +29,7 @@ class wbxt_get_rooms_api(Resource):
 
 
 message_post_args = reqparse.RequestParser()
-message_post_args.add_argument('teamId', type=str, required=True, help='The room ID of the message')
+message_post_args.add_argument('roomId', type=str, required=True, help='The room ID of the message')
 message_post_args.add_argument('text', type=str, required=False, help='The message, in plain text')
 message_post_args.add_argument('markdown', type=str, required=False,
                                help='The message, in Markdown format. The maximum message length is 7439 bytes')
