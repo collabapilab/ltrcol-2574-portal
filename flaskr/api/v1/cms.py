@@ -83,6 +83,7 @@ class cms_spaces_api(Resource):
 
 
 @api.route("/space/<id>")
+@api.param('id', 'The object id of the Space')
 class cms_space_api(Resource):
     def get(self, id):
         """

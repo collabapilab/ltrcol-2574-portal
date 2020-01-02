@@ -80,11 +80,15 @@ ldapusers_post_args.add_argument('templateAlias', type=str, required=True,
                                  default='voicemailusertemplate')
 ldapusers_post_args.add_argument('pkid', type=str, required=True,
                                  help='PKID of the user to be imported')
-ldapusers_post_args.add_argument('dtmfAccessId', type=int, required=False,
-                                 help='Extension of the user')
-ldapusers_post_args.add_argument('listindirectory', type=str, required=False,
-                                 help='List In Directory', choices=['true', 'false'],
-                                 default='true')
+ldapusers_post_args.add_argument('IsVmEnrolled', type=str, required=False,
+                                 help='Play initial enrollment conversation (to record a name, request new password, etc)',
+                                 choices=['true', 'false'], default = 'true')
+ldapusers_post_args.add_argument('ListInDirectory', type=str, required=False,
+                                 help='List in the Unity Connection Auto Attendant Directory', 
+                                 choices=['true', 'false'], default='true')
+ldapusers_post_args.add_argument('Inactive', type=str, required=False,
+                                 help='Status of user account', choices=['true', 'false'],
+                                 default='false')
 
 
 @api.route("/import_ldapuser")
@@ -107,6 +111,7 @@ update_pin_args.add_argument('ResetMailbox', type=bool, required=False, help='Re
 
 
 @api.route("/update_pin/<pkid>")
+@api.param('pkid', 'The pkid of the user object')
 class cuc_update_pin_api(Resource):
     @api.expect(update_pin_args, validate=True)
     def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
@@ -125,13 +130,19 @@ class cuc_update_pin_api(Resource):
 
 
 user_put_args = reqparse.RequestParser()
-user_put_args.add_argument('dtmfAccessId', type=int, required=False, help='Extension of the user')
-user_put_args.add_argument('DisplayName', type=str, required=False, help='User Display Name')
-user_put_args.add_argument('ListInDirectory', type=str, required=False, help='List In Directory', 
+user_put_args.add_argument('ListInDirectory', type=str, required=False, 
+                           help='List in the Unity Connection Auto Attendant Directory',
                            choices=['true', 'false'], default='true')
+user_put_args.add_argument('IsVmEnrolled', type=str, required=False,
+                           help='Play initial enrollment conversation (to record a name, request new password, etc)',
+                           choices=['true', 'false'], default='true')
+user_put_args.add_argument('Inactive', type=str, required=False,
+                           help='Status of user account', choices=['true', 'false'],
+                           default='false')
 
 
 @api.route("/user/<pkid>")
+@api.param('pkid', 'The pkid of the user object')
 class cuc_user_api(Resource):
     def get(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
