@@ -1,5 +1,5 @@
 from flask import request
-from flask_restplus import Namespace, Resource, reqparse
+from flask_restplus import Namespace, Resource
 from flaskr.cms.v1.cms import CMS
 from flaskr.api.v1.parsers import cms_spaces_get_args, cms_spaces_post_args
 

@@ -1,5 +1,5 @@
 from flask import request
-from flask_restplus import Namespace, Resource, reqparse
+from flask_restplus import Namespace, Resource
 from flaskr.cuc.v1.cupi import CUPI
 from flaskr.api.v1.parsers import cuc_users_get_args, cuc_users_put_args, cuc_importldap_post_args, cuc_pin_cred_put_args
 

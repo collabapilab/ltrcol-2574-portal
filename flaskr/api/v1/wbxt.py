@@ -1,6 +1,6 @@
 
 from flask import request
-from flask_restplus import Namespace, Resource, reqparse
+from flask_restplus import Namespace, Resource
 from flaskr.wbxt.v1.wbxt import WBXT
 from flaskr.api.v1.parsers import wbxt_rooms_get_args, wbxt_messages_post_args
 
