@@ -1,9 +1,8 @@
 from flask import jsonify
 from flask import request
 from flask import Blueprint
-from flask_restplus import Namespace, Resource, fields
+from flask_restplus import Namespace, Resource, fields, reqparse
 from flaskr.cucm.v1.cucm import AXL, PAWS
-import xmltodict
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
@@ -44,13 +43,13 @@ class cucm_get_version_api(Resource):
         return jsonify(result)
 
 directory_number_data = api.model('directory_number_data', {
-    'pattern': fields.String(description='Line Directory Number', default='', required=True),
-    'routePartitionName': fields.String(description='Line Partition', default='', example='', required=False)
+    'pattern': fields.String(description='Line Directory Number', example='', required=True),
+    'routePartitionName': fields.String(description='Line Partition', default='', example='', required=True)
 } )
 
 add_line_data = api.model('add_line_data', {
     'line': fields.Nested(api.model('add_line_data1', {
-            'index': fields.Integer(default=1),
+            'index': fields.Integer(example=1),
             'dirn': fields.Nested(directory_number_data)
     }))
 } )
@@ -66,11 +65,11 @@ add_phone_data = api.model('add_phone_data', {
     'locationName': fields.String(description='Location Name', example='Hub_None', required=True),
     'securityProfileName': fields.String(description='Security Profile Name', example='Cisco Unified Client Services Framework - Standard SIP Non-Secure Profile', required=True),
     'sipProfileName': fields.String(description='SIP Profile Name', example='Standard SIP Profile', required=True),
-    'lines': fields.Nested(add_line_data)
+    'lines': fields.Nested(add_line_data, required=False)
 } )
 @api.route("/add_phone")
 class cucm_add_phone_api(Resource):
-    @api.expect(add_phone_data)
+    @api.expect(add_phone_data, validate=True)
     def post(self, **kwargs):
         """
         Adds a new Phone to CUCM
@@ -130,7 +129,7 @@ class cucm_get_phone_api(Resource):
 class cucm_delete_phone_api(Resource):
     def delete(self, device_name):
         """
-        Deletes a phone device in CUCM
+        Deletes a phone device from CUCM
         """
         try:
             axlresult = myAXL.delete_phone(device_name)
@@ -139,15 +138,50 @@ class cucm_delete_phone_api(Resource):
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "Phone Successfully Deleted", 'pkid': axlresult['return']}
         return jsonify(apiresult)
+
+# List Phones querying arguments
+list_phones_search_criteria_query_args = reqparse.RequestParser()
+list_phones_search_criteria_query_args.add_argument('name', type=str, required=False,
+                        help='Name to search', default='%')
+list_phones_search_criteria_query_args.add_argument('description', type=str, required=False,
+                        help='Description to search')
+list_phones_search_criteria_query_args.add_argument('protocol', type=str, required=False, choices=[
+                        'SIP', 'SCCP'], help='Device Protocol to search')
+list_phones_search_criteria_query_args.add_argument('callingSearchSpaceName', type=str, required=False,
+                        help='Device Calling Search Space Name to search')
+list_phones_search_criteria_query_args.add_argument('devicePoolName', type=str, required=False,
+                        help='Device Pool Name to search')
+list_phones_search_criteria_query_args.add_argument('securityProfileName', type=str, required=False,
+                        help='Device Security Profile Name to search')
+
+list_phones_returned_tags_query_args = reqparse.RequestParser()
+list_phones_returned_tags_query_args.add_argument('returnedTags', type=str, required=False,
+                        help='Tags/Fields to Return (Supply a list seperated by comma) ie: name, description, product'
+                        )
+
 @api.route("/list_phones")
-class cucm_add_phone_api(Resource):
-    def get(self, **kwargs):
+class cucm_list_phone_api(Resource):
+    @api.expect(list_phones_search_criteria_query_args, list_phones_returned_tags_query_args, validate=True)
+    def get(self):
         """
-        Lists all phone devices to CUCM
+        Lists all phone details from CUCM given the search criteria
         """
-        phones = list_phones()
-            
-        return jsonify(phones)
+        try:
+            list_phones_search_criteria_query_parsed_args = list_phones_search_criteria_query_args.parse_args(request)
+            list_phones_returned_tags_query_parsed_args = list_phones_returned_tags_query_args.parse_args(request)
+            returned_tags = None
+            if list_phones_returned_tags_query_parsed_args['returnedTags'] is not None:
+                returned_tags_str = list_phones_returned_tags_query_parsed_args['returnedTags']
+                returned_tags = list(map(str.strip,returned_tags_str.split(',')))
+            axlresult = myAXL.list_phone(search_criteria_data=list_phones_search_criteria_query_parsed_args, 
+                                         returned_tags=returned_tags)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Phone List Retrieved Successfully", 
+                     'phone_list_count': len(axlresult['return']['phone']),
+                     'phone_list_data': axlresult['return']['phone']}
+        return jsonify(apiresult)
 @api.route("/edit_phone")
 class cucm_edit_phone_api(Resource):
     def put(self):
