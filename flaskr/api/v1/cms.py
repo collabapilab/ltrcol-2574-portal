@@ -60,7 +60,7 @@ class cms_version_api(Resource):
         return cms_status
 
 
-@api.route("/space")
+@api.route("/spaces")
 # @api.route("/spaces")
 class cms_spaces_api(Resource):
     @api.expect(get_spaces_args)
@@ -84,7 +84,7 @@ class cms_spaces_api(Resource):
         return cms.create_coSpace(payload=args)
 
 
-@api.route("/space/<id>")
+@api.route("/spaces/<id>")
 @api.param('id', 'The object id of the Space')
 class cms_space_api(Resource):
     def get(self, id):
