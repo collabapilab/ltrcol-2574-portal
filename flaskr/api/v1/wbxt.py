@@ -6,6 +6,11 @@ from flaskr.wbxt.v1.wbxt import WBXT
 api = Namespace('wbxt', description='Webex Teams APIs')
 
 
+#
+# Arguments for all Webex Teams API functions. Functions that have parameters will have this a decorator such as
+#     @api.expect(get_rooms_args, validate=True)
+# To document and limit what can be entered on the /api/v1/ Swagger web page
+#
 get_rooms_args = reqparse.RequestParser()
 get_rooms_args.add_argument('teamId', type=str, required=False, help='List rooms associated with a team, by ID')
 get_rooms_args.add_argument('type', type=str, required=False, help='List rooms by type',
@@ -15,10 +20,16 @@ get_rooms_args.add_argument('sortBy', type=str, required=False, help='Sort resul
 get_rooms_args.add_argument('max', type=int, required=False,
                             help='Maximum number of rooms in the response', default=100)
 
+message_post_args = reqparse.RequestParser()
+message_post_args.add_argument('roomId', type=str, required=True, help='The room ID of the message')
+message_post_args.add_argument('text', type=str, required=False, help='The message, in plain text')
+message_post_args.add_argument('markdown', type=str, required=False,
+                               help='The message, in Markdown format. The maximum message length is 7439 bytes')
+
 
 @api.route("/rooms")
 class wbxt_get_rooms_api(Resource):
-    @api.expect(get_rooms_args)    
+    @api.expect(get_rooms_args, Validate=True)
     def get(self):
         '''
         Retrieves Webex Teams Rooms
@@ -28,16 +39,9 @@ class wbxt_get_rooms_api(Resource):
         return wbxt.get_rooms(parameters=args)
 
 
-message_post_args = reqparse.RequestParser()
-message_post_args.add_argument('roomId', type=str, required=True, help='The room ID of the message')
-message_post_args.add_argument('text', type=str, required=False, help='The message, in plain text')
-message_post_args.add_argument('markdown', type=str, required=False,
-                               help='The message, in Markdown format. The maximum message length is 7439 bytes')
-
-
-@api.route("/create_message")
+@api.route("/messages")
 class wbxt_create_message_api(Resource):
-    @api.expect(message_post_args)
+    @api.expect(message_post_args, Validate=True)
     def post(self):
         '''
         Sends a message to a Webex Teams Rooms using the Room ID.

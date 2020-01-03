@@ -11,8 +11,29 @@ default_cms = {
     'password': 'c1sco123'
 }
 
+#
+# Arguments for all CMS API functions. Functions that have parameters will have this a decorator such as
+#     @api.expect(user_filter_args, validate=True)
+# To document and limit what can be entered on the /api/v1/ Swagger web page
+#
+space_args = reqparse.RequestParser()
+space_args.add_argument('name', type=str, required=False, help='Name of the Space')
+space_args.add_argument('uri', type=str, required=False, help='User URI part for SIP call to reach Space')
+space_args.add_argument('secondaryUri', type=str, required=False, help='Secondary URI for SIP call to reach Space')
+space_args.add_argument('passcode', type=str, required=False, help='Security code for this Space')
+space_args.add_argument('defaultLayout', type=str, required=False, help='Default Layout for this Space',
+                        choices=['automatic', 'allEqual', 'speakerOnly', 'telepresence', 'stacked', 'allEqualQuarters'],
+                        default='automatic')
 
-@api.route("/system_status")
+get_spaces_args = reqparse.RequestParser()
+get_spaces_args.add_argument('filter', type=str, required=False, help='Search string')
+get_spaces_args.add_argument('limit', type=int, required=False, help='How many results to return. \
+  Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
+get_spaces_args.add_argument('offset', type=int, required=False,
+                             help='Return results starting with the offset specified', default=0)
+
+
+@api.route("/system/status")
 class cms_system_status_api(Resource):
     def get(self):
         """
@@ -39,18 +60,18 @@ class cms_version_api(Resource):
         return cms_status
 
 
-space_args = reqparse.RequestParser()
-space_args.add_argument('name', type=str, required=False, help='Name of the Space')
-space_args.add_argument('uri', type=str, required=False, help='User URI part for SIP call to reach Space')
-space_args.add_argument('secondaryUri', type=str, required=False, help='Secondary URI for SIP call to reach Space')
-space_args.add_argument('passcode', type=str, required=False, help='Security code for this Space')
-space_args.add_argument('defaultLayout', type=str, required=False, help='Default Layout for this Space',
-                        choices=['automatic', 'allEqual', 'speakerOnly', 'telepresence', 'stacked', 'allEqualQuarters'],
-                        default='automatic')
+@api.route("/space")
+# @api.route("/spaces")
+class cms_spaces_api(Resource):
+    @api.expect(get_spaces_args)
+    def get(self):
+        """
+        Retrieves all CMS Spaces.
+        """
+        args = request.args.to_dict()
+        cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
+        return cms.get_coSpaces(parameters=args)
 
-
-@api.route("/create_space")
-class cms_create_space_api(Resource):
     @api.expect(space_args)
     def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'],
              password=default_cms['password']):
@@ -58,28 +79,9 @@ class cms_create_space_api(Resource):
         Creates a new CMS Space.
         """
         args = request.args.to_dict()
-        cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
+        cms = CMS(default_cms['host'], default_cms['username'],
+                  default_cms['password'], port=default_cms['port'])
         return cms.create_coSpace(payload=args)
-
-
-get_spaces_args = reqparse.RequestParser()
-get_spaces_args.add_argument('filter', type=str, required=False, help='Search string')
-get_spaces_args.add_argument('limit', type=int, required=False, help='How many results to return. \
-  Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
-get_spaces_args.add_argument('offset', type=int, required=False,
-                             help='Return results starting with the offset specified', default=0)
-
-
-@api.route("/spaces")
-class cms_spaces_api(Resource):
-    @api.expect(get_spaces_args)
-    def get(self):
-        """
-        Retrieves CMS Spaces.
-        """
-        args = request.args.to_dict()
-        cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        return cms.get_coSpaces(parameters=args)
 
 
 @api.route("/space/<id>")
