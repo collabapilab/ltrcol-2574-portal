@@ -646,6 +646,261 @@
 					"name": "CUC",
 					"item": [
 						{
+							"name": "GET LDAP Users to Import",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/import/users/ldap",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"import",
+										"users",
+										"ldap"
+									]
+								},
+								"description": "Filter with:  ?column=alias&match_type=startswith&search=pod"
+							},
+							"response": []
+						},
+						{
+							"name": "Import LDAP User with new VM",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/import/users/ldap?templateAlias=voicemailusertemplate&pkid=816d3743-d1dd-2861-e394-e23a3b912fa2",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"import",
+										"users",
+										"ldap"
+									],
+									"query": [
+										{
+											"key": "templateAlias",
+											"value": "voicemailusertemplate"
+										},
+										{
+											"key": "pkid",
+											"value": "816d3743-d1dd-2861-e394-e23a3b912fa2"
+										}
+									]
+								},
+								"description": "?templateAlias=voicemailusertemplate&pkid=816d3743-d1dd-2861-e394-e23a3b912fa2\n\nOther options: \n &IsVmEnrolled=true\n &ListInDirectory=true"
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"users",
+										"d91ea972-4209-4fbf-8092-806830c14064"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modify CUC user",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064?ListInDirectory=false&IsVmEnrolled=false",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"users",
+										"d91ea972-4209-4fbf-8092-806830c14064"
+									],
+									"query": [
+										{
+											"key": "ListInDirectory",
+											"value": "false"
+										},
+										{
+											"key": "IsVmEnrolled",
+											"value": "false"
+										}
+									]
+								},
+								"description": "Options:\nListInDirectory=true\nIsVmEnrolled=true"
+							},
+							"response": []
+						},
+						{
+							"name": "Update CUC user PIN",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064/credential/pin?Credentials=1432112&ResetMailbox=true",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"users",
+										"d91ea972-4209-4fbf-8092-806830c14064",
+										"credential",
+										"pin"
+									],
+									"query": [
+										{
+											"key": "Credentials",
+											"value": "1432112"
+										},
+										{
+											"key": "ResetMailbox",
+											"value": "true"
+										}
+									]
+								},
+								"description": "Options:\nCredentials=1432112\nResetMailbox=true"
+							},
+							"response": []
+						},
+						{
 							"name": "GET CUC users",
 							"request": {
 								"method": "GET",
@@ -653,7 +908,8 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
-										"type": "text"
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"url": {
@@ -670,291 +926,7 @@
 										"users"
 									]
 								},
-								"description": "Filter with:  ?query=(alias%20is%20operator)"
-							},
-							"response": []
-						},
-						{
-							"name": "GET LDAP Users to Import",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/ldapusers",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"ldapusers"
-									]
-								},
-								"description": "Filter with:  ?query=(alias%20is%20operator)"
-							},
-							"response": []
-						},
-						{
-							"name": "GET LDAP User to Import",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/ldapusers?query=(alias%20is%20pod31user1)",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"ldapusers"
-									],
-									"query": [
-										{
-											"key": "query",
-											"value": "(alias%20is%20pod31user1)"
-										}
-									]
-								},
-								"description": "Filter with:  ?query=(alias%20is%20operator)"
-							},
-							"response": []
-						},
-						{
-							"name": "Import LDAP User with new VM",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									},
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"alias\": \"pod31user1\",\n    \"firstName\": \"Pod31\",\n    \"lastName\": \"User1\",\n    \"dtmfAccessId\": \"12345\",\n    \"pkid\": \"dbc37047-7565-6b29-3327-18850f64d406\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/import_ldapuser?templateAlias=voicemailusertemplate",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"import_ldapuser"
-									],
-									"query": [
-										{
-											"key": "templateAlias",
-											"value": "voicemailusertemplate"
-										}
-									]
-								},
-								"description": "Filter with:  ?query=(alias%20is%20operator)"
-							},
-							"response": []
-						},
-						{
-							"name": "Get User by ID",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"type": "text",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"DisplayName\": \"Modified User Display Name\",\n    \"ListInDirectory\": \"false\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/user/52eeccd5-b9e2-4798-98d0-3182e5dcb0da",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"user",
-										"52eeccd5-b9e2-4798-98d0-3182e5dcb0da"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Modify CUC user",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"type": "text",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"DisplayName\": \"Modified User Display Name\",\n    \"ListInDirectory\": \"false\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/user/52eeccd5-b9e2-4798-98d0-3182e5dcb0da",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"user",
-										"52eeccd5-b9e2-4798-98d0-3182e5dcb0da"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Update CUC user PIN",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"type": "text",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"Credentials\": \"14235834\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/update_pin/0d03f075-faa9-4cca-9d35-75c5ef7edf69",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"update_pin",
-										"0d03f075-faa9-4cca-9d35-75c5ef7edf69"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Search for user",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users?query=(alias%20is%20operator)",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"users"
-									],
-									"query": [
-										{
-											"key": "query",
-											"value": "(alias%20is%20operator)"
-										}
-									]
-								},
-								"description": "Filter with:  ?query=(alias%20is%20operator)"
+								"description": "Filter with:  ?column=alias&match_type=startswith&search=pod"
 							},
 							"response": []
 						},
@@ -966,18 +938,20 @@
 									{
 										"key": "Accept",
 										"value": "application/json",
-										"type": "text"
+										"type": "text",
+										"disabled": true
 									},
 									{
 										"key": "Content-Type",
 										"name": "Content-Type",
 										"value": "application/json",
-										"type": "text"
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"alias\": \"pod31user1\",\n    \"firstName\": \"Pod31\",\n    \"lastName\": \"User1\",\n    \"dtmfAccessId\": \"12345\",\n    \"pkid\": \"dbc37047-7565-6b29-3327-18850f64d406\"\n}",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -985,7 +959,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/user/347df8da-0eb0-43e8-a727-6acd09c1dad7",
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -995,8 +969,8 @@
 										"api",
 										"v1",
 										"cuc",
-										"user",
-										"347df8da-0eb0-43e8-a727-6acd09c1dad7"
+										"users",
+										"d91ea972-4209-4fbf-8092-806830c14064"
 									]
 								},
 								"description": "Filter with:  ?query=(alias%20is%20operator)"
@@ -1039,7 +1013,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/system_status",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/system/status",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1049,7 +1023,8 @@
 										"api",
 										"v1",
 										"cms",
-										"system_status"
+										"system",
+										"status"
 									]
 								}
 							},
@@ -1096,12 +1071,12 @@
 										"spaces"
 									]
 								},
-								"description": "Filter with: ?filter=blah&limit=2"
+								"description": "Filter with:\n?filter=pod&limit=10&offset=0"
 							},
 							"response": []
 						},
 						{
-							"name": "POST create_space",
+							"name": "POST Create a Space",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -1109,50 +1084,13 @@
 										"key": "Content-Type",
 										"name": "Content-Type",
 										"type": "text",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"name\": \"Name of the Space\",\n  \"uri\": \"User URI part for SIP call to reach Space\",\n  \"secondaryUri\": \"Secondary URI for SIP call to reach Space\",\n  \"passcode\": \"The security code for this Space\",\n  \"defaultLayout\": \"stacked\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/create_space",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cms",
-										"create_space"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "POST create_space (duplicate err)",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
 										"value": "application/json",
-										"type": "text"
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "        {\n          \"name\": \"Name of the Space\",\n          \"uri\": \"User URI part for SIP call to reach Space\",\n          \"secondaryUri\": \"Secondary URI for SIP call to reach Space\",\n          \"passcode\": \"The security code for this Space\",\n          \"defaultLayout\": \"stacked\"\n        }\n",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1160,7 +1098,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/create_space",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1170,9 +1108,10 @@
 										"api",
 										"v1",
 										"cms",
-										"create_space"
+										"spaces"
 									]
-								}
+								},
+								"description": "Parameters:\nname=MySpace\nuri=primuri\nsecondaryUri=otheruri\npasscode=5434\ndefaultLayout=automatic"
 							},
 							"response": []
 						},
@@ -1184,13 +1123,14 @@
 									{
 										"key": "Content-Type",
 										"name": "Content-Type",
+										"type": "text",
 										"value": "application/json",
-										"type": "text"
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "        {\n          \"name\": \"NewName\"\n        }\n",
+									"raw": "",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1198,7 +1138,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/488d6af7-83e3-4088-af6d-01d98f00f184?name=Personal Space&uri=firsturi&secondaryUri=otheruri&passcode=4324&defaultLayout=automatic",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1208,10 +1148,33 @@
 										"api",
 										"v1",
 										"cms",
-										"space",
-										"a776d217-eff4-480a-b9f5-2a1a8ec226b4"
+										"spaces",
+										"488d6af7-83e3-4088-af6d-01d98f00f184"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "Personal Space"
+										},
+										{
+											"key": "uri",
+											"value": "firsturi"
+										},
+										{
+											"key": "secondaryUri",
+											"value": "otheruri"
+										},
+										{
+											"key": "passcode",
+											"value": "4324"
+										},
+										{
+											"key": "defaultLayout",
+											"value": "automatic"
+										}
 									]
-								}
+								},
+								"description": "Parameters:\nname=MySpace\nuri=primuri\nsecondaryUri=otheruri\npasscode=5434\ndefaultLayout=automatic"
 							},
 							"response": []
 						},
@@ -1221,7 +1184,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/488d6af7-83e3-4088-af6d-01d98f00f184",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1231,8 +1194,8 @@
 										"api",
 										"v1",
 										"cms",
-										"space",
-										"a776d217-eff4-480a-b9f5-2a1a8ec226b4"
+										"spaces",
+										"488d6af7-83e3-4088-af6d-01d98f00f184"
 									]
 								}
 							},
@@ -1244,7 +1207,7 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/space/a776d217-eff4-480a-b9f5-2a1a8ec226b4",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/d91ea972-4209-4fbf-8092-806830c14064",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1254,8 +1217,8 @@
 										"api",
 										"v1",
 										"cms",
-										"space",
-										"a776d217-eff4-480a-b9f5-2a1a8ec226b4"
+										"spaces",
+										"d91ea972-4209-4fbf-8092-806830c14064"
 									]
 								}
 							},
@@ -1299,7 +1262,8 @@
 									{
 										"key": "Content-Type",
 										"value": "application/json;charset=utf-8",
-										"type": "text"
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"url": {
@@ -1327,15 +1291,16 @@
 									{
 										"key": "Content-Type",
 										"type": "text",
-										"value": "application/json;charset=utf-8"
+										"value": "application/json;charset=utf-8",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"roomId\": \"Y2lzY29zcGFyazovL3VzL1JPT00vMmQ1ODU1YTAtMTNkZi0xMWVhLWEzZjYtYjFmODVhNjU5MWMz\",\n  \"text\": \"Test message2\"\n}"
+									"raw": ""
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/wbxt/create_message",
+									"raw": "http://{{host}}:{{port}}/api/v1/wbxt/messages",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1345,9 +1310,10 @@
 										"api",
 										"v1",
 										"wbxt",
-										"create_message"
+										"messages"
 									]
-								}
+								},
+								"description": "Parameters:\nroomId=Y2lzY29zcGFyazovL3VzL1JPT00vMmQ1ODU1YTAtMTNkZi0xMWVhLWEzZjYtYjFmODVhNjU5MWMz\ntext=Test Message\nmarkdown="
 							},
 							"response": []
 						}
@@ -1475,37 +1441,37 @@
 	],
 	"variable": [
 		{
-			"id": "f2bffba0-8da4-4352-b593-793c072d406e",
+			"id": "13f47bd3-ebff-4cb9-aba9-1af24332413d",
 			"key": "pod_num",
-			"value": "31",
+			"value": "31\n",
 			"type": "string"
 		},
 		{
-			"id": "39e36701-37b9-4f50-8f12-7ccbb27a600a",
+			"id": "c49b8b7a-53ae-4552-906a-ee5ff937d695",
 			"key": "cuc",
 			"value": "cuc1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "45144785-9606-4a16-bdde-63b1cd3a40c8",
+			"id": "8157b205-23f2-40c7-8787-27ccf0968a7a",
 			"key": "cms",
 			"value": "cms1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "f90bb942-e321-49f7-8e80-14a4f216a8ae",
+			"id": "1b8e0566-c00c-4bbc-80a0-1dc8f20495cd",
 			"key": "webexteams_access_token",
 			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
 			"type": "string"
 		},
 		{
-			"id": "cfbbb6c0-f427-446a-92cb-2ca48362b478",
+			"id": "5f2b689b-c309-41af-94e0-8398fd0ea91e",
 			"key": "host",
-			"value": "0.0.0.0",
+			"value": "dev1.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "ffcc3bdb-7250-411f-ba6a-ccadc27e5df7",
+			"id": "e02aa77d-a976-44b2-958a-4d33adb7ffb4",
 			"key": "port",
 			"value": "5000",
 			"type": "string"
