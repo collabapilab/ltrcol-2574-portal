@@ -67,25 +67,28 @@ class AXL:
         self.axl_version = "10.0"   # This is the default AXL version we will use
         self.axl_timeout = 30       # Default Timeout in Seconds for AXL Queries
         self.axl_logging = False    # This controls the SOAP Logging
+    
+    class Decorators(object):
+        @staticmethod
+        def axl_setup(func):
+            @functools.wraps(func)
+            def axl_setup_check(self, *args, **kwargs):
+                if not self.axlclient:
+                    self._axl_setup()
+                value = func(self, *args, **kwargs)
+                return value
+            return axl_setup_check
 
-    def axl_setup(func):
-        @functools.wraps(func)
-        def axl_setup_check(self, *args, **kwargs):
-            if not self.axlclient:
-                self._axl_setup()
-            value = func(self, *args, **kwargs)
-            return value
-        return axl_setup_check
-
-    def axl_result_check(func):
-        @functools.wraps(func)
-        def axl_result_check_wrapper(self, *args, **kwargs):
-            value = func(self, *args, **kwargs)
-            if value is None:
-                if self.axlclient.last_exception:
-                    raise Exception(str(self.axlclient.last_exception))
-            return serialize_object(value)
-        return axl_result_check_wrapper
+        @staticmethod
+        def axl_result_check(func):
+            @functools.wraps(func)
+            def axl_result_check_wrapper(self, *args, **kwargs):
+                value = func(self, *args, **kwargs)
+                if value is None:
+                    if self.axlclient.last_exception:
+                        raise Exception(str(self.axlclient.last_exception))
+                return serialize_object(value)
+            return axl_result_check_wrapper
 
     def _axl_setup(self):
         """
@@ -126,26 +129,26 @@ class AXL:
             if self.axlclient.last_exception:
                 raise Exception("Exception with get_ccm_version --- " + str(self.axlclient.last_exception))
 
-    @axl_result_check
-    @axl_setup
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
     def add_phone(self, phone_data=None):
         axl_result = self.axlclient.add_phone(phone_data=phone_data)
         return axl_result
 
-    @axl_result_check
-    @axl_setup
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
     def get_phone(self, name=None):
         axl_result = self.axlclient.get_phone(name)
         return axl_result
     
-    @axl_result_check
-    @axl_setup
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
     def delete_phone(self, name=None):
         axl_result = self.axlclient.remove_phone(name)
         return axl_result
 
-    @axl_result_check
-    @axl_setup
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
     def list_phone(self, search_criteria_data= None, returned_tags=None):
         axl_result = self.axlclient.list_phone(search_criteria_data, returned_tags)
         if axl_result['return'] is None:
@@ -178,25 +181,28 @@ class PAWS:
         self.paws_tls_verify = False  # TLS Verify on PAWS HTTPS connections
         self.paws_timeout = 30        # Default Timeout in Seconds for PAWS Queries
         self.paws_logging = False     # This controls the SOAP Logging
+    
+    class Decorators(object):
+        @staticmethod
+        def paws_setup(func):
+            @functools.wraps(func)
+            def paws_setup_check(self, *args, **kwargs):
+                if not self.pawsclient:
+                    self._paws_setup()
+                value = func(self, *args, **kwargs)
+                return value
+            return paws_setup_check
 
-    def paws_setup(func):
-        @functools.wraps(func)
-        def paws_setup_check(self, *args, **kwargs):
-            if not self.pawsclient:
-                self._paws_setup()
-            value = func(self, *args, **kwargs)
-            return value
-        return paws_setup_check
-
-    def paws_result_check(func):
-        @functools.wraps(func)
-        def paws_result_check_wrapper(self, *args, **kwargs):
-            value = func(self, *args, **kwargs)
-            if value is None:
-                if self.pawsclient.last_exception:
-                    raise Exception(str(self.pawsclient.last_exception))
-            return serialize_object(value)
-        return paws_result_check_wrapper
+        @staticmethod
+        def paws_result_check(func):
+            @functools.wraps(func)
+            def paws_result_check_wrapper(self, *args, **kwargs):
+                value = func(self, *args, **kwargs)
+                if value is None:
+                    if self.pawsclient.last_exception:
+                        raise Exception(str(self.pawsclient.last_exception))
+                return serialize_object(value)
+            return paws_result_check_wrapper
     
     def _paws_setup(self):
         """
@@ -221,8 +227,8 @@ class PAWS:
         else:
             raise Exception("PAWS Connectivity Exception:" + str(r.status_code) + " - " + r.reason)
     
-    @paws_result_check
-    @paws_setup
+    @Decorators.paws_result_check
+    @Decorators.paws_setup
     def get_version(self, Version='Active'):
         if (Version == 'Active'):
             return self.pawsclient.get_active_version()
@@ -230,18 +236,3 @@ class PAWS:
             return self.pawsclient.get_inactive_version()
         else:
             raise Exception("get_version only accepts 'Active' or 'Inactive'")
-
-def cucm_find_phone(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cucm_list_phones(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cucm_add_phone(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cucm_edit_phone(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass
-
-def cucm_delete_phone(host, username, password, port, location, parameters={}, body=None, request_method='GET'):
-    pass

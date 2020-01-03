@@ -3,6 +3,7 @@ from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields, reqparse
 from flaskr.cucm.v1.cucm import AXL, PAWS
+from flaskr.api.v1.parsers import cucm_list_phones_returned_tags_query_args, cucm_list_phones_search_criteria_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
@@ -13,13 +14,6 @@ default_cucm = {
    'username': 'admin',
    'password': 'c1sco123'
 }
-
-system_status_data = api.model('CUCM System', {
-    'host': fields.String(description='CUCM host/IP', default=default_cucm['host'], required=False),
-    'port': fields.Integer(description='port', default=default_cucm['port'], required=False),
-    'username': fields.String(description='CUCM API user name', default=default_cucm['username'], required=False),
-    'password': fields.String(description='CUCM API user password', default='********', required=False),
-})
 
 myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['password'])
 myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
@@ -42,20 +36,20 @@ class cucm_get_version_api(Resource):
                 pass
         return jsonify(result)
 
-directory_number_data = api.model('directory_number_data', {
-    'pattern': fields.String(description='Line Directory Number', example='', required=True),
+cucm_directory_number_data = api.model('cucm_directory_number_data', {
+    'pattern': fields.String(description='Line Directory Number', example='1111', required=True),
     'routePartitionName': fields.String(description='Line Partition', default='', example='', required=True)
 } )
 
-add_line_data = api.model('add_line_data', {
+cucm_line_data = api.model('cucm_line_data', {
     'line': fields.Nested(api.model('add_line_data1', {
             'index': fields.Integer(example=1),
-            'dirn': fields.Nested(directory_number_data)
+            'dirn': fields.Nested(cucm_directory_number_data)
     }))
 } )
-add_phone_data = api.model('add_phone_data', {
-    'name': fields.String(description='Phone Device Name', default='', example='CSFTEST1', required=True),
-    'description': fields.String(description='Phone Device Description', default='', required=False),
+cucm_phone_data = api.model('cucm_phone_data', {
+    'name': fields.String(description='Phone Device Name', default='', example='CSFPOD31USER1', required=True),
+    'description': fields.String(description='Phone Device Description', example='CSF Device for pod31user1', required=False),
     'product': fields.String(description='Phone Device Type', example='Cisco Unified Client Services Framework', required=True),
     'class': fields.String(description='Device Class', example='Phone', required=True),
     'protocol': fields.String(description='Device Protocol', example='SIP', required=True),
@@ -65,11 +59,12 @@ add_phone_data = api.model('add_phone_data', {
     'locationName': fields.String(description='Location Name', example='Hub_None', required=True),
     'securityProfileName': fields.String(description='Security Profile Name', example='Cisco Unified Client Services Framework - Standard SIP Non-Secure Profile', required=True),
     'sipProfileName': fields.String(description='SIP Profile Name', example='Standard SIP Profile', required=True),
-    'lines': fields.Nested(add_line_data, required=False)
+    'ownerUserName': fields.String(description='Device Owner User Name', example='pod31user1', required=True),
+    'lines': fields.Nested(cucm_line_data, required=False)
 } )
 @api.route("/add_phone")
 class cucm_add_phone_api(Resource):
-    @api.expect(add_phone_data, validate=True)
+    @api.expect(cucm_phone_data, validate=True)
     def post(self, **kwargs):
         """
         Adds a new Phone to CUCM
@@ -78,26 +73,27 @@ class cucm_add_phone_api(Resource):
 
         ```
         {
-        "name": "makmantest",
-        "description": "Test Phone",
-        "product": "Cisco Unified Client Services Framework",
-        "class": "Phone",
-        "protocol": "SIP",
-        "protocolSide": "User",
-        "commonPhoneConfigName": "Standard Common Phone Profile",
-        "devicePoolName": "Default",
-        "locationName": "Hub_None",
-        "securityProfileName": "Cisco Unified Client Services Framework - Standard SIP Non-Secure Profile",
-        "sipProfileName": "Standard SIP Profile"
-        "lines": {
-            "line": {
-                "index": "1",
-                "dirn": {
-                    "pattern": "1111",
-                    "routePartitionName": ""
+            "name": "CSFPOD31USER1",
+            "description": "",
+            "product": "Cisco Unified Client Services Framework",
+            "class": "Phone",
+            "protocol": "SIP",
+            "protocolSide": "User",
+            "commonPhoneConfigName": "Standard Common Phone Profile",
+            "devicePoolName": "Default",
+            "locationName": "Hub_None",
+            "securityProfileName": "Cisco Unified Client Services Framework - Standard SIP Non-Secure Profile",
+            "sipProfileName": "Standard SIP Profile",
+            "ownerUserName": "pod31user1", 
+            "lines": {
+                "line": {
+                    "index": "1",
+                    "dirn": {
+                        "pattern": "1111",
+                        "routePartitionName": ""
+                    }
                 }
             }
-        }
         }
         ```
 
@@ -138,37 +134,16 @@ class cucm_delete_phone_api(Resource):
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "Phone Successfully Deleted", 'pkid': axlresult['return']}
         return jsonify(apiresult)
-
-# List Phones querying arguments
-list_phones_search_criteria_query_args = reqparse.RequestParser()
-list_phones_search_criteria_query_args.add_argument('name', type=str, required=False,
-                        help='Name to search', default='%')
-list_phones_search_criteria_query_args.add_argument('description', type=str, required=False,
-                        help='Description to search')
-list_phones_search_criteria_query_args.add_argument('protocol', type=str, required=False, choices=[
-                        'SIP', 'SCCP'], help='Device Protocol to search')
-list_phones_search_criteria_query_args.add_argument('callingSearchSpaceName', type=str, required=False,
-                        help='Device Calling Search Space Name to search')
-list_phones_search_criteria_query_args.add_argument('devicePoolName', type=str, required=False,
-                        help='Device Pool Name to search')
-list_phones_search_criteria_query_args.add_argument('securityProfileName', type=str, required=False,
-                        help='Device Security Profile Name to search')
-
-list_phones_returned_tags_query_args = reqparse.RequestParser()
-list_phones_returned_tags_query_args.add_argument('returnedTags', type=str, required=False,
-                        help='Tags/Fields to Return (Supply a list seperated by comma) ie: name, description, product'
-                        )
-
 @api.route("/list_phones")
 class cucm_list_phone_api(Resource):
-    @api.expect(list_phones_search_criteria_query_args, list_phones_returned_tags_query_args, validate=True)
+    @api.expect(cucm_list_phones_search_criteria_query_args, cucm_list_phones_returned_tags_query_args, validate=True)
     def get(self):
         """
         Lists all phone details from CUCM given the search criteria
         """
         try:
-            list_phones_search_criteria_query_parsed_args = list_phones_search_criteria_query_args.parse_args(request)
-            list_phones_returned_tags_query_parsed_args = list_phones_returned_tags_query_args.parse_args(request)
+            list_phones_search_criteria_query_parsed_args = cucm_list_phones_search_criteria_query_args.parse_args(request)
+            list_phones_returned_tags_query_parsed_args = cucm_list_phones_returned_tags_query_args.parse_args(request)
             returned_tags = None
             if list_phones_returned_tags_query_parsed_args['returnedTags'] is not None:
                 returned_tags_str = list_phones_returned_tags_query_parsed_args['returnedTags']

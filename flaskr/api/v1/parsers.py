@@ -6,6 +6,27 @@ Arguments for all API functions. Functions that have parameters will have this a
 To document and limit what can be entered on the /api/v1/ Swagger web page
 """
 
+### CUCM API Arguments
+# CUCM List Phones Query arguments
+cucm_list_phones_search_criteria_query_args = reqparse.RequestParser()
+cucm_list_phones_search_criteria_query_args.add_argument('name', type=str, required=False,
+                        help='Name to search', default='%')
+cucm_list_phones_search_criteria_query_args.add_argument('description', type=str, required=False,
+                        help='Description to search')
+cucm_list_phones_search_criteria_query_args.add_argument('protocol', type=str, required=False, choices=[
+                        'SIP', 'SCCP'], help='Device Protocol to search')
+cucm_list_phones_search_criteria_query_args.add_argument('callingSearchSpaceName', type=str, required=False,
+                        help='Device Calling Search Space Name to search')
+cucm_list_phones_search_criteria_query_args.add_argument('devicePoolName', type=str, required=False,
+                        help='Device Pool Name to search')
+cucm_list_phones_search_criteria_query_args.add_argument('securityProfileName', type=str, required=False,
+                        help='Device Security Profile Name to search')
+
+cucm_list_phones_returned_tags_query_args = reqparse.RequestParser()
+cucm_list_phones_returned_tags_query_args.add_argument('returnedTags', type=str, required=False,
+                        help='Tags/Fields to Return (Supply a list seperated by comma) ie: name, description, product'
+                        )
+
 ### Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
 cms_spaces_post_args.add_argument('name', type=str, required=False, help='Name of the Space')
