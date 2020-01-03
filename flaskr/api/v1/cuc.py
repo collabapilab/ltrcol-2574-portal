@@ -1,6 +1,7 @@
 from flask import request
 from flask_restplus import Namespace, Resource, reqparse
 from flaskr.cuc.v1.cupi import CUPI
+from flaskr.api.v1.parsers import cuc_users_get_args, cuc_users_put_args, cuc_importldap_post_args, cuc_pin_cred_put_args
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
@@ -27,66 +28,22 @@ def get_search_params(args):
     return params
 
 
-#
-# Arguments for all CUC API functions. Functions that have parameters will have this a decorator such as
-#     @api.expect(user_filter_args, validate=True)
-# To document and limit what can be entered on the /api/v1/ Swagger web page
-#
-user_filter_args = reqparse.RequestParser()
-user_filter_args.add_argument('column', type=str, required=False,
-                              help='Column to search', default='alias')
-user_filter_args.add_argument('match_type', type=str, required=False, choices=[
-                              'startswith', 'is'], help='Order of return values', default='is')
-user_filter_args.add_argument('search', type=str, required=False, help='Query string')
-user_filter_args.add_argument('sortorder', type=str, required=False, choices=[
-                              'asc', 'desc'], help='Order of return values', default='asc')
-user_filter_args.add_argument('rowsPerPage', type=int, required=False,
-                              help='Number of rows to return', default=100)
-user_filter_args.add_argument('pageNumber', type=int, required=False,
-                              help='Page # to return', default=1)
-
-ldapusers_post_args = reqparse.RequestParser()
-ldapusers_post_args.add_argument('templateAlias', type=str, required=True,
-                                 help='User template alias',
-                                 default='voicemailusertemplate')
-ldapusers_post_args.add_argument('pkid', type=str, required=True,
-                                 help='PKID of the user to be imported')
-ldapusers_post_args.add_argument('IsVmEnrolled', type=str, required=False,
-                                 help='Play initial enrollment conversation (to record a name, request password, etc)',
-                                 choices=['true', 'false'], default='true')
-ldapusers_post_args.add_argument('ListInDirectory', type=str, required=False,
-                                 help='List in the Unity Connection Auto Attendant Directory',
-                                 choices=['true', 'false'], default='true')
-
-user_put_args = reqparse.RequestParser()
-user_put_args.add_argument('ListInDirectory', type=str, required=False,
-                           help='List in the Unity Connection Auto Attendant Directory',
-                           choices=['true', 'false'], default='true')
-user_put_args.add_argument('IsVmEnrolled', type=str, required=False,
-                           help='Play initial enrollment conversation (to record a name, request new password, etc)',
-                           choices=['true', 'false'], default='true')
-
-update_pin_args = reqparse.RequestParser()
-update_pin_args.add_argument('Credentials', type=int, required=True, help='PIN of the voicemail box')
-update_pin_args.add_argument('ResetMailbox', type=bool, required=False, help='Reset mailbox', default=True)
-
-
 @api.route("/import/users/ldap")
 class cuc_import_ldapuser_api(Resource):
-    @api.expect(user_filter_args, validate=True)
+    @api.expect(cuc_users_get_args, validate=True)
     def get(self, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
         Retrieves LDAP users synched to Unity Connection.
         """
-        args = user_filter_args.parse_args(request)
+        args = cuc_users_get_args.parse_args(request)
         params = get_search_params(args)
 
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
         return cuc.get_ldapusers(parameters=params)
 
-    @api.expect(ldapusers_post_args, validate=True)
+    @api.expect(cuc_importldap_post_args, validate=True)
     def post(self, host=default_cuc['host'], port=default_cuc['port'],
              username=default_cuc['username'], password=default_cuc['password']):
         """
@@ -100,12 +57,12 @@ class cuc_import_ldapuser_api(Resource):
 
 @api.route("/users")
 class cuc_get_user_api(Resource):
-    @api.expect(user_filter_args, validate=True)
+    @api.expect(cuc_users_get_args, validate=True)
     def get(self):
         """
         Returns Unity Connection users (with and without voicemail mailboxes).
         """
-        args = user_filter_args.parse_args(request)
+        args = cuc_users_get_args.parse_args(request)
         params = get_search_params(args)
 
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
@@ -125,7 +82,7 @@ class cuc_user_api(Resource):
                    default_cuc['password'], port=default_cuc['port'])
         return cuc.get_user(id=pkid)
 
-    @api.expect(user_put_args, validate=True)
+    @api.expect(cuc_users_put_args, validate=True)
     def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
@@ -149,7 +106,7 @@ class cuc_user_api(Resource):
 @api.route("/users/<pkid>/credential/pin")
 @api.param('pkid', 'The pkid of the user object')
 class cuc_update_pin_api(Resource):
-    @api.expect(update_pin_args, validate=True)
+    @api.expect(cuc_pin_cred_put_args, validate=True)
     def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """

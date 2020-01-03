@@ -1,6 +1,7 @@
 from flask import request
 from flask_restplus import Namespace, Resource, reqparse
 from flaskr.cms.v1.cms import CMS
+from flaskr.api.v1.parsers import cms_spaces_get_args, cms_spaces_post_args
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
@@ -10,27 +11,6 @@ default_cms = {
     'username': 'admin',
     'password': 'c1sco123'
 }
-
-#
-# Arguments for all CMS API functions. Functions that have parameters will have this a decorator such as
-#     @api.expect(user_filter_args, validate=True)
-# To document and limit what can be entered on the /api/v1/ Swagger web page
-#
-space_args = reqparse.RequestParser()
-space_args.add_argument('name', type=str, required=False, help='Name of the Space')
-space_args.add_argument('uri', type=str, required=False, help='User URI part for SIP call to reach Space')
-space_args.add_argument('secondaryUri', type=str, required=False, help='Secondary URI for SIP call to reach Space')
-space_args.add_argument('passcode', type=str, required=False, help='Security code for this Space')
-space_args.add_argument('defaultLayout', type=str, required=False, help='Default Layout for this Space',
-                        choices=['automatic', 'allEqual', 'speakerOnly', 'telepresence', 'stacked', 'allEqualQuarters'],
-                        default='automatic')
-
-get_spaces_args = reqparse.RequestParser()
-get_spaces_args.add_argument('filter', type=str, required=False, help='Search string')
-get_spaces_args.add_argument('limit', type=int, required=False, help='How many results to return. \
-  Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
-get_spaces_args.add_argument('offset', type=int, required=False,
-                             help='Return results starting with the offset specified', default=0)
 
 
 @api.route("/system/status")
@@ -63,7 +43,7 @@ class cms_version_api(Resource):
 @api.route("/spaces")
 # @api.route("/spaces")
 class cms_spaces_api(Resource):
-    @api.expect(get_spaces_args)
+    @api.expect(cms_spaces_get_args)
     def get(self):
         """
         Retrieves all CMS Spaces.
@@ -72,7 +52,7 @@ class cms_spaces_api(Resource):
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
         return cms.get_coSpaces(parameters=args)
 
-    @api.expect(space_args)
+    @api.expect(cms_spaces_post_args)
     def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'],
              password=default_cms['password']):
         """
@@ -94,7 +74,7 @@ class cms_space_api(Resource):
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
         return cms.get_coSpace(id=id)
 
-    @api.expect(space_args)
+    @api.expect(cms_spaces_get_args)
     def put(self, id):
         """
         Edits a CMS space by object id
