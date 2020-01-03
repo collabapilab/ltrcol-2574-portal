@@ -23,56 +23,27 @@ def get_search_params(args):
               'pageNumber': args.get('pageNumber')}
 
     if args.get('search') is not None:
-      params['query'] = '({} {} {})'.format(args.get('column'), args.get('match_type'), args.get('search'))
-
+        params['query'] = '({} {} {})'.format(args.get('column'), args.get('match_type'), args.get('search'))
     return params
 
 
-# CUC querying arguments
-query_args = reqparse.RequestParser()
-query_args.add_argument('column', type=str, required=False,
-                        help='Column to search', default='alias')
-query_args.add_argument('match_type', type=str, required=False, choices=[
-                        'startswith', 'is'], help='Order of return values', default='is')
-query_args.add_argument('search', type=str, required=False, help='Query string')
-query_args.add_argument('sortorder', type=str, required=False, choices=[
-                        'asc', 'desc'], help='Order of return values', default='asc')
-query_args.add_argument('rowsPerPage', type=int, required=False,
-                        help='Number of rows to return', default=100)
-query_args.add_argument('pageNumber', type=int, required=False,
-                        help='Page # to return', default=1)
-
-
-@api.route("/users")
-class cuc_get_user_api(Resource):
-    @api.expect(query_args, validate=True)
-    def get(self):
-        """
-        Returns Unity Connection users (with and without voicemail mailboxes).
-        """
-        args = query_args.parse_args(request)
-        params = get_search_params(args)
-
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
-        return cuc.get_users(parameters=params)
-
-
-@api.route("/ldapusers")
-class cuc_get_ldapuser_api(Resource):
-    @api.expect(query_args, validate=True)
-    def get(self, host=default_cuc['host'], port=default_cuc['port'],
-            username=default_cuc['username'], password=default_cuc['password']):
-        """
-        Retrieves LDAP users synched to Unity Connection.
-        """
-        args = query_args.parse_args(request)
-        params = get_search_params(args)
-
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
-        return cuc.get_ldapusers(parameters=params)
-
+#
+# Arguments for all CUC API functions. Functions that have parameters will have this a decorator such as
+#     @api.expect(user_filter_args, validate=True)
+# To document and limit what can be entered on the /api/v1/ Swagger web page
+#
+user_filter_args = reqparse.RequestParser()
+user_filter_args.add_argument('column', type=str, required=False,
+                              help='Column to search', default='alias')
+user_filter_args.add_argument('match_type', type=str, required=False, choices=[
+                              'startswith', 'is'], help='Order of return values', default='is')
+user_filter_args.add_argument('search', type=str, required=False, help='Query string')
+user_filter_args.add_argument('sortorder', type=str, required=False, choices=[
+                              'asc', 'desc'], help='Order of return values', default='asc')
+user_filter_args.add_argument('rowsPerPage', type=int, required=False,
+                              help='Number of rows to return', default=100)
+user_filter_args.add_argument('pageNumber', type=int, required=False,
+                              help='Page # to return', default=1)
 
 ldapusers_post_args = reqparse.RequestParser()
 ldapusers_post_args.add_argument('templateAlias', type=str, required=True,
@@ -80,15 +51,41 @@ ldapusers_post_args.add_argument('templateAlias', type=str, required=True,
                                  default='voicemailusertemplate')
 ldapusers_post_args.add_argument('pkid', type=str, required=True,
                                  help='PKID of the user to be imported')
-ldapusers_post_args.add_argument('dtmfAccessId', type=int, required=False,
-                                 help='Extension of the user')
-ldapusers_post_args.add_argument('listindirectory', type=str, required=False,
-                                 help='List In Directory', choices=['true', 'false'],
-                                 default='true')
+ldapusers_post_args.add_argument('IsVmEnrolled', type=str, required=False,
+                                 help='Play initial enrollment conversation (to record a name, request password, etc)',
+                                 choices=['true', 'false'], default='true')
+ldapusers_post_args.add_argument('ListInDirectory', type=str, required=False,
+                                 help='List in the Unity Connection Auto Attendant Directory',
+                                 choices=['true', 'false'], default='true')
+
+user_put_args = reqparse.RequestParser()
+user_put_args.add_argument('ListInDirectory', type=str, required=False,
+                           help='List in the Unity Connection Auto Attendant Directory',
+                           choices=['true', 'false'], default='true')
+user_put_args.add_argument('IsVmEnrolled', type=str, required=False,
+                           help='Play initial enrollment conversation (to record a name, request new password, etc)',
+                           choices=['true', 'false'], default='true')
+
+update_pin_args = reqparse.RequestParser()
+update_pin_args.add_argument('Credentials', type=int, required=True, help='PIN of the voicemail box')
+update_pin_args.add_argument('ResetMailbox', type=bool, required=False, help='Reset mailbox', default=True)
 
 
-@api.route("/import_ldapuser")
+@api.route("/import/users/ldap")
 class cuc_import_ldapuser_api(Resource):
+    @api.expect(user_filter_args, validate=True)
+    def get(self, host=default_cuc['host'], port=default_cuc['port'],
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Retrieves LDAP users synched to Unity Connection.
+        """
+        args = user_filter_args.parse_args(request)
+        params = get_search_params(args)
+
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.get_ldapusers(parameters=params)
+
     @api.expect(ldapusers_post_args, validate=True)
     def post(self, host=default_cuc['host'], port=default_cuc['port'],
              username=default_cuc['username'], password=default_cuc['password']):
@@ -101,37 +98,23 @@ class cuc_import_ldapuser_api(Resource):
         return cuc.import_ldapuser(parameters={'templateAlias': args['templateAlias']}, payload=args)
 
 
-update_pin_args = reqparse.RequestParser()
-update_pin_args.add_argument('Credentials', type=int, required=True, help='PIN of the voicemail box')
-update_pin_args.add_argument('ResetMailbox', type=bool, required=False, help='Reset mailbox', default=True)
-
-
-@api.route("/update_pin/<pkid>")
-class cuc_update_pin_api(Resource):
-    @api.expect(update_pin_args, validate=True)
-    def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
-            username=default_cuc['username'], password=default_cuc['password']):
+@api.route("/users")
+class cuc_get_user_api(Resource):
+    @api.expect(user_filter_args, validate=True)
+    def get(self):
         """
-        Update Unity Connection user PIN credential settings using user object ID.
+        Returns Unity Connection users (with and without voicemail mailboxes).
         """
-        args = request.args.to_dict()
-        payload = {'Credentials': args['Credentials']}
-        if args['ResetMailbox']:
-            payload['HackCount'] = 0
-            payload['TimeHacked'] = []
+        args = user_filter_args.parse_args(request)
+        params = get_search_params(args)
+
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        return cuc.update_pin(id=pkid, payload=payload)
+        return cuc.get_users(parameters=params)
 
 
-user_put_args = reqparse.RequestParser()
-user_put_args.add_argument('dtmfAccessId', type=int, required=False, help='Extension of the user')
-user_put_args.add_argument('DisplayName', type=str, required=False, help='User Display Name')
-user_put_args.add_argument('ListInDirectory', type=str, required=False, help='List In Directory', 
-                           choices=['true', 'false'], default='true')
-
-
-@api.route("/user/<pkid>")
+@api.route("/users/<pkid>")
+@api.param('pkid', 'The pkid of the user object')
 class cuc_user_api(Resource):
     def get(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
@@ -161,3 +144,22 @@ class cuc_user_api(Resource):
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
         return cuc.delete_user(id=pkid)
+
+
+@api.route("/users/<pkid>/credential/pin")
+@api.param('pkid', 'The pkid of the user object')
+class cuc_update_pin_api(Resource):
+    @api.expect(update_pin_args, validate=True)
+    def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Update Unity Connection user PIN credential settings using user object ID.
+        """
+        args = request.args.to_dict()
+        payload = {'Credentials': args['Credentials']}
+        if args['ResetMailbox']:
+            payload['HackCount'] = 0
+            payload['TimeHacked'] = []
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.update_pin(id=pkid, payload=payload)
