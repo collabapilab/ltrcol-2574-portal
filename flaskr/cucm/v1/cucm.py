@@ -5,7 +5,7 @@ import os
 from zeep.xsd.valueobjects import CompoundValue
 from lxml import etree
 from collections import OrderedDict
-from .axltoolkit import CUCMAxlToolkit, IMPAxlToolkit, PawsToolkit
+from .axltoolkit import CUCMAxlToolkit, PawsToolkit
 
 def serialize_object(obj, target_cls=OrderedDict):
     """
@@ -62,11 +62,11 @@ class AXL:
         self.host = host
         self.username = username
         self.password = password
-        self.axlclient = None  # This is the AXL Client Object
-        self.axl_tls_verify = False  # TLS Verify on AXL HTTPS connections
-        self.axl_version = "10.0"  # This is the default AXL version we will use
-        self.axl_timeout = 30  # Default Timeout in Seconds for AXL Queries
-        self.axl_logging = False # This controls the Logging
+        self.axlclient = None       # This is the AXL Client Object
+        self.axl_tls_verify = False # TLS Verify on AXL HTTPS connections
+        self.axl_version = "10.0"   # This is the default AXL version we will use
+        self.axl_timeout = 30       # Default Timeout in Seconds for AXL Queries
+        self.axl_logging = False    # This controls the SOAP Logging
 
     def axl_setup(func):
         @functools.wraps(func)
@@ -144,6 +144,13 @@ class AXL:
         axl_result = self.axlclient.remove_phone(name)
         return axl_result
 
+    @axl_result_check
+    @axl_setup
+    def list_phone(self, search_criteria_data= None, returned_tags=None):
+        axl_result = self.axlclient.list_phone(search_criteria_data, returned_tags)
+        if axl_result['return'] is None:
+            raise Exception("List Phone did not return any Results given the search criteria")
+        return axl_result
 class PAWS:
     """
     The CUCM PAWS class
@@ -167,10 +174,10 @@ class PAWS:
         self.username = username
         self.password = password
         self.service = service
-        self.pawsclient = None  # This is the PAWS Client Object
+        self.pawsclient = None        # This is the PAWS Client Object
         self.paws_tls_verify = False  # TLS Verify on PAWS HTTPS connections
-        self.paws_timeout = 30  # Default Timeout in Seconds for PAWS Queries
-        self.paws_logging = False # This controls the Logging
+        self.paws_timeout = 30        # Default Timeout in Seconds for PAWS Queries
+        self.paws_logging = False     # This controls the SOAP Logging
 
     def paws_setup(func):
         @functools.wraps(func)
