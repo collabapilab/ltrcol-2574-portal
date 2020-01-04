@@ -149,10 +149,22 @@ class AXL:
 
     @Decorators.axl_result_check
     @Decorators.axl_setup
+    def apply_phone(self, name=None):
+        axl_result = self.axlclient.apply_phone(name)
+        return axl_result
+
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
     def list_phone(self, search_criteria_data= None, returned_tags=None):
         axl_result = self.axlclient.list_phone(search_criteria_data, returned_tags)
         if axl_result['return'] is None:
             raise Exception("List Phone did not return any Results given the search criteria")
+        return axl_result
+    
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
+    def update_phone(self,phone_data=None):
+        axl_result = self.axlclient.update_phone(phone_data=phone_data)
         return axl_result
 class PAWS:
     """

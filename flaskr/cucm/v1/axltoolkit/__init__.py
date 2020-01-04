@@ -629,6 +629,15 @@ class CUCMAxlToolkit(AxlToolkit):
 
         return result
 
+    def apply_phone(self, name):
+        try:
+            result = self.service.applyPhone(name=name)
+        except Exception as fault:
+            result = None
+            self.last_exception = fault
+
+        return result
+
     def update_phone(self, phone_data, line_data=None):
 
         if line_data is not None:

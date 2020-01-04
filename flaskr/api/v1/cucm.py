@@ -3,7 +3,7 @@ from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields, reqparse
 from flaskr.cucm.v1.cucm import AXL, PAWS
-from flaskr.api.v1.parsers import cucm_add_phone_query_args, cucm_list_phones_returned_tags_query_args, cucm_list_phones_search_criteria_query_args
+from flaskr.api.v1.parsers import cucm_add_phone_query_args, cucm_update_phone_query_args, cucm_list_phones_returned_tags_query_args, cucm_list_phones_search_criteria_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
@@ -77,7 +77,7 @@ class cucm_add_phone_api(Resource):
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "Phone Added Successfully", 'pkid': axlresult['return']}
+        apiresult = {'success': True, 'message': "Phone Added Successfully", 'uuid': axlresult['return']}
         return jsonify(apiresult)
 @api.route("/get_phone/<device_name>")
 class cucm_get_phone_api(Resource):
@@ -103,7 +103,20 @@ class cucm_delete_phone_api(Resource):
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "Phone Successfully Deleted", 'pkid': axlresult['return']}
+        apiresult = {'success': True, 'message': "Phone Successfully Deleted", 'uuid': axlresult['return']}
+        return jsonify(apiresult)
+@api.route("/apply_phone/<device_name>")
+class cucm_apply_phone_api(Resource):
+    def put(self, device_name):
+        """
+        Applies a Phone Configuration on CUCM
+        """
+        try:
+            axlresult = myAXL.apply_phone(device_name)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Phone Configuration Applied Successfully", 'uuid': axlresult['return']}
         return jsonify(apiresult)
 @api.route("/list_phones")
 class cucm_list_phone_api(Resource):
@@ -130,8 +143,22 @@ class cucm_list_phone_api(Resource):
         return jsonify(apiresult)
 @api.route("/edit_phone/<device_name>")
 class cucm_edit_phone_api(Resource):
-    def put(self):
+    @api.expect(cucm_update_phone_query_args, validate=True)
+    def put(self, device_name):
         """
-        Updates a Phone Configuration
+        Updates a Phone Configuration on CUCM
         """
-        
+        try:
+            cucm_update_phone_query_parsed_args = cucm_update_phone_query_args.parse_args(request)
+            cucm_update_phone_query_parsed_args['name'] = device_name
+            phone_update_data = {
+                "name": device_name,
+                "description": cucm_update_phone_query_parsed_args["description"],
+                "isActive": cucm_update_phone_query_parsed_args["isActive"]
+            }
+            axlresult = myAXL.update_phone(phone_data=phone_update_data)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Phone Configuration Updated Successfully", 'uuid': axlresult['return']}
+        return jsonify(apiresult)
