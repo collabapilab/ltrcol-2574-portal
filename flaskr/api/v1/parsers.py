@@ -7,6 +7,14 @@ To document and limit what can be entered on the /api/v1/ Swagger web page
 """
 
 ### CUCM API Arguments
+# CUCM Add Phone Query arguments
+cucm_add_phone_query_args = reqparse.RequestParser()
+cucm_add_phone_query_args.add_argument('name', type=str, required=True, help='Phone Device Name', default='CSFPOD31USER1')
+cucm_add_phone_query_args.add_argument('description', type=str, required=False, help='Phone Device Description', default='CSF Device for pod31user1')
+cucm_add_phone_query_args.add_argument('ownerUserName', type=str, required=True, help='Device Owner User Name', default='pod31user1')
+cucm_add_phone_query_args.add_argument('directorynumber', type=str, required=True, help='Line 1 Directory Number', default='1111')
+cucm_add_phone_query_args.add_argument('calleridname', type=str, required=True, help='Line 1 Caller ID Name', default='Pod31 User1')
+
 # CUCM List Phones Query arguments
 cucm_list_phones_search_criteria_query_args = reqparse.RequestParser()
 cucm_list_phones_search_criteria_query_args.add_argument('name', type=str, required=False,

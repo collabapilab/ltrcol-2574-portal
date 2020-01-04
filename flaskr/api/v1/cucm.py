@@ -3,7 +3,7 @@ from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields, reqparse
 from flaskr.cucm.v1.cucm import AXL, PAWS
-from flaskr.api.v1.parsers import cucm_list_phones_returned_tags_query_args, cucm_list_phones_search_criteria_query_args
+from flaskr.api.v1.parsers import cucm_add_phone_query_args, cucm_list_phones_returned_tags_query_args, cucm_list_phones_search_criteria_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
@@ -35,74 +35,45 @@ class cucm_get_version_api(Resource):
             except KeyError:
                 pass
         return jsonify(result)
-
-cucm_directory_number_data = api.model('cucm_directory_number_data', {
-    'pattern': fields.String(description='Line Directory Number', example='1111', required=True),
-    'routePartitionName': fields.String(description='Line Partition', default='', example='', required=True)
-} )
-
-cucm_line_data = api.model('cucm_line_data', {
-    'line': fields.Nested(api.model('add_line_data1', {
-            'index': fields.Integer(example=1),
-            'dirn': fields.Nested(cucm_directory_number_data)
-    }))
-} )
-cucm_phone_data = api.model('cucm_phone_data', {
-    'name': fields.String(description='Phone Device Name', default='', example='CSFPOD31USER1', required=True),
-    'description': fields.String(description='Phone Device Description', example='CSF Device for pod31user1', required=False),
-    'product': fields.String(description='Phone Device Type', example='Cisco Unified Client Services Framework', required=True),
-    'class': fields.String(description='Device Class', example='Phone', required=True),
-    'protocol': fields.String(description='Device Protocol', example='SIP', required=True),
-    'protocolSide': fields.String(description='Device Protocol Side', example='User', required=True),
-    'commonPhoneConfigName': fields.String(description='Common Phone Config Name', example='Standard Common Phone Profile', required=True),
-    'devicePoolName': fields.String(description='Device Pool Name', example='Default', required=True),
-    'locationName': fields.String(description='Location Name', example='Hub_None', required=True),
-    'securityProfileName': fields.String(description='Security Profile Name', example='Cisco Unified Client Services Framework - Standard SIP Non-Secure Profile', required=True),
-    'sipProfileName': fields.String(description='SIP Profile Name', example='Standard SIP Profile', required=True),
-    'ownerUserName': fields.String(description='Device Owner User Name', example='pod31user1', required=True),
-    'lines': fields.Nested(cucm_line_data, required=False)
-} )
 @api.route("/add_phone")
 class cucm_add_phone_api(Resource):
-    @api.expect(cucm_phone_data, validate=True)
-    def post(self, **kwargs):
+    @api.expect(cucm_add_phone_query_args, validate=True)
+    def post(self):
         """
         Adds a new Phone to CUCM
-
-        * Send a JSON object
-
-        ```
-        {
-            "name": "CSFPOD31USER1",
-            "description": "",
-            "product": "Cisco Unified Client Services Framework",
-            "class": "Phone",
-            "protocol": "SIP",
-            "protocolSide": "User",
-            "commonPhoneConfigName": "Standard Common Phone Profile",
-            "devicePoolName": "Default",
-            "locationName": "Hub_None",
-            "securityProfileName": "Cisco Unified Client Services Framework - Standard SIP Non-Secure Profile",
-            "sipProfileName": "Standard SIP Profile",
-            "ownerUserName": "pod31user1", 
-            "lines": {
-                "line": {
-                    "index": "1",
-                    "dirn": {
-                        "pattern": "1111",
-                        "routePartitionName": ""
+        """
+        try:
+            cucm_add_phone_query_parsed_args = cucm_add_phone_query_args.parse_args(request)
+            cucm_add_phone_data_dict = {
+                "name": cucm_add_phone_query_parsed_args['name'],
+                "description": cucm_add_phone_query_parsed_args['description'],
+                "product": "Cisco Unified Client Services Framework",
+                "class": "Phone",
+                "protocol": "SIP",
+                "protocolSide": "User",
+                "commonPhoneConfigName": "Standard Common Phone Profile",
+                "devicePoolName": "Default",
+                "locationName": "Hub_None",
+                "securityProfileName": "Cisco Unified Client Services Framework - Standard SIP Non-Secure Profile",
+                "sipProfileName": "Standard SIP Profile",
+                "ownerUserName": cucm_add_phone_query_parsed_args['ownerUserName'],
+                "lines": {
+                    "line": {
+                        "index": "1",
+                        "dirn": {
+                            "pattern": cucm_add_phone_query_parsed_args['directorynumber']
+                        },
+                        "display": cucm_add_phone_query_parsed_args['calleridname'],
+                        "displayAscii": cucm_add_phone_query_parsed_args['calleridname'],
+                        "associatedEndusers": {
+                                "enduser": {
+                                    "userId": cucm_add_phone_query_parsed_args['ownerUserName']
+                                }
+                        }
                     }
                 }
             }
-        }
-        ```
-
-        * Returns a dictionary with a 'success' (boolean) element.  If success is true, then the pkid of the new Phone is returned.
-
-        """
-
-        try:
-            axlresult = myAXL.add_phone(phone_data=self.api.payload)
+            axlresult = myAXL.add_phone(phone_data=cucm_add_phone_data_dict)
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
@@ -157,10 +128,10 @@ class cucm_list_phone_api(Resource):
                      'phone_list_count': len(axlresult['return']['phone']),
                      'phone_list_data': axlresult['return']['phone']}
         return jsonify(apiresult)
-@api.route("/edit_phone")
+@api.route("/edit_phone/<device_name>")
 class cucm_edit_phone_api(Resource):
     def put(self):
         """
-        Modifies a phone device to CUCM
+        Updates a Phone Configuration
         """
-        pass
+        
