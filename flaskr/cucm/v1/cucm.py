@@ -5,7 +5,8 @@ import os
 from zeep.xsd.valueobjects import CompoundValue
 from lxml import etree
 from collections import OrderedDict
-from .axltoolkit import CUCMAxlToolkit, PawsToolkit
+from flaskr.cucm.v1.axltoolkit import CUCMAxlToolkit, PawsToolkit
+
 
 def serialize_object(obj, target_cls=OrderedDict):
     """
@@ -40,11 +41,12 @@ def serialize_object(obj, target_cls=OrderedDict):
 
     return obj
 
+
 class AXL:
     """
     The CUCM AXL class
 
-    Use this class to connect and make AXL API Calls to CUCM 
+    Use this class to connect and make AXL API Calls to CUCM
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
@@ -58,16 +60,16 @@ class AXL:
     :rtype: AXL
     """
 
-    def __init__(self, host, username, password ):
+    def __init__(self, host, username, password):
         self.host = host
         self.username = username
         self.password = password
-        self.axlclient = None       # This is the AXL Client Object
-        self.axl_tls_verify = False # TLS Verify on AXL HTTPS connections
-        self.axl_version = "10.0"   # This is the default AXL version we will use
-        self.axl_timeout = 30       # Default Timeout in Seconds for AXL Queries
-        self.axl_logging = False    # This controls the SOAP Logging
-    
+        self.axlclient = None           # This is the AXL Client Object
+        self.axl_tls_verify = False     # TLS Verify on AXL HTTPS connections
+        self.axl_version = "10.0"       # This is the default AXL version we will use
+        self.axl_timeout = 30           # Default Timeout in Seconds for AXL Queries
+        self.axl_logging = False        # This controls the SOAP Logging
+
     class Decorators(object):
         @staticmethod
         def axl_setup(func):
@@ -99,9 +101,9 @@ class AXL:
         """
         axl_test_url = "https://" + self.host + "/axl"
         r = requests.get(axl_test_url,
-                        auth=(self.username, self.password),
-                        timeout=self.axl_timeout,
-                        verify=False)
+                         auth=(self.username, self.password),
+                         timeout=self.axl_timeout,
+                         verify=False)
         if r.status_code == 404:
             raise Exception("AXL Services Not Running: " + str(r.status_code) + " - " + r.reason)
         if r.status_code == 401:
@@ -140,7 +142,7 @@ class AXL:
     def get_phone(self, name=None):
         axl_result = self.axlclient.get_phone(name)
         return axl_result
-    
+
     @Decorators.axl_result_check
     @Decorators.axl_setup
     def delete_phone(self, name=None):
@@ -155,22 +157,24 @@ class AXL:
 
     @Decorators.axl_result_check
     @Decorators.axl_setup
-    def list_phone(self, search_criteria_data= None, returned_tags=None):
+    def list_phone(self, search_criteria_data=None, returned_tags=None):
         axl_result = self.axlclient.list_phone(search_criteria_data, returned_tags)
         if axl_result['return'] is None:
             raise Exception("List Phone did not return any Results given the search criteria")
         return axl_result
-    
+
     @Decorators.axl_result_check
     @Decorators.axl_setup
-    def update_phone(self,phone_data=None):
+    def update_phone(self, phone_data=None):
         axl_result = self.axlclient.update_phone(phone_data=phone_data)
         return axl_result
+
+
 class PAWS:
     """
     The CUCM PAWS class
 
-    Use this class to connect and make PAWS API Calls to CUCM 
+    Use this class to connect and make PAWS API Calls to CUCM
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
@@ -193,7 +197,7 @@ class PAWS:
         self.paws_tls_verify = False  # TLS Verify on PAWS HTTPS connections
         self.paws_timeout = 30        # Default Timeout in Seconds for PAWS Queries
         self.paws_logging = False     # This controls the SOAP Logging
-    
+
     class Decorators(object):
         @staticmethod
         def paws_setup(func):
@@ -215,7 +219,7 @@ class PAWS:
                         raise Exception(str(self.pawsclient.last_exception))
                 return serialize_object(value)
             return paws_result_check_wrapper
-    
+
     def _paws_setup(self):
         """
         Tests and establishes PAWS connection to a given VOS device. Initializes self.pawsclient if successful
@@ -225,9 +229,9 @@ class PAWS:
         """
         paws_test_url = "https://" + self.host + "/platform-services/services/listServices"
         r = requests.get(paws_test_url,
-                        auth=(self.username, self.password),
-                        timeout=self.paws_timeout,
-                        verify=False)
+                         auth=(self.username, self.password),
+                         timeout=self.paws_timeout,
+                         verify=False)
         if r.status_code == 404:
             raise Exception("PAWS Services Not Running: " + str(r.status_code) + " - " + r.reason)
         if r.status_code == 401:
@@ -238,7 +242,7 @@ class PAWS:
                                           tls_verify=self.paws_tls_verify, timeout=self.paws_timeout)
         else:
             raise Exception("PAWS Connectivity Exception:" + str(r.status_code) + " - " + r.reason)
-    
+
     @Decorators.paws_result_check
     @Decorators.paws_setup
     def get_version(self, Version='Active'):

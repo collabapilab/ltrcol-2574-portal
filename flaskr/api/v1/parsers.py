@@ -6,7 +6,7 @@ Arguments for all API functions. Functions that have parameters will have this a
 To document and limit what can be entered on the /api/v1/ Swagger web page
 """
 
-### CUCM API Arguments
+# CUCM API Arguments
 # CUCM Add Phone Query arguments
 cucm_add_phone_query_args = reqparse.RequestParser()
 cucm_add_phone_query_args.add_argument('name', type=str, required=True, help='Phone Device Name', default='CSFPOD31USER1')
@@ -22,47 +22,38 @@ cucm_update_phone_query_args.add_argument('isActive', type=inputs.boolean, requi
 
 # CUCM List Phones Query arguments
 cucm_list_phones_search_criteria_query_args = reqparse.RequestParser()
-cucm_list_phones_search_criteria_query_args.add_argument('name', type=str, required=False,
-                        help='Name to search', default='%')
-cucm_list_phones_search_criteria_query_args.add_argument('description', type=str, required=False,
-                        help='Description to search')
-cucm_list_phones_search_criteria_query_args.add_argument('protocol', type=str, required=False, choices=[
-                        'SIP', 'SCCP'], help='Device Protocol to search')
-cucm_list_phones_search_criteria_query_args.add_argument('callingSearchSpaceName', type=str, required=False,
-                        help='Device Calling Search Space Name to search')
-cucm_list_phones_search_criteria_query_args.add_argument('devicePoolName', type=str, required=False,
-                        help='Device Pool Name to search')
-cucm_list_phones_search_criteria_query_args.add_argument('securityProfileName', type=str, required=False,
-                        help='Device Security Profile Name to search')
+cucm_list_phones_search_criteria_query_args.add_argument('name', type=str, required=False, help='Name to search', default='%')
+cucm_list_phones_search_criteria_query_args.add_argument('description', type=str, required=False, help='Description to search')
+cucm_list_phones_search_criteria_query_args.add_argument('protocol', type=str, required=False, choices=['SIP', 'SCCP'], help='Device Protocol to search')
+cucm_list_phones_search_criteria_query_args.add_argument('callingSearchSpaceName', type=str, required=False, help='Device Calling Search Space Name to search')
+cucm_list_phones_search_criteria_query_args.add_argument('devicePoolName', type=str, required=False, help='Device Pool Name to search')
+cucm_list_phones_search_criteria_query_args.add_argument('securityProfileName', type=str, required=False, help='Device Security Profile Name to search')
 
 cucm_list_phones_returned_tags_query_args = reqparse.RequestParser()
 cucm_list_phones_returned_tags_query_args.add_argument('returnedTags', type=str, required=False,
-                        help='Tags/Fields to Return (Supply a list seperated by comma) ie: name, description, product'
-                        )
+                                                       help='Tags/Fields to Return (Supply a list seperated by comma) ie: name, description, product')
 
-### Cisco Meeting Server API Arguments
+# Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
 cms_spaces_post_args.add_argument('name', type=str, required=False, help='Name of the Space')
-cms_spaces_post_args.add_argument('uri', type=str, required=False, 
+cms_spaces_post_args.add_argument('uri', type=str, required=False,
                                   help='User URI part for SIP call to reach Space')
-cms_spaces_post_args.add_argument('secondaryUri', type=str, required=False, 
+cms_spaces_post_args.add_argument('secondaryUri', type=str, required=False,
                                   help='Secondary URI for SIP call to reach Space')
-cms_spaces_post_args.add_argument('passcode', type=str, required=False, 
+cms_spaces_post_args.add_argument('passcode', type=str, required=False,
                                   help='Security code for this Space')
-cms_spaces_post_args.add_argument('defaultLayout', type=str, required=False, 
+cms_spaces_post_args.add_argument('defaultLayout', type=str, required=False,
                                   help='Default Layout for this Space',
-                                  choices=['automatic', 'allEqual', 'speakerOnly', 'telepresence', 
-                                  'stacked', 'allEqualQuarters'],
+                                  choices=['automatic', 'allEqual', 'speakerOnly', 'telepresence', 'stacked', 'allEqualQuarters'],
                                   default='automatic')
 
 cms_spaces_get_args = reqparse.RequestParser()
 cms_spaces_get_args.add_argument('filter', type=str, required=False, help='Search string')
 cms_spaces_get_args.add_argument('limit', type=int, required=False, help='How many results to return. \
   Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
-cms_spaces_get_args.add_argument('offset', type=int, required=False,
-                                  help='Return results starting with the offset specified', default=0)
+cms_spaces_get_args.add_argument('offset', type=int, required=False, help='Return results starting with the offset specified', default=0)
 
-### Cisco Unity Connection API Arguments
+# Cisco Unity Connection API Arguments
 
 cuc_importldap_post_args = reqparse.RequestParser()
 cuc_importldap_post_args.add_argument('templateAlias', type=str, required=True,
@@ -104,7 +95,7 @@ cuc_pin_cred_put_args = reqparse.RequestParser()
 cuc_pin_cred_put_args.add_argument('Credentials', type=int, required=True, help='PIN of the voicemail box')
 cuc_pin_cred_put_args.add_argument('ResetMailbox', type=bool, required=False, help='Reset mailbox', default=True)
 
-### Webex Teams API Arguments
+# Webex Teams API Arguments
 wbxt_rooms_get_args = reqparse.RequestParser()
 wbxt_rooms_get_args.add_argument('teamId', type=str, required=False, help='List rooms associated with a team, by ID')
 wbxt_rooms_get_args.add_argument('type', type=str, required=False, help='List rooms by type',

@@ -650,7 +650,7 @@ class CUCMAxlToolkit(AxlToolkit):
             self.last_exception = fault
 
         return result
-    
+
     def list_phone(self, search_Criteria_data, returned_tags=None):
         if returned_tags is None:
             returned_tags = {
@@ -782,7 +782,7 @@ class CUCMAxlToolkit(AxlToolkit):
         except Exception as fault:
             result = None
             self.last_exception = fault
-        
+
         return result
 
     """
