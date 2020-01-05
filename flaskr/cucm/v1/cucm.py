@@ -176,6 +176,8 @@ class PAWS:
 
     Use this class to connect and make PAWS API Calls to CUCM
 
+    https://developer.cisco.com/site/paws/documents/api-reference/
+
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
@@ -259,6 +261,8 @@ class SXML:
     The CUCM Serviceability XML API
 
     Use this class to connect and make Serviceability XML API Calls to CUCM
+
+    https://developer.cisco.com/docs/sxml/
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
@@ -358,3 +362,11 @@ class SXML:
     @Decorators.sxml_setup(service="realtimeservice2")
     def ris_query(self, search_criteria=None):
         return self.sxmlclient.get_service().selectCmDevice(StateInfo='', CmSelectionCriteria=search_criteria)
+
+    @Decorators.sxml_result_check
+    @Decorators.sxml_setup(service="controlcenterservice2")
+    def ccs_get_service_status(self, service_list=None):
+        # We must send at least a blank ServiceStatus so init a blank list before sending it to soapGetServiceStatus
+        if service_list is None or len(service_list) == 0:
+            service_list = [""]
+        return self.sxmlclient.get_service().soapGetServiceStatus(ServiceStatus=service_list)

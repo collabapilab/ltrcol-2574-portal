@@ -8,6 +8,7 @@ from flaskr.api.v1.parsers import cucm_update_phone_query_args
 from flaskr.api.v1.parsers import cucm_list_phones_returned_tags_query_args
 from flaskr.api.v1.parsers import cucm_list_phones_search_criteria_query_args
 from flaskr.api.v1.parsers import cucm_device_search_criteria_query_args
+from flaskr.api.v1.parsers import cucm_service_status_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
@@ -29,6 +30,7 @@ default_cucm = {
 myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['password'])
 myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
 mySXMLRisPort70Service = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'realtimeservice2')
+mySXMLControlCenterServicesService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'controlcenterservice2')
 
 
 @api.route("/get_version")
@@ -220,4 +222,31 @@ class cucm_device_search_api(Resource):
         apiresult = {'success': True, 'message': "Device Search Results Retrieved Successfully",
                      'TotalDevicesFound': risresult['SelectCmDeviceResult']['TotalDevicesFound'],
                      'ris_search_result': risresult}
+        return jsonify(apiresult)
+
+
+@api.route("/service_status")
+class cucm_service_status_api(Resource):
+    @api.expect(cucm_service_status_query_args, validate=True)
+    def get(self):
+        """
+        Perform a Service Status Query via ControlCenterServicesPort service on CUCM given the service_name
+
+        This API method executes a soapGetServiceStatus Request and sets results with returned Response data
+
+        https://developer.cisco.com/docs/sxml/#!control-center-services-api-reference
+
+        """
+        try:
+            cucm_service_status_query_parsed_args = cucm_service_status_query_args.parse_args(request)
+            service_list = None
+            if cucm_service_status_query_parsed_args['Services'] is not None:
+                services_str = cucm_service_status_query_parsed_args['Services']
+                service_list = list(map(str.strip, services_str.split(',')))
+            ccsresult = mySXMLControlCenterServicesService.ccs_get_service_status(service_list=service_list)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Service(s) Status Info Retrieved Successfully",
+                     'service_info': ccsresult}
         return jsonify(apiresult)
