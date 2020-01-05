@@ -1,3 +1,4 @@
+from lxml import etree
 from zeep import Client
 from zeep.cache import SqliteCache
 from zeep.transports import Transport
@@ -10,6 +11,26 @@ import logging
 import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+class AXLHistoryPlugin(HistoryPlugin):
+    """Simple HistoryPlugin extension for easy xml extraction"""
+
+    @staticmethod
+    def _parse_envelope(envelope):
+        return etree.tostring(envelope, encoding="unicode", pretty_print=True)
+
+    @property
+    def last_received_xml(self):
+        last_tx = self._buffer[-1]
+        if last_tx:
+            return self._parse_envelope(last_tx['received']['envelope'])
+
+    @property
+    def last_sent_xml(self):
+        last_tx = self._buffer[-1]
+        if last_tx:
+            return self._parse_envelope(last_tx['sent']['envelope'])
 
 
 class AxlToolkit:
@@ -27,13 +48,13 @@ class AxlToolkit:
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
-        self.history = HistoryPlugin()
+        self.history = AXLHistoryPlugin(maxlen=1)
 
         filedir = os.path.dirname(__file__)
         if schema_folder_path is not None:
             filedir = schema_folder_path
 
-        self.cache = SqliteCache(path='/tmp/sqlite_{0}.db'.format(server_ip), timeout=60)
+        self.cache = SqliteCache(path='/tmp/sqlite_axl_{0}.db'.format(server_ip), timeout=60)
 
         if version == '12.5':
             self.wsdl = os.path.join(filedir, 'schema/12.5/AXLAPI.wsdl')
@@ -1850,7 +1871,7 @@ class UcmServiceabilityToolkit:
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
-        self.history = HistoryPlugin()
+        self.history = HistoryPlugin(maxlen=1)
 
         self.cache = SqliteCache(path='/tmp/sqlite_serviceability_{0}.db'.format(server_ip), timeout=60)
 
@@ -1864,46 +1885,7 @@ class UcmServiceabilityToolkit:
                                                   control_svc_ip)
 
         if logging_enabled:
-            self._enable_logging()
-
-    @staticmethod
-    def _enable_logging():
-        logging.config.dictConfig({
-            'version': 1,
-            'formatters': {
-                'verbose': {
-                    'format': '%(name)s: %(message)s'
-                }
-            },
-            'handlers': {
-                'console': {
-                    'level': 'DEBUG',
-                    'class': 'logging.StreamHandler',
-                    'formatter': 'verbose',
-                },
-                'debug_file_handler': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'formatter': 'verbose',
-                    'filename': '/tmp/axltoolkit.log',
-                    "maxBytes": 10485760,
-                    "backupCount": 20,
-                    "encoding": "utf8"
-                }
-            },
-            'loggers': {
-                'zeep.transports': {
-                    'level': 'DEBUG',
-                    'propagate': True,
-                    'handlers': ['console', 'debug_file_handler'],
-                },
-            }
-        })
-        logging.basicConfig()
-        logging.getLogger().setLevel(logging.DEBUG)
-        requests_log = logging.getLogger("requests.packages.urllib3")
-        requests_log.setLevel(logging.DEBUG)
-        requests_log.propagate = True
+            AxlToolkit._enable_logging()
 
     def get_service(self):
         return self.service
@@ -1921,17 +1903,17 @@ class UcmRisPortToolkit:
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
+        self.history = HistoryPlugin(maxlen=1)
 
-        self.cache = SqliteCache(path='/tmp/sqlite_risport.db', timeout=60)
+        self.cache = SqliteCache(path='/tmp/sqlite_risport_{0}.db'.format(server_ip), timeout=60)
 
-        self.client = Client(wsdl=wsdl, transport=Transport(timeout=timeout,
-                                                            operation_timeout=timeout,
-                                                            cache=self.cache,
-                                                            session=self.session))
+        self.client = Client(wsdl=wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                    operation_timeout=timeout,
+                                                                                    cache=self.cache,
+                                                                                    session=self.session))
 
         self.service = self.client.create_service("{http://schemas.cisco.com/ast/soap}RisBinding",
-                                                  "https://{0}:8443/realtimeservice2/services/RISService70".format(
-                                                      server_ip))
+                                                  "https://{0}:8443/realtimeservice2/services/RISService70".format(server_ip))
 
         if logging_enabled:
             AxlToolkit._enable_logging()
@@ -1943,7 +1925,7 @@ class UcmRisPortToolkit:
 class UcmPerfMonToolkit:
     last_exception = None
 
-    def __init__(self, username, password, server_ip, tls_verify=True):
+    def __init__(self, username, password, server_ip, tls_verify=True, timeout=30, logging_enabled=False):
         """
         Constructor - Create new instance
         """
@@ -1952,16 +1934,21 @@ class UcmPerfMonToolkit:
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
+        self.history = HistoryPlugin(maxlen=1)
 
-        self.cache = SqliteCache(path='/tmp/sqlite_risport.db', timeout=60)
+        self.cache = SqliteCache(path='/tmp/sqlite_perfmon_{0}.db'.format(server_ip), timeout=60)
 
-        self.client = Client(wsdl=wsdl, transport=Transport(cache=self.cache, session=self.session))
+        self.client = Client(wsdl=wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                    operation_timeout=timeout,
+                                                                                    cache=self.cache,
+                                                                                    session=self.session))
 
         self.service = self.client.create_service("{http://schemas.cisco.com/ast/soap}PerfmonBinding",
                                                   "https://{0}:8443/perfmonservice2/services/PerfmonService".format(
                                                       server_ip))
 
-        # enable_logging()
+        if logging_enabled:
+            AxlToolkit._enable_logging()
 
     def get_service(self):
         return self.service
@@ -2010,7 +1997,6 @@ class UcmPerfMonToolkit:
         return result
 
     def perfmonCollectSessionData(self, session_handle):
-
         return self.service.perfmonCollectSessionData(SessionHandle=session_handle)
 
 
@@ -2068,7 +2054,7 @@ class UcmDimeGetFileToolkit:
 class PawsToolkit:
     last_exception = None
 
-    def __init__(self, username, password, server_ip, service, tls_verify=True, timeout=10):
+    def __init__(self, username, password, server_ip, service, tls_verify=True, timeout=10, logging_enabled=False):
         """
         Constructor - Create new instance
         """
@@ -2098,14 +2084,19 @@ class PawsToolkit:
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
+        self.history = HistoryPlugin(maxlen=1)
 
-        self.cache = SqliteCache(path='/tmp/sqlite_paws.db', timeout=60)
+        self.cache = SqliteCache(path='/tmp/sqlite_paws_{0}.db'.format(server_ip), timeout=60)
 
-        self.client = Client(wsdl=wsdl, transport=Transport(timeout=timeout, operation_timeout=timeout, cache=self.cache, session=self.session))
+        self.client = Client(wsdl=wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                    operation_timeout=timeout,
+                                                                                    cache=self.cache,
+                                                                                    session=self.session))
 
         self.service = self.client.create_service(binding, endpoint)
 
-        # enable_logging()
+        if logging_enabled:
+            AxlToolkit._enable_logging()
 
     def get_service(self):
         return self.service
