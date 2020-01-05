@@ -33,6 +33,13 @@ cucm_list_phones_returned_tags_query_args = reqparse.RequestParser()
 cucm_list_phones_returned_tags_query_args.add_argument('returnedTags', type=str, required=False,
                                                        help='Tags/Fields to Return (Supply a list seperated by comma) ie: name, description, product')
 
+# CUCM Device Search Query arguments
+cucm_device_search_criteria_query_args = reqparse.RequestParser()
+cucm_device_search_criteria_query_args.add_argument('Description', type=str, required=True, help='Device Description to Search (* wildcard is accepted)', default='*')
+cucm_device_search_criteria_query_args.add_argument('Status', type=str, required=True,
+                                                    choices=['Any', 'Registered', 'UnRegistered', 'Rejected', 'PartiallyRegistered', 'Unknown'],
+                                                    help='Device Status to Search', default='Any')
+
 # Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
 cms_spaces_post_args.add_argument('name', type=str, required=False, help='Name of the Space')

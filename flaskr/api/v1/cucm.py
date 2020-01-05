@@ -2,30 +2,33 @@ from flask import jsonify
 from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields, reqparse
-from flaskr.cucm.v1.cucm import AXL, PAWS
-from flaskr.api.v1.parsers import cucm_add_phone_query_args, \
-     cucm_update_phone_query_args, cucm_list_phones_returned_tags_query_args, \
-     cucm_list_phones_search_criteria_query_args
+from flaskr.cucm.v1.cucm import AXL, PAWS, SXML
+from flaskr.api.v1.parsers import cucm_add_phone_query_args
+from flaskr.api.v1.parsers import cucm_update_phone_query_args
+from flaskr.api.v1.parsers import cucm_list_phones_returned_tags_query_args
+from flaskr.api.v1.parsers import cucm_list_phones_search_criteria_query_args
+from flaskr.api.v1.parsers import cucm_device_search_criteria_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
 
-default_cucm = {
-   'host': 'cucm1a.pod31.col.lab',
-   'port': 8443,
-   'username': 'admin',
-   'password': 'c1sco123'
-}
-
 # default_cucm = {
-#    'host': '10.0.131.41',
+#    'host': 'cucm1a.pod31.col.lab',
 #    'port': 8443,
 #    'username': 'admin',
 #    'password': 'c1sco123'
 # }
 
+default_cucm = {
+   'host': '10.0.131.41',
+   'port': 8443,
+   'username': 'admin',
+   'password': 'c1sco123'
+}
+
 myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['password'])
 myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
+mySXMLRisPortService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'realtimeservice2')
 
 
 @api.route("/get_version")
@@ -183,4 +186,38 @@ class cucm_edit_phone_api(Resource):
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "Phone Configuration Updated Successfully", 'uuid': axlresult['return']}
+        return jsonify(apiresult)
+
+
+@api.route("/device_search")
+class cucm_device_search_api(Resource):
+    @api.expect(cucm_device_search_criteria_query_args, validate=True)
+    def get(self):
+        """
+        Perform a Device Search via RisPort70 (Real-Time Information Port) service on CUCM given the search criteria
+
+        This API method executes a SelectCMDevice Request and sets results with returned Response data
+
+        https://developer.cisco.com/docs/sxml/#!risport70-api-reference/selectcmdevice
+
+        """
+        try:
+            cucm_device_search_criteria_query_parsed_args = cucm_device_search_criteria_query_args.parse_args(request)
+            ris_search_criteria = {
+                'SelectBy': 'Description',
+                'MaxReturnedDevices': 1000,
+                'Status': cucm_device_search_criteria_query_parsed_args['Status'],
+                'SelectItems': [
+                    {
+                        'item': [cucm_device_search_criteria_query_parsed_args['Description']]
+                    }
+                ]
+            }
+            risresult = mySXMLRisPortService.ris_query(search_criteria=ris_search_criteria)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Device Search Results Retrieved Successfully",
+                     'TotalDevicesFound': risresult['SelectCmDeviceResult']['TotalDevicesFound'],
+                     'ris_search_result': risresult}
         return jsonify(apiresult)

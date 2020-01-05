@@ -5,7 +5,7 @@ import os
 from zeep.xsd.valueobjects import CompoundValue
 from lxml import etree
 from collections import OrderedDict
-from flaskr.cucm.v1.axltoolkit import CUCMAxlToolkit, PawsToolkit
+from flaskr.cucm.v1.axltoolkit import CUCMAxlToolkit, PawsToolkit, UcmRisPortToolkit, UcmServiceabilityToolkit
 
 
 def serialize_object(obj, target_cls=OrderedDict):
@@ -252,3 +252,109 @@ class PAWS:
             return self.pawsclient.get_inactive_version()
         else:
             raise Exception("get_version only accepts 'Active' or 'Inactive'")
+
+
+class SXML:
+    """
+    The CUCM Serviceability XML API
+
+    Use this class to connect and make Serviceability XML API Calls to CUCM
+
+    :param host: The Hostname / IP Address of the server
+    :param username: The username of an account with access to the API.
+    :param password: The password for your user account
+    :param port: (optiona) The server port for API access (default: 443)
+    :type host: String
+    :type username: String
+    :type password: String
+    :type port: Integer
+    :returns: return an SXML object
+    :rtype: SXML
+    """
+
+    def __init__(self, host, username, password, service):
+        self.host = host
+        self.username = username
+        self.password = password
+        self.service = service
+        self.sxmlclient = None        # This is the PAWS Client Object
+        self.sxml_tls_verify = False  # TLS Verify on PAWS HTTPS connections
+        self.sxml_timeout = 30        # Default Timeout in Seconds for PAWS Queries
+        self.sxml_logging = False     # This controls the SOAP Logging
+        self.service_map = {
+            "realtimeservice2": {
+                "service_test_url": "/realtimeservice2/services/listServices",
+                "toolkit": UcmRisPortToolkit
+            },
+            "controlcenterservice2": {
+                "service_test_url": "/controlcenterservice2/services/listServices",
+                "toolkit": UcmServiceabilityToolkit
+            },
+            "CDRonDemandService2": {
+                "service_test_url": "/CDRonDemandService2/services/listServices",
+                "toolkit": ""
+            },
+            "logcollectionservice2": {
+                "service_test_url": "/logcollectionservice2/services/listServices",
+                "toolkit": ""
+            },
+            "logcollectionservice": {
+                "service_test_url": "/logcollectionservice/services",
+                "toolkit": ""
+            },
+            "perfmonservice2": {
+                "service_test_url": "/perfmonservice2/services/listServices",
+                "toolkit": ""
+            }
+        }
+
+    class Decorators(object):
+        @staticmethod
+        def sxml_setup(service=None):
+            def decorator(func):
+                @functools.wraps(func)
+                def sxml_setup_check(self, *args, **kwargs):
+                    if not isinstance(self.sxmlclient, self.service_map[service]['toolkit']):
+                        self._sxml_setup(service=service)
+                    value = func(self, *args, **kwargs)
+                    return value
+                return sxml_setup_check
+            return decorator
+
+        @staticmethod
+        def sxml_result_check(func):
+            @functools.wraps(func)
+            def sxml_result_check_wrapper(self, *args, **kwargs):
+                value = func(self, *args, **kwargs)
+                if value is None:
+                    if self.sxmlclient.last_exception:
+                        raise Exception(str(self.sxmlclient.last_exception))
+                return serialize_object(value)
+            return sxml_result_check_wrapper
+
+    def _sxml_setup(self, service=None):
+        """
+        Tests and establishes UC Manager Serviceability (SXML) Service connection to a given VOS device. Initializes self.sxmlclient if successful
+
+        If given UC Manager Serviceability (SXML) Service is not running or if we are not authorized we fail
+
+        """
+        sxml_test_url = "https://" + self.host + self.service_map[service]['service_test_url']
+        r = requests.get(sxml_test_url,
+                         auth=(self.username, self.password),
+                         timeout=self.sxml_timeout,
+                         verify=False)
+        if r.status_code == 404:
+            raise Exception("SXML Services Not Running: " + str(r.status_code) + " - " + r.reason)
+        if r.status_code == 401:
+            raise Exception("SXML Authentication error " + str(r.status_code) + " - " + r.reason)
+        if r.status_code == 200:
+            self.sxmlclient = self.service_map[service]['toolkit'](
+                    username=self.username, password=self.password, server_ip=self.host, tls_verify=self.sxml_tls_verify, timeout=self.sxml_timeout)
+        else:
+            raise Exception("SXML Connectivity Exception:" + str(r.status_code) + " - " + r.reason)
+
+    @Decorators.sxml_result_check
+    @Decorators.sxml_setup(service="realtimeservice2")
+    def ris_query(self, search_criteria=None):
+        return self.sxmlclient.get_service().selectCmDevice(StateInfo='', CmSelectionCriteria=search_criteria)
