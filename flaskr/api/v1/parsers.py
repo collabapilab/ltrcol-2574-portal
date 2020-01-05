@@ -40,6 +40,11 @@ cucm_device_search_criteria_query_args.add_argument('Status', type=str, required
                                                     choices=['Any', 'Registered', 'UnRegistered', 'Rejected', 'PartiallyRegistered', 'Unknown'],
                                                     help='Device Status to Search', default='Any')
 
+# CUCM Service Status Query arguments
+cucm_service_status_query_args = reqparse.RequestParser()
+cucm_service_status_query_args.add_argument('Services', type=str, required=False,
+                                            help='List of Services seperated by commas, Leave blank to receive the service status information for all services in the system')
+
 # Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
 cms_spaces_post_args.add_argument('name', type=str, required=False, help='Name of the Space')
