@@ -1,2 +1,2 @@
 #!/bin/bash
-find . -name "*.py" -exec pycodestyle --max-line-length=120 {} \;
+find . -name "*.py" -exec pycodestyle --max-line-length=180 {} \;
