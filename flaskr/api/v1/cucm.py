@@ -28,7 +28,7 @@ default_cucm = {
 
 myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['password'])
 myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
-mySXMLRisPortService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'realtimeservice2')
+mySXMLRisPort70Service = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'realtimeservice2')
 
 
 @api.route("/get_version")
@@ -213,7 +213,7 @@ class cucm_device_search_api(Resource):
                     }
                 ]
             }
-            risresult = mySXMLRisPortService.ris_query(search_criteria=ris_search_criteria)
+            risresult = mySXMLRisPort70Service.ris_query(search_criteria=ris_search_criteria)
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
