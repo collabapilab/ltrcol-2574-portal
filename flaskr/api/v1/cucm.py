@@ -59,6 +59,10 @@ class cucm_add_phone_api(Resource):
     def post(self):
         """
         Adds a new Phone to CUCM
+
+        This API method executes an addPhone AXL Request with the supplied parameters
+
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_addPhone.html#Link284
         """
         try:
             cucm_add_phone_query_parsed_args = cucm_add_phone_query_args.parse_args(request)
@@ -79,7 +83,8 @@ class cucm_add_phone_api(Resource):
                     "line": {
                         "index": "1",
                         "dirn": {
-                            "pattern": cucm_add_phone_query_parsed_args['directorynumber']
+                            "pattern": cucm_add_phone_query_parsed_args['directorynumber'],
+                            "routePartitionName": cucm_add_phone_query_parsed_args['routepartition']
                         },
                         "display": cucm_add_phone_query_parsed_args['calleridname'],
                         "displayAscii": cucm_add_phone_query_parsed_args['calleridname'],
@@ -175,6 +180,11 @@ class cucm_edit_phone_api(Resource):
     def put(self, device_name):
         """
         Updates a Phone Configuration on CUCM
+
+        This API method executes an updatePhone AXL Request with the supplied phone_update_data parameter
+
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_updatePhone.html#Link105E
+
         """
         try:
             cucm_update_phone_query_parsed_args = cucm_update_phone_query_args.parse_args(request)
@@ -182,7 +192,8 @@ class cucm_edit_phone_api(Resource):
             phone_update_data = {
                 "name": device_name,
                 "description": cucm_update_phone_query_parsed_args["description"],
-                "isActive": cucm_update_phone_query_parsed_args["isActive"]
+                "isActive": cucm_update_phone_query_parsed_args["isActive"],
+                "callingSearchSpaceName": cucm_update_phone_query_parsed_args["callingSearchSpaceName"]
             }
             axlresult = myAXL.update_phone(phone_data=phone_update_data)
         except Exception as e:
