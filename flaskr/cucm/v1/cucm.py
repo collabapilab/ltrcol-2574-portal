@@ -5,7 +5,7 @@ import os
 from zeep.xsd.valueobjects import CompoundValue
 from lxml import etree
 from collections import OrderedDict
-from flaskr.cucm.v1.axltoolkit import CUCMAxlToolkit, PawsToolkit, UcmRisPortToolkit, UcmServiceabilityToolkit
+from flaskr.cucm.v1.axltoolkit import CUCMAxlToolkit, PawsToolkit, UcmRisPortToolkit, UcmServiceabilityToolkit, UcmPerfMonToolkit
 
 
 def serialize_object(obj, target_cls=OrderedDict):
@@ -308,7 +308,7 @@ class SXML:
             },
             "perfmonservice2": {
                 "service_test_url": "/perfmonservice2/services/listServices",
-                "toolkit": ""
+                "toolkit": UcmPerfMonToolkit
             }
         }
 
@@ -370,3 +370,10 @@ class SXML:
         if service_list is None or len(service_list) == 0:
             service_list = [""]
         return self.sxmlclient.get_service().soapGetServiceStatus(ServiceStatus=service_list)
+
+    @Decorators.sxml_result_check
+    @Decorators.sxml_setup(service="perfmonservice2")
+    def perfmon_query(self, host=None, perfmon_object=None):
+        if host is None:
+            host = self.host
+        return self.sxmlclient.perfmonCollectCounterData(host, perfmon_object)

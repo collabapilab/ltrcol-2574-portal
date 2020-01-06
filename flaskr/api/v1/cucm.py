@@ -31,6 +31,7 @@ myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['passwo
 myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
 mySXMLRisPort70Service = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'realtimeservice2')
 mySXMLControlCenterServicesService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'controlcenterservice2')
+mySXMLPerfMonService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'perfmonservice2')
 
 
 @api.route("/get_version")
@@ -249,4 +250,25 @@ class cucm_service_status_api(Resource):
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "Service(s) Status Info Retrieved Successfully",
                      'service_info': ccsresult}
+        return jsonify(apiresult)
+
+
+@api.route("/perfmon_query")
+class cucm_perfmon_query_api(Resource):
+    def get(self):
+        """
+        Perform a Perfmon Query via PerfMon service on CUCM
+
+        This API method executes a perfmonCollectCounterData Request and sets results with returned Response data
+
+        https://developer.cisco.com/docs/sxml/#!perfmon-api-reference
+
+        """
+        try:
+            perfmonresult = mySXMLPerfMonService.perfmon_query(perfmon_object="Cisco CallManager")
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
+                     'perfmon_data': perfmonresult}
         return jsonify(apiresult)

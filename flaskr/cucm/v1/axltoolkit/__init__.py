@@ -1999,6 +1999,9 @@ class UcmPerfMonToolkit:
     def perfmonCollectSessionData(self, session_handle):
         return self.service.perfmonCollectSessionData(SessionHandle=session_handle)
 
+    def perfmonCollectCounterData(self, host, perfmon_object):
+        return self.service.perfmonCollectCounterData(Host=host, Object=perfmon_object)
+
 
 class UcmLogCollectionToolkit:
     last_exception = None
