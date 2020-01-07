@@ -169,6 +169,18 @@ class AXL:
         axl_result = self.axlclient.update_phone(phone_data=phone_data)
         return axl_result
 
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
+    def get_user(self, userid=None):
+        axl_result = self.axlclient.get_user(userid=userid)
+        return axl_result
+
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
+    def update_user(self, user_data=None):
+        axl_result = self.axlclient.update_user(user_data=user_data)
+        return axl_result
+
 
 class PAWS:
     """
