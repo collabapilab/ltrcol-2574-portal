@@ -9,11 +9,9 @@ To document and limit what can be entered on the /api/v1/ Swagger web page
 # CUCM API Arguments
 # CUCM Add Phone Query arguments
 cucm_add_phone_query_args = reqparse.RequestParser()
-cucm_add_phone_query_args.add_argument('name', type=str, required=True, help='Phone Device Name', default='CSFPOD31USER2')
 cucm_add_phone_query_args.add_argument('description', type=str, required=False, help='Phone Device Description', default='Cisco Live LTRCOL2574 - pod31user2')
+cucm_add_phone_query_args.add_argument('phonetype', type=str, required=False, help='Phone Device Type', default='Cisco Unified Client Services Framework')
 cucm_add_phone_query_args.add_argument('ownerUserName', type=str, required=True, help='Device Owner User Name', default='pod31user2')
-cucm_add_phone_query_args.add_argument('directorynumber', type=str, required=True, help='Line 1 Directory Number', default='86310002')
-cucm_add_phone_query_args.add_argument('routepartition', type=str, required=True, help='Line 1 Directory Number Partition', default='DN_PT')
 cucm_add_phone_query_args.add_argument('calleridname', type=str, required=True, help='Line 1 Caller ID Name', default='Pod31 User2')
 
 # CUCM Update Phone Query arguments
