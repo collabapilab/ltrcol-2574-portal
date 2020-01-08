@@ -385,7 +385,27 @@ class SXML:
 
     @Decorators.sxml_result_check
     @Decorators.sxml_setup(service="perfmonservice2")
-    def perfmon_query(self, host=None, perfmon_object=None):
+    def perfmon_query_class(self, host=None, perfmon_class_name=None):
         if host is None:
             host = self.host
-        return self.sxmlclient.perfmonCollectCounterData(host, perfmon_object)
+        return self.sxmlclient.perfmon_collect_counter_data(host, perfmon_class_name)
+
+    @Decorators.sxml_result_check
+    @Decorators.sxml_setup(service="perfmonservice2")
+    def perfmon_open_session(self):
+        return self.sxmlclient.perfmon_open_session()
+
+    @Decorators.sxml_result_check
+    @Decorators.sxml_setup(service="perfmonservice2")
+    def perfmon_close_session(self, session_handle=None):
+        return self.sxmlclient.perfmon_close_session(session_handle)
+
+    @Decorators.sxml_result_check
+    @Decorators.sxml_setup(service="perfmonservice2")
+    def perfmon_add_counter(self, session_handle=None, counters=None):
+        return self.sxmlclient.perfmon_add_counter(session_handle, counters)
+
+    @Decorators.sxml_result_check
+    @Decorators.sxml_setup(service="perfmonservice2")
+    def perfmon_collect_session_data(self, session_handle=None):
+        return self.sxmlclient.perfmon_collect_session_data(session_handle)
