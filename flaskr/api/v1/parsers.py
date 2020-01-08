@@ -45,6 +45,11 @@ cucm_service_status_query_args = reqparse.RequestParser()
 cucm_service_status_query_args.add_argument('Services', type=str, required=False,
                                             help='List of Services seperated by commas, Leave blank to receive the service status information for all services in the system')
 
+# CUCM Perfmon Query arguments
+cucm_perfmon_query_args = reqparse.RequestParser()
+cucm_perfmon_query_args.add_argument('Counters', type=str, required=False, help='List of Performance Counters seperated by commas')
+cucm_perfmon_query_args.add_argument('Class', type=str, required=False, help='Single Perfmonance Counter Class Name')
+
 # Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
 cms_spaces_post_args.add_argument('name', type=str, required=False, help='Name of the Space')
