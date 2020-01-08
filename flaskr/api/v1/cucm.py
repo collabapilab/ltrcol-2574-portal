@@ -10,6 +10,7 @@ from flaskr.api.v1.parsers import cucm_list_phones_returned_tags_query_args
 from flaskr.api.v1.parsers import cucm_list_phones_search_criteria_query_args
 from flaskr.api.v1.parsers import cucm_device_search_criteria_query_args
 from flaskr.api.v1.parsers import cucm_service_status_query_args
+from flaskr.api.v1.parsers import cucm_perfmon_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
@@ -35,23 +36,23 @@ mySXMLControlCenterServicesService = SXML(default_cucm['host'], default_cucm['us
 mySXMLPerfMonService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'perfmonservice2')
 
 
-@api.route("/get_version")
+@api.route("/version")
 class cucm_get_version_api(Resource):
     def get(self):
         """
         Returns CUCM Active Software version
+
+        This API method utilizes getActiveVersion PAWS requests along with the supplied parameters
+        <br>
+        https://developer.cisco.com/site/paws/documents/api-reference/
         """
         try:
             version_info = myPAWSVersionService.get_version()
         except Exception as e:
             result = {'success': False, 'message': str(e)}
             return jsonify(result)
-        if version_info['version']:
-            try:
-                result = {'success': True, 'version': version_info['version']}
-            except KeyError:
-                pass
-        return jsonify(result)
+        apiresult = {'success': True, 'message': "CUCM Active Version Retrieved Successfully", 'version': version_info['version']}
+        return jsonify(apiresult)
 
 
 @api.route("/phone/<string:device_name>")
@@ -267,8 +268,28 @@ class cucm_device_search_api(Resource):
         return jsonify(apiresult)
 
 
-@api.route("/service_status")
-class cucm_service_status_api(Resource):
+@api.route("/user/<string:user_name>")
+@api.param('user_name', description='CUCM User Name')
+class cucm_user_api(Resource):
+    def get(self, user_name):
+        """
+        Retrieves a Phone device configuration from CUCM
+
+        This API method executes an getPhone AXL Request with the supplied device_name
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getPhone.html
+        """
+        try:
+            axlresult = myAXL.get_user(user_name)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "User Data Retrieved Successfully", 'user_data': axlresult['return']['user']}
+        return jsonify(apiresult)
+
+
+@api.route("/service")
+class cucm_service_api(Resource):
     @api.expect(cucm_service_status_query_args, validate=True)
     def get(self):
         """
@@ -294,22 +315,39 @@ class cucm_service_status_api(Resource):
         return jsonify(apiresult)
 
 
-@api.route("/perfmon_query")
-class cucm_perfmon_query_api(Resource):
+@api.route("/perfmon")
+class cucm_perfmon_api(Resource):
+    @api.expect(cucm_perfmon_query_args, validate=True)
     def get(self):
         """
         Perform a Perfmon Query via PerfMon service on CUCM
 
-        This API method executes a perfmonCollectCounterData Request and sets results with returned Response data
+        This API method executes multiple PerfMon API requests to get the Performance Counters values and sets results with returned Response data
 
         https://developer.cisco.com/docs/sxml/#!perfmon-api-reference
 
         """
         try:
-            perfmonresult = mySXMLPerfMonService.perfmon_query(perfmon_object="Cisco CallManager")
+            cucm_perfmon_query_args_parsed_args = cucm_perfmon_query_args.parse_args(request)
+            if cucm_perfmon_query_args_parsed_args['Class']:
+                perfmon_class_result = mySXMLPerfMonService.perfmon_query_class(perfmon_class_name=cucm_perfmon_query_args_parsed_args['Class'])
+            else:
+                perfmon_class_result = None
+            if cucm_perfmon_query_args_parsed_args['Counters']:
+                perfmon_counters_str = cucm_perfmon_query_args_parsed_args['Counters']
+                perfmon_counters = list(map(str.strip, perfmon_counters_str.split(',')))
+                perfmon_session_handle = mySXMLPerfMonService.perfmon_open_session()
+                if not mySXMLPerfMonService.perfmon_add_counter(session_handle=perfmon_session_handle, counters=perfmon_counters):
+                    mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
+                    raise Exception(f"Failed to Query Counters: {perfmon_counters}")
+                perfmon_counters_result = mySXMLPerfMonService.perfmon_collect_session_data(session_handle=perfmon_session_handle)
+                mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
+            else:
+                perfmon_counters_result = None
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
-                     'perfmon_data': perfmonresult}
+                     'perfmon_class_data': perfmon_class_result,
+                     'perfmon_counters_result': perfmon_counters_result}
         return jsonify(apiresult)
