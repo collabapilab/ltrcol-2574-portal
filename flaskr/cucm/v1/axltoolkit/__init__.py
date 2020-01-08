@@ -1957,6 +1957,9 @@ class UcmPerfMonToolkit:
         session_handle = self.service.perfmonOpenSession()
         return session_handle
 
+    def perfmon_close_session(self, session_handle):
+        return self.service.perfmonCloseSession(SessionHandle=session_handle)
+
     def perfmon_add_counter(self, session_handle, counters):
         """
         :param session_handle: A session Handle returned from perfmonOpenSession()
@@ -1996,10 +1999,10 @@ class UcmPerfMonToolkit:
 
         return result
 
-    def perfmonCollectSessionData(self, session_handle):
+    def perfmon_collect_session_data(self, session_handle):
         return self.service.perfmonCollectSessionData(SessionHandle=session_handle)
 
-    def perfmonCollectCounterData(self, host, perfmon_object):
+    def perfmon_collect_counter_data(self, host, perfmon_object):
         return self.service.perfmonCollectCounterData(Host=host, Object=perfmon_object)
 
 
