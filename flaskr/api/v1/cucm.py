@@ -316,11 +316,11 @@ class cucm_service_api(Resource):
 
 
 @api.route("/perfmon")
-class cucm_perfmon_api(Resource):
+class cucm_perfmon_api(Resource):   
     @api.expect(cucm_perfmon_query_args, validate=True)
     def get(self):
         """
-        Perform a Perfmon Query via PerfMon service on CUCM
+        Perform a Perfmon Query via PerfMon service on CUCM via Query String
 
         This API method executes multiple PerfMon API requests to get the Performance Counters values and sets results with returned Response data
 
@@ -350,4 +350,33 @@ class cucm_perfmon_api(Resource):
         apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
                      'perfmon_class_data': perfmon_class_result,
                      'perfmon_counters_result': perfmon_counters_result}
+        return jsonify(apiresult)
+
+    perfmon_post_data = api.model('perfmon_post_data', {
+        "perfmon_counters": fields.List(fields.String(description='Performance Counter Name',
+                                                      example='\\\\cucm1a.pod31.col.lab\\Cisco CallManager\\RegisteredOtherStationDevices', required=False))
+    })
+
+    @api.expect(perfmon_post_data, validate=True)
+    def post(self):
+        """
+        Perform a Perfmon Query via PerfMon service on CUCM via Request Body
+
+        This API method executes multiple PerfMon API requests to get the Performance Counters values and sets results with returned Response data
+
+        https://developer.cisco.com/docs/sxml/#!perfmon-api-reference
+
+        """
+        try:
+            perfmon_session_handle = mySXMLPerfMonService.perfmon_open_session()
+            if not mySXMLPerfMonService.perfmon_add_counter(session_handle=perfmon_session_handle, counters=api.payload['perfmon_counters']):
+                mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
+                raise Exception(f"Failed to Query Counters: {api.payload['perfmon_counters']}")
+            perfmon_counters_result = mySXMLPerfMonService.perfmon_collect_session_data(session_handle=perfmon_session_handle)
+            mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
+                    'perfmon_counters_result': perfmon_counters_result}
         return jsonify(apiresult)
