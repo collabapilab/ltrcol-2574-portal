@@ -316,7 +316,7 @@ class cucm_service_api(Resource):
 
 
 @api.route("/perfmon")
-class cucm_perfmon_api(Resource):   
+class cucm_perfmon_api(Resource):
     @api.expect(cucm_perfmon_query_args, validate=True)
     def get(self):
         """
@@ -378,5 +378,5 @@ class cucm_perfmon_api(Resource):
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
-                    'perfmon_counters_result': perfmon_counters_result}
+                     'perfmon_counters_result': perfmon_counters_result}
         return jsonify(apiresult)
