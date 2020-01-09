@@ -45,8 +45,7 @@ class CUPI(REST):
 
         :param api_method:  The API method, such as "users" that will be used with the existing base_url to form a
                             complete url, such as "/vmrest/users"
-        :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}, which would become
-                            "?filter=sales" as part of the URL.
+        :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}
         :param payload:     The payload to be sent, typically with a POST or PUT
         :param http_method: The request verb. CUPI only supports 'GET', 'PUT', 'POST', and 'DELETE'
         :type method: String
@@ -66,17 +65,16 @@ class CUPI(REST):
             # Check for non-2XX response code
             resp = self._check_response(resp)
             resp = self._cupi_parse_response(resp)
-
         return resp
 
     def _cupi_parse_response(self, raw_resp):
         '''
         Return a parsed dictionary with the response from the raw response from _cupi_request.
 
-        This function takes a raw response from _cupi_request and attempts to convert the response key
-        to a dict type (from its original Response type).  Within this response, based on the @total
-        key, the contents may either be a list of dictionaries or just a dictionary (if @total=1).
-        For ease of processing later on, we will always return a list of dictionaries.
+        This function parses the a raw response from _cupi_request and returns:
+          -  success indication
+          -  message with any string payload returned  
+          -  response payload in a dict
 
         :param raw_resp: Dictionary with minimally the following key:
            'response' :rtype:requests.models.Response: The raw response from the requests library.
@@ -85,18 +83,25 @@ class CUPI(REST):
         :returns: return a dictionary with the following keys:
            'success' :rtype:Bool:  Whether the response received from the server is deemed a success
            'message' :rtype:String: Contains error information, either from the server or from the CMS, if available
-           'response' :rtype:Dict: The parsed response, converted from the XML of the raw response.
+           'response' :rtype:Dict: The parsed response, converted from the raw response.
         :rtype: Dict
         '''
         result = {'success': raw_resp['success'], 'message': raw_resp['message'], 'response': ''}
         try:
-            # Attempt to parse the response into JSON format from the Response type from the requests
-            # module to a dictionary
-            parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
+            # Could not decode as JSON; convert the binary response to a string type
+            response_string = raw_resp['response'].content.decode('utf-8')
+
+            # Attempt to convert the response string into a dict using json.loads 
+            parsed_response = json.loads(response_string)
+
+            # Convert Response payload ("content") from byte type into string-, the to dict using json.loads
+            # parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
             try:
-                # check if there is only one element, meaning xmltodict would not have created a list
+                # From most responses, @total key will indicate how many items were found. If @total=1,
+                # the data included under child key will be a dict; if @total>1, then a list of dicts. 
+                # We would like to always return a list of dicts, even if there's only one item in the list.
                 if(str(parsed_response["@total"]) == "1"):
-                    # Get the child key nested under the root (e.g. 'Users')
+                    # Find the child key nested under the root (e.g. 'Users'), ignoring '@total' key
                     rootobj = [key for key in parsed_response.keys() if key not in '@total'][0]
                     # Force the child element to be a list
                     parsed_response[rootobj] = [parsed_response[rootobj]]
@@ -107,17 +112,16 @@ class CUPI(REST):
             # Replace the response value with our parsed_response
             result['response'] = parsed_response
 
+        # Could not decode response string into a dict using json.loads
         except json.decoder.JSONDecodeError:
-            # Could not decode as JSON;  raw response was likely a binary string; convert it to regular string type.
-            decoded_response = raw_resp['response'].content.decode()
-            # This string may be a a string response, as in after a valid POST. Or it could be an error web page.
-            # If it's the latter, look for an Exception tag to give us more information.
+            # This may be a normal response, as for a valid POST/PUT. Or it could be an error web 
+            # page from Unity. If it's the latter, look for an Exception tag to give us more information.
             regex = r"<b>\s*Exception:\s*</b>\s*<pre>\s*(.*?)\s+</pre>"
-            exception_match = re.search(regex, decoded_response)
+            exception_match = re.search(regex, response_string)
             if exception_match:
                 result['message'] = exception_match[1]
             else:
-                result['message'] = decoded_response
+                result['message'] = response_string
 
         return result
 

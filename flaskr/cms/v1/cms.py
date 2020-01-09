@@ -1,9 +1,10 @@
 import xmltodict
 import json
 import urllib.parse
-import xml.etree.ElementTree as ET
+# import xml.etree.ElementTree as ET
 from flaskr.rest.v1.rest import REST
 from base64 import b64encode
+import requests.exceptions
 import xml.parsers.expat
 
 
@@ -16,7 +17,7 @@ class CMS(REST):
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
-    :param port: (optiona) The server port for API access (default: 443)
+    :param port: (optional) The server port for API access (default: 443)
     :type host: String
     :type username: String
     :type password: String
@@ -85,7 +86,7 @@ class CMS(REST):
             "tenantParticipantLimitReached": "You tried to add a new participant beyond the maximum number allowed for the owning tenant",
             "tooManyCdrReceivers": "You tried to add a new CDR receiver when the maximum number were already present. R1.8 supports up to 2 CDR receivers",
             "tooManyLdapSyncs": "A method to create a new LDAP synchronization method failed. Try again later",
-            "unrecognisedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you specified the wrong object ID in the URI",
+            "66unrecognisedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you specified the wrong object ID in the URI",
             "userDoesNotExist": "You tried to modify or remove a user using an ID that did not correspond to a valid user",
             "userProfileDoesNotExist": "You tried to modify a user profile using an ID that did not correspond to a valid user profile"
         }
@@ -97,8 +98,7 @@ class CMS(REST):
 
         :param api_method:  The API method, such as "coSpaces" that will be used with the existing base_url to form a
                             complete url, such as "/api/v1/coSpaces"
-        :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}, which would become
-                            "?filter=sales" as part of the URL.
+        :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}
         :param payload:     The payload to be sent, typically with a POST or PUT
         :param http_method: The request verb. CMS only supports 'GET', 'PUT', 'POST', and 'DELETE'
         :type method: String
@@ -111,7 +111,7 @@ class CMS(REST):
            'response' :rtype:Dict:   The parsed response, converted from the XML of the raw response.
         :rtype: Dict
         '''
-        # Change the parameters from dictionary to an encoded string
+        # Change the parameters from dictionary to an url-encoded string
         parameters = urllib.parse.urlencode(parameters)
 
         resp = self._send_request(api_method, parameters=parameters, payload=payload, http_method=http_method)
@@ -134,62 +134,67 @@ class CMS(REST):
         :rtype Dict
 
         :returns: return a dictionary with the following keys:
-           'success' :rtype:Bool:  Whether the response received from the server is deemed a success
-           'message' :rtype:String: Contains error information, either from the server or from the CMS, if available
+           'success'  :rtype:Bool:  Whether the response received from the server is deemed a success
+           'message'  :rtype:String: Contains error information, either from the server or from the CMS, if available
            'response' :rtype:Dict: The parsed response, converted from the XML of the raw response.
         :rtype: Dict
         '''
-        result = {'success': False, 'message': '', 'response': ''}
+        result = {'success': raw_resp['success'], 'message': raw_resp['message'], 'response': ''}
+        
         try:
-            result['success'] = raw_resp['success']
+            # Convert the binary encoded XML to a OrderedDict using xmltodict.parse
+            parsed_response = xmltodict.parse(raw_resp['response'].content.decode("utf-8"))
+            
+            # Get the root key from the dictionary (e.g. 'coSpaces')
+            rootobj = list(parsed_response.keys())[0]
 
-            if raw_resp['response'].status_code in list(range(200, 300)):
-                # Convert the XML to a OrderedDict
-                parsed_response = xmltodict.parse(raw_resp['response'].content.decode("utf-8"))
+            # Check if we had returned a 200-299 response code
+            if result['success']:
                 try:
-                    # Get the root key from the dictionary (e.g. 'coSpaces')
-                    rootobj = list(parsed_response.keys())[0]
-
-                    # check if there is only one element, meaning xmltodict would not have created a list of dicts
+                    # check if there is only one element, @total will be 1.  in that case, xmltodict
+                    # would not have created a list of dicts
                     if(parsed_response[rootobj]["@total"] == "1"):
                         # Get the child key nested under the root (e.g. 'coSpace')
                         childobj = list(parsed_response[rootobj].keys())[1]
                         # Force the child element to be a list
-                        parsed_response = xmltodict.parse(raw_resp['response'].content, force_list={childobj: True})
+                        parsed_response = xmltodict.parse(
+                            raw_resp['response'].content, force_list={childobj: True})
 
                 # The @total key does not exist; just return the result
                 except KeyError:
                     pass
                 # Replace the response value with our parsed_response, converting the OrderedDict to dict
                 result['response'] = json.loads(json.dumps(parsed_response))
+
             else:
-                # Error codes for CMS. These are returned with a 400 response code
-                try:
-                    # Parse the response to get the error buried in the XML
-                    rootobj = ET.fromstring(raw_resp['response'].content)
-                    error_tag = rootobj[0].tag
+                # Error codes for CMS. These are returned with a 400 response code with a rootobj=failureDetails
+                if rootobj == 'failureDetails':
+                    error_tag = list(parsed_response[rootobj].keys())[0]
                     try:
                         # Map a known CMS error code
-                        result['message'] = error_tag + ': ' + self.error_codes[error_tag] + \
-                                            ' : URL:' + raw_resp['response'].request.url
+                        result['message'] = '{}: {}.  URL={}'.format(error_tag,
+                                                                     self.error_codes[error_tag], 
+                                                                     raw_resp['response'].request.url)
                     except KeyError:
-                        # We couldn't map that error code, so just return the tag
+                        # We couldn't map that error tag to a known code, so just return the tag
                         result['message'] = error_tag
-                except IndexError:
-                    # We couldn't find the root element item
-                    pass
-                except ET.ParseError:
-                    # We couldn't parse the XML received from CMS
-                    result['success'] = False
-                    result['message'] = 'Invalid XML received from server'
+                else:
+                    # Unknown root object
+                    result['message'] = 'Unknown root object: {}'.format(rootobj)
+                    result['response'] = json.loads(json.dumps(parsed_response))
 
+        # No XML found in the response. check the Location header and return it, if present
         except xml.parsers.expat.ExpatError:
             try:
                 # Return the string from the location header, if present
-                result['message'] = raw_resp['response'].headers['location'].split(
-                                    "/")[len(raw_resp['response'].headers['location'].split("/"))-1]
+                location = raw_resp['response'].headers['location'].split("/")[len(
+                                    raw_resp['response'].headers['location'].split("/"))-1]
+                result['response'] = location
             except:
                 pass
+        except Exception as e:
+            result['message'] = 'Failed to decode response content: \
+                                 {}.  URL={}'.format(e, raw_resp['response'].request.url)
 
         return result
 
