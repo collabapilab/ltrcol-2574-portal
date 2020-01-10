@@ -1,4 +1,5 @@
 import re
+from time import sleep
 from flask import jsonify
 from flask import request
 from flask import Blueprint
@@ -13,7 +14,6 @@ from flaskr.api.v1.parsers import cucm_service_status_query_args
 from flaskr.api.v1.parsers import cucm_perfmon_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
-
 
 # default_cucm = {
 #    'host': 'cucm1a.pod31.col.lab',
@@ -317,10 +317,18 @@ class cucm_service_api(Resource):
 
 @api.route("/perfmon")
 class cucm_perfmon_api(Resource):
-    @api.expect(cucm_perfmon_query_args, validate=True)
-    def get(self):
+    # CUCM Perfmon Query Model
+
+    cucm_perfmon_post_data = api.model('perfmon_post_data', {
+        "perfmon_class": fields.String(description='Performance Class Name', example='Cisco SIP Stack', required=False),
+        "perfmon_counters": fields.List(fields.String(description='Performance Counter Name',
+                                                      example='\\\\cucm1a.pod31.col.lab\\Cisco CallManager\\RegisteredOtherStationDevices', required=False))
+    })
+
+    @api.expect(cucm_perfmon_post_data, validate=True)
+    def post(self):
         """
-        Perform a Perfmon Query via PerfMon service on CUCM via Query String
+        Query Performance Counters via PerfMon service on CUCM
 
         This API method executes multiple PerfMon API requests to get the Performance Counters values and sets results with returned Response data
 
@@ -328,19 +336,21 @@ class cucm_perfmon_api(Resource):
 
         """
         try:
-            cucm_perfmon_query_args_parsed_args = cucm_perfmon_query_args.parse_args(request)
-            if cucm_perfmon_query_args_parsed_args['Class']:
-                perfmon_class_result = mySXMLPerfMonService.perfmon_query_class(perfmon_class_name=cucm_perfmon_query_args_parsed_args['Class'])
+            if not ('perfmon_class' in api.payload or 'perfmon_counters' in api.payload):
+                raise Exception(f"perfmon_class or perfmon_counters are required in the payload")
+            if api.payload.get('perfmon_class'):
+                perfmon_class_result = mySXMLPerfMonService.perfmon_query_class(perfmon_class_name=api.payload['perfmon_class'])
             else:
                 perfmon_class_result = None
-            if cucm_perfmon_query_args_parsed_args['Counters']:
-                perfmon_counters_str = cucm_perfmon_query_args_parsed_args['Counters']
-                perfmon_counters = list(map(str.strip, perfmon_counters_str.split(',')))
+            if api.payload.get('perfmon_counters'):
                 perfmon_session_handle = mySXMLPerfMonService.perfmon_open_session()
-                if not mySXMLPerfMonService.perfmon_add_counter(session_handle=perfmon_session_handle, counters=perfmon_counters):
+                if not mySXMLPerfMonService.perfmon_add_counter(session_handle=perfmon_session_handle, counters=api.payload['perfmon_counters']):
                     mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
-                    raise Exception(f"Failed to Query Counters: {perfmon_counters}")
+                    raise Exception(f"Failed to Query Counters: {api.payload['perfmon_counters']}")
                 perfmon_counters_result = mySXMLPerfMonService.perfmon_collect_session_data(session_handle=perfmon_session_handle)
+                if any(("%" in counter) or ("Percentage" in counter) for counter in api.payload['perfmon_counters']):
+                    sleep(5)
+                    perfmon_counters_result = mySXMLPerfMonService.perfmon_collect_session_data(session_handle=perfmon_session_handle)
                 mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
             else:
                 perfmon_counters_result = None
@@ -348,35 +358,6 @@ class cucm_perfmon_api(Resource):
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
-                     'perfmon_class_data': perfmon_class_result,
-                     'perfmon_counters_result': perfmon_counters_result}
-        return jsonify(apiresult)
-
-    perfmon_post_data = api.model('perfmon_post_data', {
-        "perfmon_counters": fields.List(fields.String(description='Performance Counter Name',
-                                                      example='\\\\cucm1a.pod31.col.lab\\Cisco CallManager\\RegisteredOtherStationDevices', required=False))
-    })
-
-    @api.expect(perfmon_post_data, validate=True)
-    def post(self):
-        """
-        Perform a Perfmon Query via PerfMon service on CUCM via Request Body
-
-        This API method executes multiple PerfMon API requests to get the Performance Counters values and sets results with returned Response data
-
-        https://developer.cisco.com/docs/sxml/#!perfmon-api-reference
-
-        """
-        try:
-            perfmon_session_handle = mySXMLPerfMonService.perfmon_open_session()
-            if not mySXMLPerfMonService.perfmon_add_counter(session_handle=perfmon_session_handle, counters=api.payload['perfmon_counters']):
-                mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
-                raise Exception(f"Failed to Query Counters: {api.payload['perfmon_counters']}")
-            perfmon_counters_result = mySXMLPerfMonService.perfmon_collect_session_data(session_handle=perfmon_session_handle)
-            mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
-        except Exception as e:
-            apiresult = {'success': False, 'message': str(e)}
-            return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
+                     'perfmon_class_result': perfmon_class_result,
                      'perfmon_counters_result': perfmon_counters_result}
         return jsonify(apiresult)
