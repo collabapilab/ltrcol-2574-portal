@@ -50,8 +50,17 @@ class cuc_import_ldapuser_api(Resource):
         Import LDAP user to Unity Connection.
         """
         args = request.args.to_dict()
+            
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
+
+        if args['userid']:
+            # Look up pkid from user ID
+            params = {'query': '(alias is {})'.format(args['userid'])}
+            user = cuc.get_ldapusers(parameters=params)
+            if user['response']['@total'] == '1':
+                args['pkid'] = user['response']['ImportUser'][0]['pkid']
+
         return cuc.import_ldapuser(parameters={'templateAlias': args['templateAlias']}, payload=args)
 
 

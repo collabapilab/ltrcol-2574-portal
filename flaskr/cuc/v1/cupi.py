@@ -1,7 +1,7 @@
 import json
 import re
-from flaskr.rest.v1.rest import REST
 from base64 import b64encode
+from flaskr.rest.v1.rest import REST
 
 
 class CUPI(REST):
@@ -20,7 +20,6 @@ class CUPI(REST):
     :type port: Integer
     :returns: return an CUPI object
     :rtype: CUPI
-
     '''
 
     def __init__(self, host, username, password, port=443):
@@ -62,7 +61,6 @@ class CUPI(REST):
                                   payload=json.dumps(payload), http_method=http_method)
 
         if resp['success']:
-            # Check for non-2XX response code
             resp = self._check_response(resp)
             resp = self._cupi_parse_response(resp)
         return resp
@@ -87,41 +85,47 @@ class CUPI(REST):
         :rtype: Dict
         '''
         result = {'success': raw_resp['success'], 'message': raw_resp['message'], 'response': ''}
-        try:
-            # Could not decode as JSON; convert the binary response to a string type
-            response_string = raw_resp['response'].content.decode('utf-8')
-
-            # Attempt to convert the response string into a dict using json.loads 
-            parsed_response = json.loads(response_string)
-
-            # Convert Response payload ("content") from byte type into string-, the to dict using json.loads
-            # parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
+        # Check if the payload had any data to decode
+        if len(raw_resp['response'].content) > 0:
             try:
-                # From most responses, @total key will indicate how many items were found. If @total=1,
-                # the data included under child key will be a dict; if @total>1, then a list of dicts. 
-                # We would like to always return a list of dicts, even if there's only one item in the list.
-                if(str(parsed_response["@total"]) == "1"):
-                    # Find the child key nested under the root (e.g. 'Users'), ignoring '@total' key
-                    rootobj = [key for key in parsed_response.keys() if key not in '@total'][0]
-                    # Force the child element to be a list
-                    parsed_response[rootobj] = [parsed_response[rootobj]]
+                # Could not decode as JSON; convert the binary response to a string type
+                response_string = raw_resp['response'].content.decode('utf-8')
 
-            # The @total key does not exist; just return the result
-            except KeyError:
-                pass
-            # Replace the response value with our parsed_response
-            result['response'] = parsed_response
+                # Attempt to convert the response string into a dict using json.loads 
+                parsed_response = json.loads(response_string)
 
-        # Could not decode response string into a dict using json.loads
-        except json.decoder.JSONDecodeError:
-            # This may be a normal response, as for a valid POST/PUT. Or it could be an error web 
-            # page from Unity. If it's the latter, look for an Exception tag to give us more information.
-            regex = r"<b>\s*Exception:\s*</b>\s*<pre>\s*(.*?)\s+</pre>"
-            exception_match = re.search(regex, response_string)
-            if exception_match:
-                result['message'] = exception_match[1]
-            else:
-                result['message'] = response_string
+                # Convert Response payload ("content") from byte type into string-, the to dict using json.loads
+                # parsed_response = json.loads(raw_resp['response'].content.decode("utf-8"))
+                try:
+                    # From most responses, @total key will indicate how many items were found. If @total=1,
+                    # the data included under child key will be a dict; if @total>1, then a list of dicts. 
+                    # We would like to always return a list of dicts, even if there's only one item in the list.
+                    if(str(parsed_response["@total"]) == "1"):
+                        # Find the child key nested under the root (e.g. 'Users'), ignoring '@total' key
+                        rootobj = [key for key in parsed_response.keys() if key not in '@total'][0]
+                        # Force the child element to be a list
+                        parsed_response[rootobj] = [parsed_response[rootobj]]
+
+                # The @total key does not exist; just return the result
+                except KeyError:
+                    # There was likely an error that we can supply in the message
+                    try:
+                        result['message'] = parsed_response['errors']['message']
+                    except KeyError:
+                        pass
+                # Replace the response value with our parsed_response
+                result['response'] = parsed_response
+
+            # Could not decode response string into a dict using json.loads
+            except json.decoder.JSONDecodeError:
+                # This may be a normal response, as for a valid POST/PUT. Or it could be an error web 
+                # page from Unity. If it's the latter, look for an Exception tag to give us more information.
+                regex = r"<b>\s*Exception:\s*</b>\s*<pre>\s*(.*?)\s+</pre>"
+                exception_match = re.search(regex, response_string)
+                if exception_match:
+                    result['message'] = exception_match[1]
+                else:
+                    result['message'] = response_string
 
         return result
 
@@ -148,7 +152,7 @@ class CUPI(REST):
         Get a list of users on the Unity Connection system.
 
         Reference:
-        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
+        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_0100000.html?bookSearch=true#topic_36335E29259643BB95306CC1D90649CF
         '''
         return self._cupi_request("import/users/ldap", parameters=parameters, payload=payload, http_method='POST')
 
@@ -157,7 +161,7 @@ class CUPI(REST):
         Get a voicemail user from the Unity Connection system by user id.
 
         Reference:
-        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
+        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_0111.html#id_38638
         '''
         return self._cupi_request("users/" + str(id))
 
@@ -166,7 +170,7 @@ class CUPI(REST):
         Modify a user on the Unity Connection system.
 
         Reference:
-        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
+        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_0111.html#id_38642
         '''
         return self._cupi_request("users/" + str(id), payload=payload, http_method='PUT')
 
@@ -175,7 +179,7 @@ class CUPI(REST):
         Delete a user from the Unity Connection system.
 
         Reference:
-        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011101.html#reference_E4DD44846143441C8FB01478AB71476B
+        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_0111.html#id_38644
         '''
         return self._cupi_request("users/" + str(id), http_method='DELETE')
 
@@ -189,7 +193,6 @@ class CUPI(REST):
         }
 
         Reference:
-        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011110.html#reference_B32245DBC67A42228AA514C41D708368
+        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011110.html?bookSearch=true#reference_B32245DBC67A42228AA514C41D708368
         '''
-
         return self._cupi_request('users/' + str(id) + '/credential/pin', payload=payload, http_method='PUT')

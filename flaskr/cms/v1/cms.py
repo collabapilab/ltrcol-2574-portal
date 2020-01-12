@@ -1,11 +1,8 @@
-import xmltodict
 import json
-import urllib.parse
-# import xml.etree.ElementTree as ET
+import xmltodict
+import xml.parsers.expat
 from flaskr.rest.v1.rest import REST
 from base64 import b64encode
-import requests.exceptions
-import xml.parsers.expat
 
 
 class CMS(REST):
@@ -111,10 +108,9 @@ class CMS(REST):
            'response' :rtype:Dict:   The parsed response, converted from the XML of the raw response.
         :rtype: Dict
         '''
-        # Change the parameters from dictionary to an url-encoded string
-        parameters = urllib.parse.urlencode(parameters)
 
-        resp = self._send_request(api_method, parameters=parameters, payload=payload, http_method=http_method)
+        resp = self._send_request(api_method, parameters=parameters, 
+                                  payload=payload, http_method=http_method)
         if resp['success']:
             resp = self._check_response(resp)
             resp = self._cms_parse_response(resp)
@@ -173,8 +169,8 @@ class CMS(REST):
                     try:
                         # Map a known CMS error code
                         result['message'] = '{}: {}.  URL={}'.format(error_tag,
-                                                                     self.error_codes[error_tag], 
-                                                                     raw_resp['response'].request.url)
+                                                                    self.error_codes[error_tag], 
+                                                                    raw_resp['response'].request.url)
                     except KeyError:
                         # We couldn't map that error tag to a known code, so just return the tag
                         result['message'] = error_tag
@@ -194,7 +190,7 @@ class CMS(REST):
                 pass
         except Exception as e:
             result['message'] = 'Failed to decode response content: \
-                                 {}.  URL={}'.format(e, raw_resp['response'].request.url)
+                                {}.  URL={}'.format(e, raw_resp['response'].request.url)
 
         return result
 

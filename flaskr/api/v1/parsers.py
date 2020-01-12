@@ -76,8 +76,10 @@ cuc_importldap_post_args = reqparse.RequestParser()
 cuc_importldap_post_args.add_argument('templateAlias', type=str, required=True,
                                       help='User template alias',
                                       default='voicemailusertemplate')
-cuc_importldap_post_args.add_argument('pkid', type=str, required=True,
+cuc_importldap_post_args.add_argument('pkid', type=str, required=False,
                                       help='PKID of the user to be imported')
+cuc_importldap_post_args.add_argument('userid', type=str, required=False,
+                                      help='User ID of the user to be imported')
 cuc_importldap_post_args.add_argument('IsVmEnrolled', type=str, required=False,
                                       help='Play initial enrollment conversation (to record a name, request \
                                             password, etc)',
