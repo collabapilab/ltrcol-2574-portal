@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Namespace, Resource
-from flaskr.config import default_cuc
+from flaskr.api.v1.config import default_cuc
 from flaskr.cuc.v1.cupi import CUPI
 from flaskr.api.v1.parsers import cuc_users_get_args, cuc_users_put_args, cuc_importldap_post_args, cuc_pin_cred_put_args
 
@@ -44,7 +44,7 @@ class cuc_import_ldapuser_api(Resource):
         Import LDAP user to Unity Connection.
         """
         args = request.args.to_dict()
-            
+
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
 

@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Namespace, Resource
-from flaskr.config import default_cms, default_cucm
+from flaskr.api.v1.config import default_cms, default_cucm
 from flaskr.cms.v1.cms import CMS
 from flaskr.uds.v1.uds import UDS
 from flaskr.api.v1.parsers import cms_spaces_get_args, cms_spaces_post_args
@@ -69,10 +69,10 @@ class cms_spaces_api(Resource):
                     payload.update(args)
 
                     cms = CMS(default_cms['host'], default_cms['username'],
-                            default_cms['password'], port=default_cms['port'])
+                              default_cms['password'], port=default_cms['port'])
                     return cms.create_coSpace(payload=payload)
-                else: 
-                    return {'success': False, 
+                else:
+                    return {'success': False,
                             'message': 'Found {} users with userid "{}"'.format(
                                 user['response']['users']['@totalCount'], args['userid'])}
             else:
@@ -80,6 +80,7 @@ class cms_spaces_api(Resource):
                 return user
         else:
             return cms.create_coSpace(payload=args)
+
 
 @api.route("/spaces/<id>")
 @api.param('id', 'The object id of the Space')

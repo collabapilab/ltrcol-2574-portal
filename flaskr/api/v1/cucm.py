@@ -4,7 +4,7 @@ from flask import jsonify
 from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields, reqparse
-from flaskr.config import default_cucm
+from flaskr.api.v1.config import default_cucm
 from flaskr.cucm.v1.cucm import AXL, PAWS, SXML
 from flaskr.api.v1.parsers import cucm_add_phone_query_args
 from flaskr.api.v1.parsers import cucm_update_phone_query_args
