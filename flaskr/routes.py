@@ -12,29 +12,18 @@ core = Blueprint('', __name__,
 
 @core.route('/')
 def index():
-    return render_template('main.html',
-                           title='LTRCOL-2574 Collaboration APIs')
+    return render_template('index.html',
+                           title='LTRCOL-2574 Portal')
 
 
-@core.route('/cucm')
-def cucm_route():
-    return render_template('cucm.html',
-                           title='LTRCOL-2574 Sample Portal')
+@core.route('/provisioning')
+def provisioning_route():
+    return render_template('provisioning.html',
+                           title='LTRCOL-2574 Portal - Provisioning')
 
 
-@core.route('/cuc')
-def cuc_route():
-    return render_template('cuc.html',
-                           title='LTRCOL-2574 Sample Portal')
-
-
-@core.route('/cms')
-def cms_route():
-    return render_template('cms.html',
-                           title='LTRCOL-2574 Sample Portal')
-
-
-@core.route('/wbxt')
-def wbxt_route():
-    return render_template('wbxt.html',
+@core.route('/', defaults={'path': ''})
+@core.route('/<path:path>')
+def catch_all(path):
+    return render_template(path,
                            title='LTRCOL-2574 Sample Portal')

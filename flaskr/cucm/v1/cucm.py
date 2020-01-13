@@ -12,7 +12,7 @@ def serialize_object(obj, target_cls=OrderedDict):
     """
     Serialize zeep objects to native python data structures.
 
-    This helper function is used inplace of zeep.helpers.serialize_object in order to handle the etree._Element types
+    This helper function is used in place of zeep.helpers.serialize_object in order to handle the etree._Element types
 
     :Parameters:
         - obj (any) - Object to be serialized
