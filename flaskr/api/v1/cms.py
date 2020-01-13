@@ -68,21 +68,31 @@ class cms_spaces_api(Resource):
         """
         args = request.args.to_dict()
 
-        cucm_uds = UDS(default_cucm['host'])
-        user = cucm_uds.get_user(parameters={'username': args['userid']})
+        if args['userid']:
+            cucm_uds = UDS(default_cucm['host'])
+            user = cucm_uds.get_user(parameters={'username': args['userid']})
 
-        payload = {}
-        if user['success'] and user['response']['users']['@totalCount'] == '1':
-            payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
-            payload['uri'] = user['response']['users']['user'][0]['userName']
-            payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
-            # Overwrite payload with whatever values were passed via args
-            payload.update(args)
+            payload = {}
+            if user['success']:
+                if user['response']['users']['@totalCount'] == '1':
+                    payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
+                    payload['uri'] = user['response']['users']['user'][0]['userName']
+                    payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
+                    # Overwrite payload with whatever values were passed via args
+                    payload.update(args)
 
-            cms = CMS(default_cms['host'], default_cms['username'],
-                      default_cms['password'], port=default_cms['port'])
-        return cms.create_coSpace(payload=payload)
-
+                    cms = CMS(default_cms['host'], default_cms['username'],
+                            default_cms['password'], port=default_cms['port'])
+                    return cms.create_coSpace(payload=payload)
+                else: 
+                    return {'success': False, 
+                            'message': 'Found {} users with userid "{}"'.format(
+                                user['response']['users']['@totalCount'], args['userid'])}
+            else:
+                # User lookup failed completely
+                return user
+        else:
+            return cms.create_coSpace(payload=args)
 
 @api.route("/spaces/<id>")
 @api.param('id', 'The object id of the Space')
