@@ -34,10 +34,28 @@ class cms_version_api(Resource):
             return cms_status['response']['status']['softwareVersion']
         return cms_status
 
+def get_matched_uri(space_list, uri):
+    """
+    Returns pkid of the Space where the URI or Secondary URI match the searched uri
+    """
+    for space in space_list:
+        try:
+            if uri == space['uri']:
+                return space['@id']
+        except KeyError:
+            pass
+        try:
+            if uri == space['secondaryUri']:
+                return space['@id']
+        except KeyError:
+            pass
+    return None
+
 
 @api.route("/spaces")
 # @api.route("/spaces")
 class cms_spaces_api(Resource):
+
     @api.expect(cms_spaces_get_args)
     def get(self):
         """
@@ -45,7 +63,49 @@ class cms_spaces_api(Resource):
         """
         args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        return cms.get_coSpaces(parameters=args)
+        try:
+            if not args['match_uri']:
+                # return get_coSpaces with regular filtering, if any
+                return cms.get_coSpaces(parameters=args)
+        except KeyError:
+            pass
+        # Need to search using exact matching 
+        args['offset'] = 0
+        matched_spaces = cms.get_coSpaces(parameters=args)
+        try:
+            total_matches = int(matched_spaces['response']['coSpaces']['@total'])
+            if total_matches == 0:
+                # No match found
+                return matched_spaces
+            elif total_matches == len(matched_spaces['response']['coSpaces']['coSpace']):
+                # Received all matches back
+                pkid = get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'],
+                                       uri=args['filter'])
+                if pkid:
+                    return cms.get_coSpace(id=pkid)
+                else:
+                    return {'success':False,
+                            'message': 'No match found for URI "{}"'.format(args['filter']),
+                            'response': ''}
+            else:
+                # The list of results was not the complete set of results
+                all_spaces = matched_spaces['response']['coSpaces']['coSpace']
+
+                while total_matches > len(all_spaces):
+                    pkid = get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'],
+                                           uri=args['filter'])
+                    if pkid:
+                        return cms.get_coSpace(id=pkid)
+                    args['offset'] = len(all_spaces)
+                    matched_spaces = cms.get_coSpaces(parameters=args)
+                    all_spaces += matched_spaces['response']['coSpaces']['coSpace']
+            return {'success': False,
+                    'message': 'No match found for URI "{}"'.format(args['filter']),
+                    'response': ''}
+        except KeyError:
+            pass
+        return matched_spaces
+        
 
     @api.expect(cms_spaces_post_args)
     def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'],
@@ -55,30 +115,31 @@ class cms_spaces_api(Resource):
         """
         args = request.args.to_dict()
 
-        if args['userid']:
-            cucm_uds = UDS(default_cucm['host'])
-            user = cucm_uds.get_user(parameters={'username': args['userid']})
+        cms = CMS(default_cms['host'], default_cms['username'],
+                  default_cms['password'], port=default_cms['port'])
+        try:
+            if args['userid']:
+                cucm_uds = UDS(default_cucm['host'])
+                user = cucm_uds.get_user(parameters={'username': args['userid']})
 
-            payload = {}
-            if user['success']:
-                if user['response']['users']['@totalCount'] == '1':
-                    payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
-                    payload['uri'] = user['response']['users']['user'][0]['userName']
-                    payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
-                    # Overwrite payload with whatever values were passed via args
-                    payload.update(args)
+                payload = {}
+                if user['success']:
+                    if user['response']['users']['@totalCount'] == '1':
+                        payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
+                        payload['uri'] = user['response']['users']['user'][0]['userName']
+                        payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
+                        # Overwrite payload with whatever values were passed via args
+                        payload.update(args)
 
-                    cms = CMS(default_cms['host'], default_cms['username'],
-                              default_cms['password'], port=default_cms['port'])
-                    return cms.create_coSpace(payload=payload)
+                        return cms.create_coSpace(payload=payload)
+                    else:
+                        return {'success': False,
+                                'message': 'Found {} users with userid "{}"'.format(
+                                    user['response']['users']['@totalCount'], args['userid'])}
                 else:
-                    return {'success': False,
-                            'message': 'Found {} users with userid "{}"'.format(
-                                user['response']['users']['@totalCount'], args['userid'])}
-            else:
-                # User lookup failed completely
-                return user
-        else:
+                    # User lookup failed completely
+                    return user
+        except KeyError:
             return cms.create_coSpace(payload=args)
 
 

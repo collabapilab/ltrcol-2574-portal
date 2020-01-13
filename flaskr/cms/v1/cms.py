@@ -146,19 +146,13 @@ class CMS(REST):
 
             # Check if we had returned a 200-299 response code
             if result['success']:
-                try:
-                    # check if there is only one element, @total will be 1.  in that case, xmltodict
-                    # would not have created a list of dicts
-                    if(parsed_response[rootobj]["@total"] == "1"):
-                        # Get the child key nested under the root (e.g. 'coSpace')
-                        childobj = list(parsed_response[rootobj].keys())[1]
-                        # Force the child element to be a list
-                        parsed_response = xmltodict.parse(
-                            raw_resp['response'].content, force_list={childobj: True})
+                # In cases where there is exactly one user/object/etc, xmltodict
+                # will create not place the dict in a list
+                childobj = list(parsed_response[rootobj].keys())[1]
 
-                # The @total key does not exist; just return the result
-                except KeyError:
-                    pass
+                if isinstance(parsed_response[rootobj][childobj], dict):
+                    parsed_response = xmltodict.parse(raw_resp['response'].content, force_list={childobj: True})
+
                 # Replace the response value with our parsed_response, converting the OrderedDict to dict
                 result['response'] = json.loads(json.dumps(parsed_response))
 
