@@ -173,6 +173,8 @@
 
         $('.toast').toast({'delay':5000});
 
+        $('#nav-provisioning').addClass('active');
+
         $('#username').bind('keypress keydown keyup', function(e){
             if(e.keyCode == 13) { 
                 e.preventDefault(); 
@@ -181,7 +183,6 @@
 
         $('#username').keyup(function(e) {
             if(e.keyCode == 13) { 
-                console.log("Username Entered");
                 user_search();
             }
         });
