@@ -52,7 +52,6 @@ cucm_perfmon_query_args.add_argument('Class', type=str, required=False, help='Si
 
 # Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
-cms_spaces_post_args.add_argument('userid', type=str, required=False, help='User ID of Space to create')
 cms_spaces_post_args.add_argument('name', type=str, required=False, help='Name of the Space')
 cms_spaces_post_args.add_argument('uri', type=str, required=False,
                                   help='User URI part for SIP call to reach Space')

@@ -148,11 +148,13 @@ class CMS(REST):
             if result['success']:
                 # In cases where there is exactly one user/object/etc, xmltodict
                 # will create not place the dict in a list
-                childobj = list(parsed_response[rootobj].keys())[1]
+                try:
+                    childobj = list(parsed_response[rootobj].keys())[1]
 
-                if isinstance(parsed_response[rootobj][childobj], dict):
-                    parsed_response = xmltodict.parse(raw_resp['response'].content, force_list={childobj: True})
-
+                    if isinstance(parsed_response[rootobj][childobj], dict):
+                        parsed_response = xmltodict.parse(raw_resp['response'].content, force_list={childobj: True})
+                except IndexError:
+                    pass
                 # Replace the response value with our parsed_response, converting the OrderedDict to dict
                 result['response'] = json.loads(json.dumps(parsed_response))
 
@@ -235,6 +237,66 @@ class CMS(REST):
         :type parameters: Dict
         '''
         return self._cms_request(("coSpaces/" + id))
+
+    def get_matched_uri(self, space_list, uri):
+        """
+        Returns pkid of the Space where the URI or Secondary URI match the searched uri
+        """
+        for space in space_list:
+            try:
+                if uri == space['uri']:
+                    return space['@id']
+            except KeyError:
+                pass
+            try:
+                if uri == space['secondaryUri']:
+                    return space['@id']
+            except KeyError:
+                pass
+        return None
+
+    def get_coSpace_pkid(self, userid):
+        '''
+        Get the coSpace object ID given a user ID.
+
+        :param userid: The UserID which will correspond to the coSpace URI or secondaryURI.
+        :type userid: String
+
+        :param parameters: Filters for the query
+        :type parameters: Dict
+
+        :returns: Dictionary with keys: 'success' (bool), 'message' (str), and 'response' (str).
+                  The 'response' key will have the pkid, if available.
+        :rtype: Dict
+        '''
+
+        parameters = {'filter': userid, 'offset': 0}
+
+        matched_spaces = self._cms_request("coSpaces", parameters=parameters)
+        try:
+            total_matches = int(matched_spaces['response']['coSpaces']['@total'])
+
+            if total_matches == len(matched_spaces['response']['coSpaces']['coSpace']):
+                # Received all matches back
+                pkid = self.get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'],
+                                            uri=userid)
+                if pkid:
+                    return {'success': True, 'message': 'Found Space for  "{}"'.format(userid), 'response': pkid}
+            elif total_matches > 0:
+                # The list of results was not the complete set of results
+                all_spaces = matched_spaces['response']['coSpaces']['coSpace']
+
+                while total_matches > len(all_spaces):
+                    pkid = self.get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'],
+                                                uri=userid)
+                    if pkid:
+                        return {'success': True, 'message': 'Found Space for  "{}"'.format(userid), 'response': pkid}
+                    parameters['offset'] = len(all_spaces)
+                    matched_spaces = self._cms_request("coSpaces", parameters=parameters)
+                    all_spaces += matched_spaces['response']['coSpaces']['coSpace']
+        except KeyError:
+            pass
+        return {'success': False, 'message': 'Could not find a Space for user "{}"'.format(userid), 'response': ''}
 
     def delete_coSpace(self, id):
         '''

@@ -63,6 +63,8 @@ class cms_spaces_api(Resource):
         """
         args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
+
+
         try:
             if not args['exact_match']:
                 # return get_coSpaces with regular filtering, if any
@@ -117,56 +119,75 @@ class cms_spaces_api(Resource):
 
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
-        try:
-            if args['userid']:
-                cucm_uds = UDS(default_cucm['host'])
-                user = cucm_uds.get_user(parameters={'username': args['userid']})
 
-                payload = {}
-                if user['success']:
-                    if user['response']['users']['@totalCount'] == '1':
-                        payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
-                        payload['uri'] = user['response']['users']['user'][0]['userName']
-                        payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
-                        # Overwrite payload with whatever values were passed via args
-                        payload.update(args)
+        return cms.create_coSpace(payload=args)
 
-                        return cms.create_coSpace(payload=payload)
-                    else:
-                        return {'success': False,
-                                'message': 'Found {} users with userid "{}"'.format(
-                                    user['response']['users']['@totalCount'], args['userid'])}
-                else:
-                    # User lookup failed completely
-                    return user
-        except KeyError:
-            return cms.create_coSpace(payload=args)
-
-
-@api.route("/spaces/<id>")
-@api.param('id', 'The object id of the Space')
+@api.route("/spaces/<userid>")
+@api.param('userid', 'The user ID associated with the Space')
+# @api.param('id', 'The object id of the Space')
 class cms_space_api(Resource):
-    def get(self, id):
+    def get(self, userid):
         """
-        Retrieves a CMS Space by object id.
+        Retrieves a CMS Space by user id.
         """
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        return cms.get_coSpace(id=id)
+        pkid = cms.get_coSpace_pkid(userid=userid)
+        if pkid['success']:
+            return cms.get_coSpace(id=pkid['response'])
+        else:
+            return pkid
 
-    @api.expect(cms_spaces_get_args)
-    def put(self, id):
+    @api.expect(cms_spaces_post_args)
+    def post(self, userid):
+        """
+        Creates a CMS space by user id
+        """
+        args = request.args.to_dict()
+        cms = CMS(default_cms['host'], default_cms['username'],
+                  default_cms['password'], port=default_cms['port'])
+
+        cucm_uds = UDS(default_cucm['host'])
+        user = cucm_uds.get_user(parameters={'username': userid})
+
+        payload = {}
+        if user['success']:
+            if user['response']['users']['@totalCount'] == '1':
+                payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
+                payload['uri'] = user['response']['users']['user'][0]['userName']
+                payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
+                # Overwrite payload with whatever values were passed via args
+                payload.update(args)
+
+                return cms.create_coSpace(payload=payload)
+            else:
+                return {'success': False,
+                        'message': 'Found {} users with userid "{}"'.format(
+                            user['response']['users']['@totalCount'], args['userid'])}
+        else:
+            # User lookup failed completely
+            return user
+
+    @api.expect(cms_spaces_post_args)
+    def put(self, userid):
         """
         Edits a CMS space by object id
         """
         args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
-        return cms.update_coSpace(id=id, payload=args)
+        pkid = cms.get_coSpace_pkid(userid=userid)
+        if pkid['success']:
+            return cms.update_coSpace(id=pkid['response'], payload=args)
+        return pkid
 
-    def delete(self, id):
+    def delete(self, userid):
         """
-        Removes a CMS space by object id
+        Removes a CMS space by user id
         """
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
-        return cms.delete_coSpace(id=id)
+
+        pkid = cms.get_coSpace_pkid(userid=userid)
+        if pkid['success']:
+            return cms.delete_coSpace(id=pkid['response'])
+        return pkid
