@@ -2,7 +2,9 @@ from flask import request
 from flask_restplus import Namespace, Resource
 from flaskr.api.v1.config import default_cuc
 from flaskr.cuc.v1.cupi import CUPI
-from flaskr.api.v1.parsers import cuc_users_get_args, cuc_users_put_args, cuc_importldap_post_args, cuc_pin_cred_put_args
+from flaskr.api.v1.parsers import cuc_users_get_args
+from flaskr.api.v1.parsers import cuc_users_put_args
+from flaskr.api.v1.parsers import cuc_importldap_post_args, cuc_pin_cred_put_args, cuc_importldap_user_post_args
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
@@ -73,20 +75,47 @@ class cuc_get_user_api(Resource):
         return cuc.get_users(parameters=params)
 
 
-@api.route("/users/<pkid>")
-@api.param('pkid', 'The pkid of the user object')
+@api.route("/users/<userid>")
+@api.param('userid', 'The userid (alias) of the user')
 class cuc_user_api(Resource):
-    def get(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
+    def get(self, userid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
         Get user from Unity Connection using user object ID.
         """
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        return cuc.get_user(id=pkid)
+        return cuc.get_user_by_id(userid)
+
+    @api.expect(cuc_importldap_user_post_args, validate=True)
+    def post(self, userid, host=default_cuc['host'], port=default_cuc['port'],
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Import Unity Connection user from LDAP using userID.
+        """
+        args = request.args.to_dict()
+        if 'templateAlias' not in args:
+            args['templateAlias'] = 'voicemailusertemplate'
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+
+        # Look up pkid from user ID
+        params = {'query': '(alias is {})'.format(userid)}
+        user = cuc.get_ldapusers(parameters=params)
+        try:
+            if user['response']['@total'] == '1':
+                args['pkid'] = user['response']['ImportUser'][0]['pkid']                    
+                return cuc.import_ldapuser(parameters={'templateAlias': args['templateAlias']}, payload=args)
+            else:
+                return {'success': False, 
+                        'msg': 'Found {} users to import with user id {}'.format(user['response']['@total'], userid), 
+                        'response': user['response']}
+        except KeyError:
+            pass
+        return user
 
     @api.expect(cuc_users_put_args, validate=True)
-    def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
+    def put(self, userid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
         Update user from Unity Connection using user object ID.
@@ -94,20 +123,27 @@ class cuc_user_api(Resource):
         args = request.args.to_dict()
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        return cuc.update_user(id=pkid, payload=args)
+        # look up a user
+        user = cuc.get_user_by_id(userid)
+        if user['success']:
+            return cuc.update_user(id=user['response']['ObjectId'], payload=args)
+        return user
 
-    def delete(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
+    def delete(self, userid, host=default_cuc['host'], port=default_cuc['port'],
                username=default_cuc['username'], password=default_cuc['password']):
         """
         Delete user from Unity Connection using user object ID.
         """
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        return cuc.delete_user(id=pkid)
+        # look up a user
+        user = cuc.get_user_by_id(userid)
+        if user['success']:
+            return cuc.delete_user(id=user['response']['ObjectId'])
+        return user
 
-
-@api.route("/users/<pkid>/credential/pin")
-@api.param('pkid', 'The pkid of the user object')
+@api.route("/users/<userid>/credential/pin")
+@api.param('userid', 'The userid (alias) of the user')
 class cuc_update_pin_api(Resource):
     @api.expect(cuc_pin_cred_put_args, validate=True)
     def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
@@ -122,4 +158,8 @@ class cuc_update_pin_api(Resource):
             payload['TimeHacked'] = []
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
-        return cuc.update_pin(id=pkid, payload=payload)
+        # look up a user
+        user = cuc.get_user_by_id(userid)
+        if user['success']:
+            return cuc.update_pin(id=user['response']['ObjectId'], payload=payload)
+        return user

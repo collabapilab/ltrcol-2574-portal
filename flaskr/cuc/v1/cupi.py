@@ -196,3 +196,20 @@ class CUPI(REST):
         https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_011110.html?bookSearch=true#reference_B32245DBC67A42228AA514C41D708368
         '''
         return self._cupi_request('users/' + str(id) + '/credential/pin', payload=payload, http_method='PUT')
+
+    def get_user_by_id(self, userid):
+        '''
+        Get a voicemail user from the Unity Connection system by user alias.
+
+        Reference:
+        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_0111.html#id_38638
+        '''
+
+        user = self.get_users(parameters={'query': '(alias is {})'.format(userid)})
+        if user['success']:
+            try:
+                if user['response']['@total'] == '1':
+                    return self._cupi_request("users/" + user['response']['User'][0]['ObjectId'])
+            except KeyError:
+                pass
+        return user
