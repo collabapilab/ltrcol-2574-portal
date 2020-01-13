@@ -63,51 +63,7 @@ class cms_spaces_api(Resource):
         """
         args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-
-
-        try:
-            if not args['exact_match']:
-                # return get_coSpaces with regular filtering, if any
-                return cms.get_coSpaces(parameters=args)
-        except KeyError:
-            pass
-        # Need to search using exact matching 
-        args['offset'] = 0
-        matched_spaces = cms.get_coSpaces(parameters=args)
-        try:
-            total_matches = int(matched_spaces['response']['coSpaces']['@total'])
-            if total_matches == 0:
-                # No match found
-                return matched_spaces
-            elif total_matches == len(matched_spaces['response']['coSpaces']['coSpace']):
-                # Received all matches back
-                pkid = get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'],
-                                       uri=args['filter'])
-                if pkid:
-                    return cms.get_coSpace(id=pkid)
-                else:
-                    return {'success':False,
-                            'message': 'No match found for URI "{}"'.format(args['filter']),
-                            'response': ''}
-            else:
-                # The list of results was not the complete set of results
-                all_spaces = matched_spaces['response']['coSpaces']['coSpace']
-
-                while total_matches > len(all_spaces):
-                    pkid = get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'],
-                                           uri=args['filter'])
-                    if pkid:
-                        return cms.get_coSpace(id=pkid)
-                    args['offset'] = len(all_spaces)
-                    matched_spaces = cms.get_coSpaces(parameters=args)
-                    all_spaces += matched_spaces['response']['coSpaces']['coSpace']
-            return {'success': False,
-                    'message': 'No match found for URI "{}"'.format(args['filter']),
-                    'response': ''}
-        except KeyError:
-            pass
-        return matched_spaces
-        
+        return cms.get_coSpaces(parameters=args)
 
     @api.expect(cms_spaces_post_args)
     def post(self, host=default_cms['host'], port=default_cms['port'], username=default_cms['username'],
