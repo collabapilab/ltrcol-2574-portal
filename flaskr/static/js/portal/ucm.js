@@ -5,9 +5,10 @@ function get_perfmon_data() {
         data: JSON.stringify(
         {
             "perfmon_counters": [
-              "\\\\vnt-cm1b.cisco.com\\Cisco CallManager\\RegisteredHardwarePhones",
-              "\\\\vnt-cm1b.cisco.com\\Cisco CallManager\\CallsActive",
-              "\\\\vnt-cm1b.cisco.com\\Cisco CallManager\\CallsCompleted"
+                "Cisco CallManager\\RegisteredHardwarePhones",
+                "Cisco CallManager\\RegisteredOtherStationDevices",
+                "Cisco CallManager\\CallsActive",
+                "Cisco CallManager\\CallsCompleted"
             ]
         }),
         contentType: "application/json",
@@ -27,7 +28,13 @@ function insert_device(device_name, device_description, device_model, clid_name,
             "ownerUserName": owner_userid
         }
 	});
+}
 
+function delete_device(device_name) {
+	return $.ajax({
+		type: 'DELETE',
+		url: '/api/v1/cucm/phone/' + device_name,
+	});
 }
 
 function get_service_status() {
@@ -51,6 +58,7 @@ function refresh_perfmon_data() {
         var calls_active = null
         var calls_completed = null
         var registered_phones = null
+        var registered_softphones = null
 
         data['perfmon_counters_result'].forEach(function (counter) {
           var counter_name = counter['Name']['_value_1'];
@@ -62,11 +70,14 @@ function refresh_perfmon_data() {
             calls_completed = counter['Value']
           } else if (counter_name.includes("RegisteredHardwarePhones")) {
             registered_phones = counter['Value']
+          } else if (counter_name.includes("RegisteredOtherStationDevices")) {
+            registered_softphones = counter['Value']
           }
         })
         console.log(calls_active);
         console.log(calls_completed);
         console.log(registered_phones);
+        console.log(registered_softphones);
 
         if (calls_active != null) {
           console.log("Updating Calls Active Counter to " + calls_active)
@@ -78,12 +89,27 @@ function refresh_perfmon_data() {
           $("#call_completed_counter").html(calls_completed);
         }
 
-        if (registered_phones != null) {
-          console.log("Updating Registered Phones Counter to " + registered_phones)
-          $("#registered_phones_counter").html(registered_phones);
-        }
+        if (registered_phones != null || registered_softphones != null) {
 
-    });
+            if (registered_phones != null) {
+                num_registered_phones = parseInt(registered_phones);
+            } else {
+                num_registered_phones = 0;
+            }
+
+            if (registered_softphones != null) {
+                num_registered_softphones = parseInt(registered_softphones);
+            } else {
+                num_registered_softphones = 0;
+            }
+
+            var total_registered_phones = (num_registered_phones + num_registered_softphones).toString();
+
+            console.log("Updating Registered Phones Counter to " + total_registered_phones)
+            $("#registered_phones_counter").html(total_registered_phones);
+        }
+  
+      });
 
     get_service_status().then(function(data) {
         var health_text;
@@ -147,9 +173,15 @@ function get_user(username) {
 function display_user_data(user_data) {
     var name = user_data['firstName'] + ' ' + user_data['lastName'];
     var userid = user_data['userid'];
-    var primary_extension = user_data['extensionsInfo']['extension'][0]['pattern']['_value_1'];
+    var primary_extension = "";
 
-    user_data['primary_extension'] = primary_extension;
+    try {
+        primary_extension = user_data['extensionsInfo']['extension'][0]['pattern']['_value_1'];
+    } catch (error) {  
+    
+    }
+
+    user_data['primary_extension'] = primary_extension;    
 
     var template = `
     <div> 
@@ -188,14 +220,17 @@ function display_device_table(device_list) {
         device_datatable = $('#device_table').DataTable().clear().draw();
     }
 
-    delete_button_html = '<a href="#" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
-    info_button_html = '<a href="#" class="btn btn-info btn-circle btn-sm"><i class="fas fa-info-circle"></i></a>';
-
     device_list.forEach(function(device) {
         get_device_detail(device).then(function(device_details) {
             if (device_details['success'] == true) {
                 device_data = device_details['phone_data'];
 
+                device_delete_id = 'device_delete_' + device_data['name'];
+                device_info_id = 'device_info_' + device_data['name'];
+
+                delete_button_html = '<a href="#" id="' + device_delete_id + '" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
+                info_button_html = '<a href="#" id="' + device_info_id + '" class="btn btn-info btn-circle btn-sm"><i class="fas fa-info-circle"></i></a>';
+                        
                 device_row = [
                     device_data['name'],
                     device_data['description'],
@@ -203,7 +238,25 @@ function display_device_table(device_list) {
                     info_button_html,
                     delete_button_html
                 ];     
+
                 device_datatable.row.add(device_row).draw();
+                
+                $('#' + device_delete_id).click(function (e) {
+                    e.preventDefault();
+                    table_row = device_datatable.row( $(this).parents('tr') )
+                    var data = table_row.data();
+                    console.log(data);
+                    device_name = data[0];
+                    console.log("Removing " + device_name);
+                    remove_device(device_name, table_row);
+                });
+    
+                $('#' + device_info_id).click(function (e) {
+                    e.preventDefault();
+                    var data = device_datatable.row( $(this).parents('tr') ).data();
+                    console.log(data);
+                });
+        
             }
         });  
     })
@@ -238,15 +291,17 @@ function add_device() {
 
     insert_device(device_name, device_description, device_model, clid_name, owner_userid).then(function(result) {
         console.log(result);
-        result['success'] = true;
         if (result['success'] == true) {
             message = "Successfully added " + device_name;
             $("#add_device_status").removeClass('text-danger');
             $("#add_device_status").addClass('text-success');
 
-            delete_button_html = '<a href="#" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
-            info_button_html = '<a href="#" class="btn btn-info btn-circle btn-sm"><i class="fas fa-info-circle"></i></a>';
-            
+            device_delete_id = 'device_delete_' + device_name;
+            device_info_id = 'device_info_' + device_name;
+
+            delete_button_html = '<a href="#" id="' + device_delete_id + '" class="btn btn-danger btn-circle btn-sm"><i class="fas fa-trash"></i></a>';
+            info_button_html = '<a href="#" id="' + device_info_id + '" class="btn btn-info btn-circle btn-sm"><i class="fas fa-info-circle"></i></a>';
+                    
             device_row = [
                 device_name,
                 device_description,
@@ -254,7 +309,26 @@ function add_device() {
                 info_button_html,
                 delete_button_html
             ];     
-            $('#device_table').DataTable().row.add(device_row).draw();
+
+            device_datatable = $('#device_table').DataTable();
+            device_datatable.row.add(device_row).draw();
+
+            $('#' + device_delete_id).click(function (e) {
+                e.preventDefault();
+                table_row = device_datatable.row( $(this).parents('tr') )
+                var data = table_row.data();
+                console.log(data);
+                device_name = data[0];
+                console.log("Removing " + device_name);
+                remove_device(device_name, table_row);
+            });
+    
+            $('#' + device_info_id).click(function (e) {
+                e.preventDefault();
+                var data = device_datatable.row( $(this).parents('tr') ).data();
+                console.log(data);
+            });
+            
         } else {
             message = "Failed to add " + device_name;
             $("#add_device_status").removeClass('text-success');
@@ -265,3 +339,12 @@ function add_device() {
     });
 }
 
+function remove_device(device_name, table_row) {
+    delete_device(device_name).then(function(result) {
+        if (result['success'] == true) {
+            table_row.remove().draw();
+        } else {
+            console.log(result);
+        }
+    });
+}
