@@ -4,6 +4,7 @@ from flask import jsonify
 from flask import request
 from flask import Blueprint
 from flask_restplus import Namespace, Resource, fields, reqparse
+from flaskr.api.v1.config import default_cucm
 from flaskr.cucm.v1.cucm import AXL, PAWS, SXML
 from flaskr.api.v1.parsers import cucm_add_phone_query_args
 from flaskr.api.v1.parsers import cucm_update_phone_query_args
@@ -15,19 +16,6 @@ from flaskr.api.v1.parsers import cucm_perfmon_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
-# default_cucm = {
-#    'host': 'cucm1a.pod31.col.lab',
-#    'port': 8443,
-#    'username': 'admin',
-#    'password': 'c1sco123'
-# }
-
-default_cucm = {
-   'host': '10.0.131.41',
-   'port': 8443,
-   'username': 'admin',
-   'password': 'c1sco123'
-}
 
 myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['password'])
 myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
