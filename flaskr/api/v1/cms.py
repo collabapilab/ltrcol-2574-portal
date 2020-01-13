@@ -1,12 +1,20 @@
 from flask import request
 from flask_restplus import Namespace, Resource
 from flaskr.cms.v1.cms import CMS
+# from flaskr.rest.v1.rest import REST
+from flaskr.uds.v1.uds import UDS
 from flaskr.api.v1.parsers import cms_spaces_get_args, cms_spaces_post_args
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
 default_cms = {
     'host': 'cms1a.pod31.col.lab',
+    'port': 8443,
+    'username': 'admin',
+    'password': 'c1sco123'
+}
+default_cucm = {
+    'host': '10.0.131.41',
     'port': 8443,
     'username': 'admin',
     'password': 'c1sco123'
@@ -59,9 +67,21 @@ class cms_spaces_api(Resource):
         Creates a new CMS Space.
         """
         args = request.args.to_dict()
-        cms = CMS(default_cms['host'], default_cms['username'],
-                  default_cms['password'], port=default_cms['port'])
-        return cms.create_coSpace(payload=args)
+
+        cucm_uds = UDS(default_cucm['host'])
+        user = cucm_uds.get_user(parameters={'username': args['userid']})
+
+        payload = {}
+        if user['success'] and user['response']['users']['@totalCount'] == '1':
+            payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
+            payload['uri'] = user['response']['users']['user'][0]['userName']
+            payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
+            # Overwrite payload with whatever values were passed via args
+            payload.update(args)
+
+            cms = CMS(default_cms['host'], default_cms['username'],
+                      default_cms['password'], port=default_cms['port'])
+        return cms.create_coSpace(payload=payload)
 
 
 @api.route("/spaces/<id>")
