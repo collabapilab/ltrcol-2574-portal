@@ -64,7 +64,7 @@ class cms_spaces_api(Resource):
         args = request.args.to_dict()
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
         try:
-            if not args['match_uri']:
+            if not args['exact_match']:
                 # return get_coSpaces with regular filtering, if any
                 return cms.get_coSpaces(parameters=args)
         except KeyError:

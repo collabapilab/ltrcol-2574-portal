@@ -66,7 +66,7 @@ cms_spaces_post_args.add_argument('defaultLayout', type=str, required=False,
                                   default='automatic')
 
 cms_spaces_get_args = reqparse.RequestParser()
-cms_spaces_get_args.add_argument('match_uri', type=bool, required=False, help='Require an exact match of filter string to URI of Space', default=True)
+cms_spaces_get_args.add_argument('exact_match', type=bool, required=False, help='Require an exact match of filter string to URI of Space', default=True)
 cms_spaces_get_args.add_argument('filter', type=str, required=False, help='Search string')
 cms_spaces_get_args.add_argument('limit', type=int, required=False, help='How many results to return. \
   Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
