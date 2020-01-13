@@ -1,16 +1,10 @@
 from flask import request
 from flask_restplus import Namespace, Resource
+from flaskr.config import default_cuc
 from flaskr.cuc.v1.cupi import CUPI
 from flaskr.api.v1.parsers import cuc_users_get_args, cuc_users_put_args, cuc_importldap_post_args, cuc_pin_cred_put_args
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
-
-default_cuc = {
-    'host': 'cuc1a.pod31.col.lab',
-    'port': 443,
-    'username': 'admin',
-    'password': 'c1sco123'
-}
 
 
 def get_search_params(args):

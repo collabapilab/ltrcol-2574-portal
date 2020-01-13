@@ -1,24 +1,11 @@
 from flask import request
 from flask_restplus import Namespace, Resource
+from flaskr.config import default_cms, default_cucm
 from flaskr.cms.v1.cms import CMS
-# from flaskr.rest.v1.rest import REST
 from flaskr.uds.v1.uds import UDS
 from flaskr.api.v1.parsers import cms_spaces_get_args, cms_spaces_post_args
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
-
-default_cms = {
-    'host': 'cms1a.pod31.col.lab',
-    'port': 8443,
-    'username': 'admin',
-    'password': 'c1sco123'
-}
-default_cucm = {
-    'host': '10.0.131.41',
-    'port': 8443,
-    'username': 'admin',
-    'password': 'c1sco123'
-}
 
 
 @api.route("/system/status")
