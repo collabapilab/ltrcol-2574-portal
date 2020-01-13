@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "19ab1a21-5f20-4884-b2c1-35b3afe27f52",
+		"_postman_id": "f9ab3fe3-973d-4083-8edc-74228fe681b4",
 		"name": "LTRCOL-2574",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -12,7 +12,7 @@
 					"name": "CUC",
 					"item": [
 						{
-							"name": "GET CUC Users",
+							"name": "Get CUC Users",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -37,14 +37,14 @@
 							"response": []
 						},
 						{
-							"name": "GET LDAP Users to import",
+							"name": "Get LDAP Users to import",
 							"request": {
 								"method": "GET",
 								"header": [
 									{
 										"key": "Accept",
-										"value": "application/json",
-										"type": "text"
+										"type": "text",
+										"value": "application/json"
 									}
 								],
 								"url": {
@@ -64,7 +64,7 @@
 							"response": []
 						},
 						{
-							"name": "GET LDAP User",
+							"name": "Get LDAP User",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -146,7 +146,7 @@
 							"response": []
 						},
 						{
-							"name": "GET user",
+							"name": "Get user",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -263,7 +263,7 @@
 							"response": []
 						},
 						{
-							"name": "DELETE CUC user",
+							"name": "Delete CUC user",
 							"request": {
 								"method": "DELETE",
 								"header": [
@@ -334,7 +334,7 @@
 					"name": "CMS",
 					"item": [
 						{
-							"name": "GET system_status",
+							"name": "Get system_status",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -413,7 +413,7 @@
 							"response": []
 						},
 						{
-							"name": "GET coSpaces",
+							"name": "Get coSpaces",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -479,7 +479,7 @@
 							"response": []
 						},
 						{
-							"name": "DELETE coSpace",
+							"name": "Delete coSpace",
 							"request": {
 								"method": "DELETE",
 								"header": [],
@@ -646,7 +646,7 @@
 					"name": "CUC",
 					"item": [
 						{
-							"name": "GET LDAP Users to Import",
+							"name": "List LDAP Users to Import",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -658,7 +658,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/import/users/ldap",
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/ldap_users",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -668,9 +668,7 @@
 										"api",
 										"v1",
 										"cuc",
-										"import",
-										"users",
-										"ldap"
+										"ldap_users"
 									]
 								},
 								"description": "Filter with:  ?column=alias&match_type=startswith&search=pod"
@@ -706,7 +704,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/import/users/ldap?templateAlias=voicemailusertemplate&pkid=816d3743-d1dd-2861-e394-e23a3b912fa2",
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -716,19 +714,8 @@
 										"api",
 										"v1",
 										"cuc",
-										"import",
 										"users",
-										"ldap"
-									],
-									"query": [
-										{
-											"key": "templateAlias",
-											"value": "voicemailusertemplate"
-										},
-										{
-											"key": "pkid",
-											"value": "816d3743-d1dd-2861-e394-e23a3b912fa2"
-										}
+										"pod{{pod_num}}user1"
 									]
 								},
 								"description": "?templateAlias=voicemailusertemplate&pkid=816d3743-d1dd-2861-e394-e23a3b912fa2\n\nOther options: \n &IsVmEnrolled=true\n &ListInDirectory=true"
@@ -767,7 +754,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064",
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -778,7 +765,7 @@
 										"v1",
 										"cuc",
 										"users",
-										"d91ea972-4209-4fbf-8092-806830c14064"
+										"pod{{pod_num}}user1"
 									]
 								}
 							},
@@ -813,7 +800,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064?ListInDirectory=false&IsVmEnrolled=false",
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1?ListInDirectory=false&IsVmEnrolled=false&PIN=31232121&ResetMailbox=true",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -824,7 +811,7 @@
 										"v1",
 										"cuc",
 										"users",
-										"d91ea972-4209-4fbf-8092-806830c14064"
+										"pod{{pod_num}}user1"
 									],
 									"query": [
 										{
@@ -834,6 +821,14 @@
 										{
 											"key": "IsVmEnrolled",
 											"value": "false"
+										},
+										{
+											"key": "PIN",
+											"value": "31232121"
+										},
+										{
+											"key": "ResetMailbox",
+											"value": "true"
 										}
 									]
 								},
@@ -842,73 +837,14 @@
 							"response": []
 						},
 						{
-							"name": "Update CUC user PIN",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json",
-										"disabled": true
-									},
-									{
-										"key": "Content-Type",
-										"name": "Content-Type",
-										"type": "text",
-										"value": "application/json",
-										"disabled": true
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064/credential/pin?Credentials=1432112&ResetMailbox=true",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"users",
-										"d91ea972-4209-4fbf-8092-806830c14064",
-										"credential",
-										"pin"
-									],
-									"query": [
-										{
-											"key": "Credentials",
-											"value": "1432112"
-										},
-										{
-											"key": "ResetMailbox",
-											"value": "true"
-										}
-									]
-								},
-								"description": "Options:\nCredentials=1432112\nResetMailbox=true"
-							},
-							"response": []
-						},
-						{
-							"name": "GET CUC users",
+							"name": "List CUC users",
 							"request": {
 								"method": "GET",
 								"header": [
 									{
 										"key": "Accept",
-										"value": "application/json",
 										"type": "text",
+										"value": "application/json",
 										"disabled": true
 									}
 								],
@@ -959,7 +895,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/d91ea972-4209-4fbf-8092-806830c14064",
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -970,7 +906,7 @@
 										"v1",
 										"cuc",
 										"users",
-										"d91ea972-4209-4fbf-8092-806830c14064"
+										"pod{{pod_num}}user1"
 									]
 								},
 								"description": "Filter with:  ?query=(alias%20is%20operator)"
@@ -1008,12 +944,12 @@
 					"name": "CMS",
 					"item": [
 						{
-							"name": "GET system_status",
+							"name": "Get system_status",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/system/status",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/system_status",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1023,15 +959,14 @@
 										"api",
 										"v1",
 										"cms",
-										"system",
-										"status"
+										"system_status"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "GET version",
+							"name": "Get version",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -1053,7 +988,7 @@
 							"response": []
 						},
 						{
-							"name": "GET spaces",
+							"name": "List Spaces",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -1076,7 +1011,7 @@
 							"response": []
 						},
 						{
-							"name": "POST Create a Space",
+							"name": "Create User Space",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -1098,7 +1033,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1108,7 +1043,8 @@
 										"api",
 										"v1",
 										"cms",
-										"spaces"
+										"spaces",
+										"pod{{pod_num}}user1"
 									]
 								},
 								"description": "Parameters:\nname=MySpace\nuri=primuri\nsecondaryUri=otheruri\npasscode=5434\ndefaultLayout=automatic"
@@ -1116,7 +1052,7 @@
 							"response": []
 						},
 						{
-							"name": "PUT space/<space_id>",
+							"name": "Modify User Space",
 							"request": {
 								"method": "PUT",
 								"header": [
@@ -1138,7 +1074,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/488d6af7-83e3-4088-af6d-01d98f00f184?name=Personal Space&uri=firsturi&secondaryUri=otheruri&passcode=4324&defaultLayout=automatic",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1?name=Personal Space&passcode=4324&defaultLayout=automatic",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1149,20 +1085,12 @@
 										"v1",
 										"cms",
 										"spaces",
-										"488d6af7-83e3-4088-af6d-01d98f00f184"
+										"pod{{pod_num}}user1"
 									],
 									"query": [
 										{
 											"key": "name",
 											"value": "Personal Space"
-										},
-										{
-											"key": "uri",
-											"value": "firsturi"
-										},
-										{
-											"key": "secondaryUri",
-											"value": "otheruri"
 										},
 										{
 											"key": "passcode",
@@ -1179,12 +1107,12 @@
 							"response": []
 						},
 						{
-							"name": "GET space/<space_id>",
+							"name": "Get User Space",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/488d6af7-83e3-4088-af6d-01d98f00f184",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1195,19 +1123,19 @@
 										"v1",
 										"cms",
 										"spaces",
-										"488d6af7-83e3-4088-af6d-01d98f00f184"
+										"pod{{pod_num}}user1"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "DELETE space/<space_id>",
+							"name": "Delete User Space",
 							"request": {
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/d91ea972-4209-4fbf-8092-806830c14064",
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1",
 									"protocol": "http",
 									"host": [
 										"{{host}}"
@@ -1218,7 +1146,7 @@
 										"v1",
 										"cms",
 										"spaces",
-										"d91ea972-4209-4fbf-8092-806830c14064"
+										"pod{{pod_num}}user1"
 									]
 								}
 							},
@@ -1330,28 +1258,6 @@
 					},
 					"protocolProfileBehavior": {},
 					"_postman_isSubFolder": true
-				},
-				{
-					"name": "GET system_status",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "https://{{cms}}:8443/api/v1/system/status",
-							"protocol": "https",
-							"host": [
-								"{{cms}}"
-							],
-							"port": "8443",
-							"path": [
-								"api",
-								"v1",
-								"system",
-								"status"
-							]
-						}
-					},
-					"response": []
 				}
 			],
 			"description": "These requests will be directed to our central API gateway host, which will the perform the requested API operation, be it CUCM AXL, CUPI REST API, etc.  It may also implement operations that leverage multiple different requests and/or API types to the backend servers/services.",
@@ -1380,7 +1286,7 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "GET system_status - Sample Query",
+			"name": "Get CMS system status - Sample Query",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -1441,37 +1347,37 @@
 	],
 	"variable": [
 		{
-			"id": "13f47bd3-ebff-4cb9-aba9-1af24332413d",
+			"id": "00ea97f2-6bcf-45ae-a490-e1c2e0c68722",
 			"key": "pod_num",
-			"value": "31\n",
+			"value": "31",
 			"type": "string"
 		},
 		{
-			"id": "c49b8b7a-53ae-4552-906a-ee5ff937d695",
+			"id": "9886de77-688f-45ec-a03f-5d153150cd75",
 			"key": "cuc",
 			"value": "cuc1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "8157b205-23f2-40c7-8787-27ccf0968a7a",
+			"id": "83ce82b9-724f-4ddc-9d19-85cc93d0e471",
 			"key": "cms",
 			"value": "cms1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "1b8e0566-c00c-4bbc-80a0-1dc8f20495cd",
+			"id": "b3b11100-3028-4331-8167-8542d31c7b73",
 			"key": "webexteams_access_token",
 			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
 			"type": "string"
 		},
 		{
-			"id": "5f2b689b-c309-41af-94e0-8398fd0ea91e",
+			"id": "eb7102f0-20a9-44f5-9daa-2919273fbebf",
 			"key": "host",
 			"value": "dev1.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "e02aa77d-a976-44b2-958a-4d33adb7ffb4",
+			"id": "fb8883ae-c6d3-4b89-b581-cc9e07574456",
 			"key": "port",
 			"value": "5000",
 			"type": "string"

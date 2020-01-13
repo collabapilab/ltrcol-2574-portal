@@ -8,7 +8,7 @@ from flaskr.api.v1.parsers import cms_spaces_get_args, cms_spaces_post_args
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
 
-@api.route("/system/status")
+@api.route("/system_status")
 class cms_system_status_api(Resource):
     def get(self):
         """
