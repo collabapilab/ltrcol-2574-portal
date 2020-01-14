@@ -37,15 +37,21 @@
     <div class="col-lg-6">
         <div class="row">
             <div class="col-lg-6 col-md-12 mb-4">
-                <div id="vm_div" class="card border-left-success shadow h-100 py-2 d-none">
+                <div id="vm_div" class="card border-left-info shadow h-100 py-2 d-none">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Voicemail</div>
-                                <div id="voicemail_status" class="h5 mb-0 font-weight-bold text-gray-800">Enabled</div>
+                                <div id="voicemail_status" class="h5 mb-0 font-weight-bold text-gray-800">Checking...</div>
                             </div>
                             <div class="col-auto">
-                                <a href="#" class="btn btn-danger btn-icon-split">
+                                <a href="#" id='vm_enable_btn' class="btn btn-success btn-icon-split d-none">
+                                    <span class="icon text-white-50">
+                                    <i class="fas fa-voicemail"></i>
+                                    </span>
+                                    <span class="text">Enable</span>
+                                </a>
+                                <a href="#" id='vm_disable_btn' class="btn btn-secondary btn-icon-split d-none">
                                     <span class="icon text-white-50">
                                     <i class="fas fa-voicemail"></i>
                                     </span>
@@ -58,19 +64,25 @@
             </div>
 
             <div class="col-lg-6 col-md-12 mb-4">
-                <div id="meeting_div" class="card border-left-danger shadow h-100 py-2 d-none">
+                <div id="cms_div" class="card border-left-info shadow h-100 py-2 d-none">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Meeting Space</div>
-                                <div id="meeting_status" class="h5 mb-0 font-weight-bold text-gray-800">Disabled</div>
+                                <div id="cms_status" class="h5 mb-0 font-weight-bold text-gray-800">Checking...</div>
                             </div>
                             <div class="col-auto">
-                                <a href="#" class="btn btn-success btn-icon-split">
+                                <a href="#" id='cms_enable_btn' class="btn btn-success btn-icon-split d-none">
                                     <span class="icon text-white-50">
                                     <i class="fas fa-arrows-alt"></i>
                                     </span>
                                     <span class="text">Enable</span>
+                                </a>
+                                <a href="#" id='cms_disable_btn' class="btn btn-secondary btn-icon-split d-none">
+                                    <span class="icon text-white-50">
+                                    <i class="fas fa-arrows-alt"></i>
+                                    </span>
+                                    <span class="text">Disable</span>
                                 </a>
                             </div>
                         </div>
@@ -145,7 +157,7 @@
 </div>
 
 <!-- Status Toast Popup -->
-<div id="status_toast" class="toast" style="position: absolute; top: 150px; right: 20px;">
+<div id="status_toast" class="toast" style="position: absolute; top: 50px; right: 250px;">
     <div class="toast-header bg-danger">
         <strong class="mr-auto text-white">Error</strong>
         <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
@@ -166,7 +178,7 @@
         $('#devices_card').removeClass('d-none');
         $('#device_add_card').removeClass('d-none');
         $('#vm_div').removeClass('d-none');
-        $('#meeting_div').removeClass('d-none');
+        $('#cms_div').removeClass('d-none');
     };
 
     $(document).ready(function () {
@@ -187,13 +199,37 @@
             }
         });
 
-        $('#user_search_button').click(function () {
+        $('#user_search_button').click(function (e) {
+            e.preventDefault();
             user_search();
         });
 
-        $('#add_device_button').click(function () {
+        $('#add_device_button').click(function (e) {
+            e.preventDefault();
             add_device();
         });
+
+        $('#vm_enable_btn').click(function (e) {
+            e.preventDefault();
+            enable_vm();
+        });
+
+        $('#vm_disable_btn').click(function (e) {
+            e.preventDefault();
+            disable_vm();
+        });
+
+        $('#cms_enable_btn').click(function (e) {
+            e.preventDefault();
+            enable_cms();
+        });
+
+        $('#cms_disable_btn').click(function (e) {
+            e.preventDefault();
+            disable_cms();
+        });
+
+
 
     });
 </script>

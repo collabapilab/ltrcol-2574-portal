@@ -273,6 +273,8 @@ function user_search() {
                 console.log(user_data);
                 display_user_data(user_data);
                 display_device_table(user_data['associatedDevices']['device']);
+                check_vm_status();
+                check_cms_status();
                 show_user_fields();
             } else {
                 $('#toast-body').html(data['message']);
