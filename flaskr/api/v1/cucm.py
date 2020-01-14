@@ -12,7 +12,7 @@ from flaskr.api.v1.parsers import cucm_list_phones_returned_tags_query_args
 from flaskr.api.v1.parsers import cucm_list_phones_search_criteria_query_args
 from flaskr.api.v1.parsers import cucm_device_search_criteria_query_args
 from flaskr.api.v1.parsers import cucm_service_status_query_args
-from flaskr.api.v1.parsers import cucm_perfmon_query_args
+from flaskr.api.v1.parsers import cucm_update_line_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
@@ -236,16 +236,21 @@ class cucm_device_search_api(Resource):
         """
         try:
             cucm_device_search_criteria_query_parsed_args = cucm_device_search_criteria_query_args.parse_args(request)
+            SearchItems = []
+            if ',' in cucm_device_search_criteria_query_parsed_args['SearchItems']:
+                SearchItems_str = cucm_device_search_criteria_query_parsed_args['SearchItems']
+                SearchItems = list(map(str.strip, SearchItems_str.split(',')))
+            else:
+                SearchItems.append(cucm_device_search_criteria_query_parsed_args['SearchItems'])
             ris_search_criteria = {
-                'SelectBy': 'Description',
+                'SelectBy': cucm_device_search_criteria_query_parsed_args['SearchBy'],
                 'MaxReturnedDevices': 1000,
                 'Status': cucm_device_search_criteria_query_parsed_args['Status'],
-                'SelectItems': [
-                    {
-                        'item': [cucm_device_search_criteria_query_parsed_args['Description']]
-                    }
-                ]
+                'SelectItems': []
             }
+            for SearchItem in SearchItems:
+                SelectItem_dict = {'item': SearchItem}
+                ris_search_criteria['SelectItems'].append(SelectItem_dict)
             risresult = mySXMLRisPort70Service.ris_query(search_criteria=ris_search_criteria)
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
@@ -305,8 +310,7 @@ class cucm_service_api(Resource):
 
 @api.route("/perfmon")
 class cucm_perfmon_api(Resource):
-    # CUCM Perfmon Query Model
-
+    # CUCM Perfmon Query API Payload Model
     cucm_perfmon_post_data = api.model('perfmon_post_data', {
         "perfmon_class": fields.String(description='Performance Class Name', example='Cisco SIP Stack', required=False),
         "perfmon_counters": fields.List(fields.String(description='Performance Counter Class + Instance + Name',
@@ -351,4 +355,44 @@ class cucm_perfmon_api(Resource):
         apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
                      'perfmon_class_result': perfmon_class_result,
                      'perfmon_counters_result': perfmon_counters_result}
+        return jsonify(apiresult)
+
+
+@api.route("/line/<string:directory_num>")
+@api.param('directory_num', description='The Line Directory Number')
+class cucm_line_api(Resource):
+    @api.expect(cucm_update_line_query_args, validate=True)
+    def put(self, directory_num):
+        """
+        Updates a Line Number configuration and Applies it on CUCM
+
+        This API method executes an updateLine and applyLine AXL Requests with the supplied phone_update_data parameter
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_updateLine.html
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_applyLine.html
+        """
+        try:
+            cucm_update_line_query_parsed_args = cucm_update_line_query_args.parse_args(request)
+            callforwardtovm = cucm_update_line_query_parsed_args['callforwardtovm']
+
+            line_update_data = {
+                "pattern": directory_num,
+                'callForwardBusy': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardBusyInt': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardNoAnswer': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardNoAnswerInt': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardNoCoverage': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardNoCoverageInt': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardOnFailure': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardNotRegistered': {'forwardToVoiceMail': callforwardtovm},
+                'callForwardNotRegisteredInt': {'forwardToVoiceMail': callforwardtovm}
+            }
+            axl_update_line_result = myAXL.update_line(line_data=line_update_data)
+            myAXL.apply_line(directory_num, 'DN_PT')
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Line Configuration Updated & Applied Successfully",
+                     'uuid': axl_update_line_result['return']}
         return jsonify(apiresult)
