@@ -35,7 +35,11 @@ cucm_list_phones_returned_tags_query_args.add_argument('returnedTags', type=str,
 
 # CUCM Device Search Query arguments
 cucm_device_search_criteria_query_args = reqparse.RequestParser()
-cucm_device_search_criteria_query_args.add_argument('Description', type=str, required=True, help='Device Description to Search (* wildcard is accepted)', default='*')
+cucm_device_search_criteria_query_args.add_argument('SearchBy', type=str, required=True,
+                                                    choices=['Name', 'IPV4Address', 'IPV6Address', 'DirNumber', 'Description', 'SIPStatus'],
+                                                    help='Device Search Field', default='Name')
+cucm_device_search_criteria_query_args.add_argument('SearchItems', type=str, required=True,
+                                                    help='List of Device Search Items, comma seperated (* wildcards are accepted)', default='*')
 cucm_device_search_criteria_query_args.add_argument('Status', type=str, required=True,
                                                     choices=['Any', 'Registered', 'UnRegistered', 'Rejected', 'PartiallyRegistered', 'Unknown'],
                                                     help='Device Status to Search', default='Any')
@@ -68,7 +72,7 @@ cms_spaces_get_args = reqparse.RequestParser()
 cms_spaces_get_args.add_argument('filter', type=str, required=False, help='Search string')
 cms_spaces_get_args.add_argument('limit', type=int, required=False, help='Maximum results to return. \
   Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
-cms_spaces_get_args.add_argument('offset', type=int, 
+cms_spaces_get_args.add_argument('offset', type=int,
                                  help='Return results starting with the offset specified', default=0)
 
 # Cisco Unity Connection API Arguments
@@ -86,13 +90,13 @@ cuc_users_get_args = reqparse.RequestParser()
 cuc_users_get_args.add_argument('column', type=str, default='alias',
                                 help='CUC database column to search')
 cuc_users_get_args.add_argument('match_type', type=str, choices=['startswith', 'is'], default='is',
-                                 help='How to perform the search query (column match_type search)')
+                                help='How to perform the search query (column match_type search)')
 cuc_users_get_args.add_argument('search', type=str, help='The string to search for')
 cuc_users_get_args.add_argument('sortorder', type=str, choices=['asc', 'desc'],
                                 help='Order of return values (ascending or descending)', default='asc')
-cuc_users_get_args.add_argument('rowsPerPage', type=int, 
+cuc_users_get_args.add_argument('rowsPerPage', type=int,
                                 help='Maximum number of rows to return', default=100)
-cuc_users_get_args.add_argument('pageNumber', type=int, 
+cuc_users_get_args.add_argument('pageNumber', type=int,
                                 help='Page number to return', default=1)
 
 cuc_users_put_args = reqparse.RequestParser()

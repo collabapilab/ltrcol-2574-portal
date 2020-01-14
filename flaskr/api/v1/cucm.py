@@ -236,16 +236,21 @@ class cucm_device_search_api(Resource):
         """
         try:
             cucm_device_search_criteria_query_parsed_args = cucm_device_search_criteria_query_args.parse_args(request)
+            SearchItems = []
+            if ',' in cucm_device_search_criteria_query_parsed_args['SearchItems']:
+                SearchItems_str = cucm_device_search_criteria_query_parsed_args['SearchItems']
+                SearchItems = list(map(str.strip, SearchItems_str.split(',')))
+            else:
+                SearchItems.append(cucm_device_search_criteria_query_parsed_args['SearchItems'])
             ris_search_criteria = {
-                'SelectBy': 'Description',
+                'SelectBy': cucm_device_search_criteria_query_parsed_args['SearchBy'],
                 'MaxReturnedDevices': 1000,
                 'Status': cucm_device_search_criteria_query_parsed_args['Status'],
-                'SelectItems': [
-                    {
-                        'item': [cucm_device_search_criteria_query_parsed_args['Description']]
-                    }
-                ]
+                'SelectItems': []
             }
+            for SearchItem in SearchItems:
+                SelectItem_dict = {'item': SearchItem}
+                ris_search_criteria['SelectItems'].append(SelectItem_dict)
             risresult = mySXMLRisPort70Service.ris_query(search_criteria=ris_search_criteria)
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
