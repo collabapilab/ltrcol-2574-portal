@@ -81,7 +81,7 @@ class cuc_user_api(Resource):
     def get(self, userid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
-        Get user from Unity Connection using user object ID.
+        Get user from Unity Connection using the user ID / alias.
         """
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
@@ -91,7 +91,7 @@ class cuc_user_api(Resource):
     def post(self, userid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
-        Import Unity Connection user from LDAP using userID.
+        Import Unity Connection user from LDAP using the user ID / alias.
         """
         args = request.args.to_dict()
         if 'templateAlias' not in args:
@@ -118,7 +118,7 @@ class cuc_user_api(Resource):
     def put(self, userid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
-        Update user from Unity Connection using user object ID.
+        Update user from Unity Connection using the user ID / alias.
         """
         args = request.args.to_dict()
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
@@ -132,7 +132,7 @@ class cuc_user_api(Resource):
     def delete(self, userid, host=default_cuc['host'], port=default_cuc['port'],
                username=default_cuc['username'], password=default_cuc['password']):
         """
-        Delete user from Unity Connection using user object ID.
+        Delete user from Unity Connection using the user ID / alias.
         """
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
@@ -149,7 +149,7 @@ class cuc_update_pin_api(Resource):
     def put(self, pkid, host=default_cuc['host'], port=default_cuc['port'],
             username=default_cuc['username'], password=default_cuc['password']):
         """
-        Update Unity Connection user PIN credential settings using user object ID.
+        Update Unity Connection user PIN credential settings using the user ID / alias.
         """
         args = request.args.to_dict()
         payload = {'Credentials': args['Credentials']}
