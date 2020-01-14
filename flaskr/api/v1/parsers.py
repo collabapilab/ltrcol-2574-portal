@@ -65,9 +65,11 @@ cms_spaces_post_args.add_argument('defaultLayout', type=str, default='automatic'
                                   help='Default Layout for this Space')
 
 cms_spaces_get_args = reqparse.RequestParser()
-cms_spaces_get_args.add_argument('filter', type=str, required=False, help='Search string')
-cms_spaces_get_args.add_argument('limit', type=int, required=False, help='Maximum results to return. \
-  Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
+cms_spaces_get_args.add_argument('filter', type=str,
+                                 help='String to search for in Name, URI, and secondaryUri fields')
+cms_spaces_get_args.add_argument('limit', type=int, required=False, default=10,
+                                 help='Maximum results to return. Note that CMS has an internal limit \
+                                       of 10 even though a larger limit can be requested')
 cms_spaces_get_args.add_argument('offset', type=int, 
                                  help='Return results starting with the offset specified', default=0)
 

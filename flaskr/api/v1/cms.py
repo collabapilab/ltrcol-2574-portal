@@ -3,7 +3,8 @@ from flask_restplus import Namespace, Resource
 from flaskr.api.v1.config import default_cms, default_cucm
 from flaskr.cms.v1.cms import CMS
 from flaskr.uds.v1.uds import UDS
-from flaskr.api.v1.parsers import cms_spaces_get_args, cms_spaces_post_args
+from flaskr.api.v1.parsers import cms_spaces_get_args
+from flaskr.api.v1.parsers import cms_spaces_post_args
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
@@ -38,15 +39,19 @@ class cms_version_api(Resource):
 
 def get_matched_uri(space_list, uri):
     """
-    Returns pkid of the Space where the URI or Secondary URI match the searched uri
+    Returns pkid of the Space where the URI or Secondary URI match the searched uri.
+    If neither is matched, return None.  Neither uri or secondaryUri are required
+    Space settings, so we need to take that into account.
     """
     for space in space_list:
         try:
+            # Check if the URI matches the current Space URI component
             if uri == space['uri']:
                 return space['@id']
         except KeyError:
             pass
         try:
+            # Check if the URI matches the current Space secondaryUri component
             if uri == space['secondaryUri']:
                 return space['@id']
         except KeyError:
