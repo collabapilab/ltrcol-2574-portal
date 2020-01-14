@@ -1,6 +1,3 @@
-# import os
-# import pathlib
-
 from flask import render_template
 from flask import Blueprint
 from flask import request
