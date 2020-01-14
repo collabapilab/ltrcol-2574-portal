@@ -40,7 +40,7 @@ cucm_device_search_criteria_query_args.add_argument('SearchBy', type=str, requir
                                                     help='Device Search Field', default='Name')
 cucm_device_search_criteria_query_args.add_argument('SearchItems', type=str, required=True,
                                                     help='List of Device Search Items, comma seperated (* wildcards are accepted)', default='*')
-cucm_device_search_criteria_query_args.add_argument('Status', type=str, required=True,
+cucm_device_search_criteria_query_args.add_argument('Status', type=str, required=False,
                                                     choices=['Any', 'Registered', 'UnRegistered', 'Rejected', 'PartiallyRegistered', 'Unknown'],
                                                     help='Device Status to Search', default='Any')
 
