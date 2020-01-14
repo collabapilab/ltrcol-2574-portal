@@ -187,7 +187,7 @@ class CUPI(REST):
         '''
         Modify a user on the Unity Connection system.
 
-        Payload example:
+        Payload dictionary example:
         {
             "Credentials":"14235834"
         }
@@ -209,7 +209,7 @@ class CUPI(REST):
         if user['success']:
             try:
                 if user['response']['@total'] == '1':
-                    return self._cupi_request("users/" + user['response']['User'][0]['ObjectId'])
+                    return self._cupi_request('users/' + user['response']['User'][0]['ObjectId'])
             except KeyError:
                 pass
         return user

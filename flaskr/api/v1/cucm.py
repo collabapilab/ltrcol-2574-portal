@@ -309,8 +309,8 @@ class cucm_perfmon_api(Resource):
 
     cucm_perfmon_post_data = api.model('perfmon_post_data', {
         "perfmon_class": fields.String(description='Performance Class Name', example='Cisco SIP Stack', required=False),
-        "perfmon_counters": fields.List(fields.String(description='Performance Counter Name',
-                                                      example='\\\\cucm1a.pod31.col.lab\\Cisco CallManager\\RegisteredOtherStationDevices', required=False))
+        "perfmon_counters": fields.List(fields.String(description='Performance Counter Class + Instance + Name',
+                                                      example='Cisco CallManager\\RegisteredOtherStationDevices', required=False))
     })
 
     @api.expect(cucm_perfmon_post_data, validate=True)
@@ -332,7 +332,10 @@ class cucm_perfmon_api(Resource):
                 perfmon_class_result = None
             if api.payload.get('perfmon_counters'):
                 perfmon_session_handle = mySXMLPerfMonService.perfmon_open_session()
-                if not mySXMLPerfMonService.perfmon_add_counter(session_handle=perfmon_session_handle, counters=api.payload['perfmon_counters']):
+                perfmon_counters = []
+                for counter in api.payload['perfmon_counters']:
+                    perfmon_counters.append(f"\\\\{default_cucm['host']}\\" + counter)
+                if not mySXMLPerfMonService.perfmon_add_counter(session_handle=perfmon_session_handle, counters=perfmon_counters):
                     mySXMLPerfMonService.perfmon_close_session(session_handle=perfmon_session_handle)
                     raise Exception(f"Failed to Query Counters: {api.payload['perfmon_counters']}")
                 perfmon_counters_result = mySXMLPerfMonService.perfmon_collect_session_data(session_handle=perfmon_session_handle)

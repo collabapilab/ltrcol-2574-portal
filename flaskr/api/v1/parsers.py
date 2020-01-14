@@ -72,59 +72,36 @@ cms_spaces_get_args.add_argument('offset', type=int, required=False, help='Retur
 
 # Cisco Unity Connection API Arguments
 
-cuc_importldap_post_args = reqparse.RequestParser()
-cuc_importldap_post_args.add_argument('templateAlias', type=str, required=True,
-                                      help='User template alias',
-                                      default='voicemailusertemplate')
-cuc_importldap_post_args.add_argument('pkid', type=str, required=False,
-                                      help='PKID of the user to be imported')
-cuc_importldap_post_args.add_argument('userid', type=str, required=False,
-                                      help='User ID of the user to be imported')
-cuc_importldap_post_args.add_argument('IsVmEnrolled', type=str, required=False,
-                                      help='Play initial enrollment conversation (to record a name, request \
-                                            password, etc)',
-                                      choices=['true', 'false'], default='true')
-cuc_importldap_post_args.add_argument('ListInDirectory', type=str, required=False,
-                                      help='List in the Unity Connection Auto Attendant Directory',
-                                      choices=['true', 'false'], default='true')
-
 cuc_importldap_user_post_args = reqparse.RequestParser()
-cuc_importldap_user_post_args.add_argument('templateAlias', type=str, required=False,
-                                      help='User template alias',
-                                      default='voicemailusertemplate')
-cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=str, required=False,
-                                      help='Play initial enrollment conversation (to record a name, request \
-                                            password, etc)',
-                                      choices=['true', 'false'], default='true')
-cuc_importldap_user_post_args.add_argument('ListInDirectory', type=str, required=False,
-                                      help='List in the Unity Connection Auto Attendant Directory',
-                                      choices=['true', 'false'], default='true')
+cuc_importldap_user_post_args.add_argument('templateAlias', type=str, default='voicemailusertemplate',
+                                           help='User template alias to create the account with')
+cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=str,
+                                           help='Play initial enrollment conversation (to record a name, request \
+                                           password, etc)')
+cuc_importldap_user_post_args.add_argument('ListInDirectory', type=str,
+                                           help='List in the Unity Connection Auto Attendant Directory')
 
 cuc_users_get_args = reqparse.RequestParser()
-cuc_users_get_args.add_argument('column', type=str, required=False,
-                                help='Column to search', default='alias')
-cuc_users_get_args.add_argument('match_type', type=str, required=False, choices=[
-                                'startswith', 'is'], help='Order of return values', default='is')
-cuc_users_get_args.add_argument('search', type=str, required=False, help='Query string')
-cuc_users_get_args.add_argument('sortorder', type=str, required=False, choices=[
-                                'asc', 'desc'], help='Order of return values', default='asc')
-cuc_users_get_args.add_argument('rowsPerPage', type=int, required=False,
-                                help='Number of rows to return', default=100)
-cuc_users_get_args.add_argument('pageNumber', type=int, required=False,
-                                help='Page # to return', default=1)
+cuc_users_get_args.add_argument('column', type=str, default='alias',
+                                help='CUC database column to search')
+cuc_users_get_args.add_argument('match_type', type=str, choices=['startswith', 'is'], default='is',
+                                 help='How to perform the search query (column match_type search)')
+cuc_users_get_args.add_argument('search', type=str, help='The string to search for')
+cuc_users_get_args.add_argument('sortorder', type=str, choices=['asc', 'desc'],
+                                help='Order of return values (ascending or descending)', default='asc')
+cuc_users_get_args.add_argument('rowsPerPage', type=int, 
+                                help='Maximum number of rows to return', default=100)
+cuc_users_get_args.add_argument('pageNumber', type=int, 
+                                help='Page number to return', default=1)
 
 cuc_users_put_args = reqparse.RequestParser()
-cuc_users_put_args.add_argument('ListInDirectory', type=str, required=False,
-                                help='List in the Unity Connection Auto Attendant Directory',
-                                choices=['true', 'false'], default='true')
-cuc_users_put_args.add_argument('IsVmEnrolled', type=str, required=False,
+cuc_users_put_args.add_argument('ListInDirectory', type=bool,
+                                help='List in the Unity Connection Auto Attendant Directory')
+cuc_users_put_args.add_argument('IsVmEnrolled', type=bool,
                                 help='Play initial enrollment conversation (to record a name, request new \
-                                      password, etc)',
-                                choices=['true', 'false'], default='true')
-
-cuc_pin_cred_put_args = reqparse.RequestParser()
-cuc_pin_cred_put_args.add_argument('Credentials', type=int, required=True, help='PIN of the voicemail box')
-cuc_pin_cred_put_args.add_argument('ResetMailbox', type=bool, required=False, help='Reset mailbox', default=True)
+                                      password, etc)')
+cuc_users_put_args.add_argument('PIN', type=int, help='New PIN for the voicemail account')
+cuc_users_put_args.add_argument('ResetMailbox', type=bool, help='Reset mailbox')
 
 # Webex Teams API Arguments
 wbxt_rooms_get_args = reqparse.RequestParser()
