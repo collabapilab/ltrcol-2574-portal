@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f9ab3fe3-973d-4083-8edc-74228fe681b4",
+		"_postman_id": "f47e6e59-ce52-4081-b5a1-6949ca611edc",
 		"name": "LTRCOL-2574",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,6 +11,33 @@
 				{
 					"name": "CUC",
 					"item": [
+						{
+							"name": "Get CUC Version",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/version/product/",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"version",
+										"product",
+										""
+									]
+								}
+							},
+							"response": []
+						},
 						{
 							"name": "Get CUC Users",
 							"request": {
@@ -1347,37 +1374,37 @@
 	],
 	"variable": [
 		{
-			"id": "00ea97f2-6bcf-45ae-a490-e1c2e0c68722",
+			"id": "8a9b1092-5c1f-48c4-8584-cf2c2a26213d",
 			"key": "pod_num",
 			"value": "31",
 			"type": "string"
 		},
 		{
-			"id": "9886de77-688f-45ec-a03f-5d153150cd75",
+			"id": "4dba2a67-b8e6-4717-91c8-b06870aae013",
 			"key": "cuc",
 			"value": "cuc1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "83ce82b9-724f-4ddc-9d19-85cc93d0e471",
+			"id": "bb61da14-1ade-42d7-89fc-9d12032d7872",
 			"key": "cms",
 			"value": "cms1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "b3b11100-3028-4331-8167-8542d31c7b73",
+			"id": "a205535d-33a3-4c1c-b8da-936cf811797c",
 			"key": "webexteams_access_token",
 			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
 			"type": "string"
 		},
 		{
-			"id": "eb7102f0-20a9-44f5-9daa-2919273fbebf",
+			"id": "761bb1fd-f73c-4268-94bd-947d2c527053",
 			"key": "host",
 			"value": "dev1.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "fb8883ae-c6d3-4b89-b581-cc9e07574456",
+			"id": "5a067e28-cef5-4c2d-8df4-990116ed60d0",
 			"key": "port",
 			"value": "5000",
 			"type": "string"
