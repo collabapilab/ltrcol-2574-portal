@@ -453,6 +453,15 @@ class CUCMAxlToolkit(AxlToolkit):
 
         return result
 
+    def apply_line(self, dn, partition=None):
+        try:
+            result = self.service.applyLine(pattern=dn, routePartitionName=partition)
+        except Exception as fault:
+            result = None
+            self.last_exception = fault
+
+        return result
+
     def add_ldap_filter(self, name, filter_name):
 
         filter_data = {
