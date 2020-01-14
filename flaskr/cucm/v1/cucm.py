@@ -51,11 +51,9 @@ class AXL:
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
-    :param port: (optiona) The server port for API access (default: 443)
     :type host: String
     :type username: String
     :type password: String
-    :type port: Integer
     :returns: return an AXL object
     :rtype: AXL
     """
@@ -171,6 +169,18 @@ class AXL:
 
     @Decorators.axl_result_check
     @Decorators.axl_setup
+    def update_line(self, line_data=None):
+        axl_result = self.axlclient.update_line(line_data=line_data)
+        return axl_result
+
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
+    def apply_line(self, dn=None, partition=None):
+        axl_result = self.axlclient.apply_line(dn=dn, partition=partition)
+        return axl_result
+
+    @Decorators.axl_result_check
+    @Decorators.axl_setup
     def get_user(self, userid=None):
         axl_result = self.axlclient.get_user(userid=userid)
         return axl_result
@@ -193,11 +203,9 @@ class PAWS:
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
-    :param port: (optiona) The server port for API access (default: 443)
     :type host: String
     :type username: String
     :type password: String
-    :type port: Integer
     :returns: return an PAWS object
     :rtype: PAWS
     """
@@ -279,11 +287,9 @@ class SXML:
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
-    :param port: (optiona) The server port for API access (default: 443)
     :type host: String
     :type username: String
     :type password: String
-    :type port: Integer
     :returns: return an SXML object
     :rtype: SXML
     """
