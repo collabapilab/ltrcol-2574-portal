@@ -20,6 +20,10 @@ cucm_update_phone_query_args.add_argument('description', type=str, required=Fals
 cucm_update_phone_query_args.add_argument('isActive', type=inputs.boolean, required=False, help='Phone License Activation Status', default=True)
 cucm_update_phone_query_args.add_argument('callingSearchSpaceName', type=str, required=False, help='Phone Device Calling Search Space', default='Unrestricted_CSS')
 
+# CUCM Update Line Query arguments
+cucm_update_line_query_args = reqparse.RequestParser()
+cucm_update_line_query_args.add_argument('callforwardtovm', type=inputs.boolean, required=False, help='Enable Call Forward to Voicemail', default=True)
+
 # CUCM List Phones Query arguments
 cucm_list_phones_search_criteria_query_args = reqparse.RequestParser()
 cucm_list_phones_search_criteria_query_args.add_argument('name', type=str, required=False, help='Name to search', default='%')
@@ -48,11 +52,6 @@ cucm_device_search_criteria_query_args.add_argument('Status', type=str, required
 cucm_service_status_query_args = reqparse.RequestParser()
 cucm_service_status_query_args.add_argument('Services', type=str, required=False,
                                             help='List of Services seperated by commas, Leave blank to receive the service status information for all services in the system')
-
-# CUCM Perfmon Query arguments
-cucm_perfmon_query_args = reqparse.RequestParser()
-cucm_perfmon_query_args.add_argument('Counters', type=str, required=False, help='List of Performance Counters seperated by commas')
-cucm_perfmon_query_args.add_argument('Class', type=str, help='Single Perfmonance Counter Class Name')
 
 # Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
