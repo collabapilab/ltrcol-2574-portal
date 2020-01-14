@@ -18,7 +18,7 @@ class WBXT(REST):
     :rtype: WBXT
     '''
 
-    def __init__(self, access_token=wbxt_access_token):
+    def __init__(self, access_token):
         '''
         Initialize the WBXT class as a child of the REST class.
         Define the WBXT-specific headers, host, and API base_url

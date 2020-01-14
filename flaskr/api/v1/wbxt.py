@@ -1,6 +1,7 @@
 
 from flask import request
 from flask_restplus import Namespace, Resource
+from flaskr.api.v1.config import wbxt_access_token
 from flaskr.wbxt.v1.wbxt import WBXT
 from flaskr.api.v1.parsers import wbxt_rooms_get_args, wbxt_messages_post_args
 
@@ -15,7 +16,7 @@ class wbxt_get_rooms_api(Resource):
         Retrieves Webex Teams Rooms
         '''
         args = request.args.to_dict()
-        wbxt = WBXT()
+        wbxt = WBXT(wbxt_access_token)
         return wbxt.get_rooms(parameters=args)
 
 
@@ -27,5 +28,5 @@ class wbxt_create_message_api(Resource):
         Sends a message to a Webex Teams Rooms using the Room ID.
         '''
         args = request.args.to_dict()
-        wbxt = WBXT()
+        wbxt = WBXT(wbxt_access_token)
         return wbxt.create_message(payload=args)
