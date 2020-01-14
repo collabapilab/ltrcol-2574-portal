@@ -9,6 +9,17 @@ from flaskr.api.v1.parsers import cuc_users_put_args
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
 
+@api.route("/version")
+class cuc_version_api(Resource):
+    def get(self, host=default_cuc['host'], port=default_cuc['port'],
+            username=default_cuc['username'], password=default_cuc['password']):
+        """
+        Retrieves Unity Connection version.
+        """
+        cuc = CUPI(default_cuc['host'], default_cuc['username'],
+                   default_cuc['password'], port=default_cuc['port'])
+        return cuc.get_version()
+
 def get_search_params(args):
     """
     Returns CUC search parameters from request arguments as a dictionary. 

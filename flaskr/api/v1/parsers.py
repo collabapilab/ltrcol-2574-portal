@@ -48,27 +48,28 @@ cucm_service_status_query_args.add_argument('Services', type=str, required=False
 # CUCM Perfmon Query arguments
 cucm_perfmon_query_args = reqparse.RequestParser()
 cucm_perfmon_query_args.add_argument('Counters', type=str, required=False, help='List of Performance Counters seperated by commas')
-cucm_perfmon_query_args.add_argument('Class', type=str, required=False, help='Single Perfmonance Counter Class Name')
+cucm_perfmon_query_args.add_argument('Class', type=str, help='Single Perfmonance Counter Class Name')
 
 # Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
-cms_spaces_post_args.add_argument('name', type=str, required=False, help='Name of the Space')
-cms_spaces_post_args.add_argument('uri', type=str, required=False,
+cms_spaces_post_args.add_argument('name', type=str, help='Name of the Space')
+cms_spaces_post_args.add_argument('uri', type=str,
                                   help='User URI part for SIP call to reach Space')
-cms_spaces_post_args.add_argument('secondaryUri', type=str, required=False,
+cms_spaces_post_args.add_argument('secondaryUri', type=str,
                                   help='Secondary URI for SIP call to reach Space')
-cms_spaces_post_args.add_argument('passcode', type=str, required=False,
+cms_spaces_post_args.add_argument('passcode', type=str,
                                   help='Security code for this Space')
-cms_spaces_post_args.add_argument('defaultLayout', type=str, required=False,
-                                  help='Default Layout for this Space',
-                                  choices=['automatic', 'allEqual', 'speakerOnly', 'telepresence', 'stacked', 'allEqualQuarters'],
-                                  default='automatic')
+cms_spaces_post_args.add_argument('defaultLayout', type=str, default='automatic',
+                                  choices=['automatic', 'allEqual', 'speakerOnly',
+                                           'telepresence', 'stacked', 'allEqualQuarters'],
+                                  help='Default Layout for this Space')
 
 cms_spaces_get_args = reqparse.RequestParser()
 cms_spaces_get_args.add_argument('filter', type=str, required=False, help='Search string')
-cms_spaces_get_args.add_argument('limit', type=int, required=False, help='How many results to return. \
+cms_spaces_get_args.add_argument('limit', type=int, required=False, help='Maximum results to return. \
   Note that CMS has an internal limit of 10 even though a larger limit can be requested', default=10)
-cms_spaces_get_args.add_argument('offset', type=int, required=False, help='Return results starting with the offset specified', default=0)
+cms_spaces_get_args.add_argument('offset', type=int, 
+                                 help='Return results starting with the offset specified', default=0)
 
 # Cisco Unity Connection API Arguments
 
@@ -105,13 +106,14 @@ cuc_users_put_args.add_argument('ResetMailbox', type=bool, help='Reset mailbox')
 
 # Webex Teams API Arguments
 wbxt_rooms_get_args = reqparse.RequestParser()
-wbxt_rooms_get_args.add_argument('teamId', type=str, required=False, help='List rooms associated with a team, by ID')
-wbxt_rooms_get_args.add_argument('type', type=str, required=False, help='List rooms by type',
-                                 choices=['direct', 'group'])
-wbxt_rooms_get_args.add_argument('sortBy', type=str, required=False, help='Sort results',
-                                 choices=['id', 'lastactivity', 'created'])
-wbxt_rooms_get_args.add_argument('max', type=int, required=False,
-                                 help='Maximum number of rooms in the response', default=100)
+wbxt_rooms_get_args.add_argument('teamId', type=str,
+                                 help='List rooms associated with a team, by ID')
+wbxt_rooms_get_args.add_argument('type', type=str, choices=['direct', 'group'],
+                                 help='List rooms by type')
+wbxt_rooms_get_args.add_argument('sortBy', type=str, required=False, choices=['id', 'lastactivity', 'created'],
+                                 help='Sort results')
+wbxt_rooms_get_args.add_argument('max', type=int, default=100,
+                                 help='Maximum number of rooms in the response')
 
 
 wbxt_messages_post_args = reqparse.RequestParser()

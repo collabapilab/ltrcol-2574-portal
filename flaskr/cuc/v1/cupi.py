@@ -129,6 +129,15 @@ class CUPI(REST):
 
         return result
 
+    def get_version(self):
+        '''
+        Get the Unity Connection version.
+
+        Reference:
+        https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_0100.html#id_117664
+        '''
+        return self._cupi_request("version/product/")
+
     def get_users(self, parameters={}):
         '''
         Get a list of users on the Unity Connection system.

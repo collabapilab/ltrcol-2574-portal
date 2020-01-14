@@ -29,8 +29,10 @@ class cms_version_api(Resource):
         Use this method to query for the CMS software version.
         """
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
+        # Retrieve the CMS system/status
         cms_status = cms.get_system_status()
         if cms_status['success']:
+            # Return only the version component
             return cms_status['response']['status']['softwareVersion']
         return cms_status
 
