@@ -173,15 +173,13 @@ class cuc_user_api(Resource):
         user = cuc.get_user_by_id(userid)
 
         # Either a single user was returned, no users were found, or an error occurred.
-        try:
-            # Single user found.  Delete the user using the object ID
-            if user['response']['@total'] == '1':
+        if user['success']:
+            try:
                 return cuc.delete_user(id=user['response']['ObjectId'])
-            else:
-                # No users were found
+            except KeyError:
+                # The user['response']['ObjectId'] did not exist. There was no user
                 return {'success': False,
-                        'msg': 'Found {} users to import with user id {}'.format(user['response']['@total'], userid),
+                        'msg': 'Found {} users with user id {}'.format(user['response']['@total'], userid),
                         'response': user['response']}
-        except KeyError:
-            # Return the errored user look up data
+        else:
             return user

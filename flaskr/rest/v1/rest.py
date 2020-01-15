@@ -10,17 +10,19 @@ class REST:
 
     :param host: The Hostname / IP Address of the server
     :param port: (optional) The server port for API access (default: 443)
+    :param secure: (optional) Destination is insecure (e.g. http instead of https)
     :param base_url: (optional) The base URL, such as "/api/v1" for a given API
     :param headers: (optional) A dictionary of header key/value pairs
     :type host: String
     :type port: Integer
+    :type secure: Bool
     :type base_url: String
     :type headers: Dict
     :returns: return an REST object
     :rtype: REST
     """
 
-    def __init__(self, host, base_url=None, headers={}, port=443):
+    def __init__(self, host, secure=True, base_url=None, headers={}, port=443):
         """
         Initialize an object with the host, port, and base_url using the parameters passed in.
         """
@@ -28,6 +30,7 @@ class REST:
         self.port = str(port)
         self.base_url = base_url
         self.headers = headers
+        self.secure = secure
 
     def _send_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         """
@@ -56,7 +59,7 @@ class REST:
         result = {'success': False, 'message': '', 'response': ''}
         # Set the URL using the parameters of the object and the api_method requested
         # in a format such as: https//host:port/api/v1/api_method
-        url = "https://{}:{}{}/{}".format(self.host, self.port, self.base_url, api_method)
+        url = "http{}://{}:{}{}/{}".format('s' if self.secure else '', self.host, self.port, self.base_url, api_method)
 
         # Send the request and handle RequestException that may occur
         try:
