@@ -13,6 +13,7 @@ function add_cuc_user(username) {
 }
 
 function remove_cuc_user(username) {
+    console.log("Removing CUC User " + username);
     return $.ajax({
 		type: 'DELETE',
 		url: '/api/v1/cuc/users/' + username
@@ -40,11 +41,27 @@ function remove_cms_space(username) {
 	});
 }
 
+function get_cuc_version() {
+    return $.ajax({
+		type: 'GET',
+		url: '/api/v1/cuc/version'
+	});
+}
+
+function get_cms_version() {
+    return $.ajax({
+		type: 'GET',
+		url: '/api/v1/cms/version'
+	});
+}
+
 function check_vm_status() {
     var username = $('#owner_id').html();
 
     get_cuc_user(username).then(function(result) {
         var vm_enabled = null;
+
+        console.log(result);
 
         if (result['success'] == true) {
             if (result['response']['@total'] == '0') {
@@ -136,7 +153,8 @@ function disable_vm() {
     $('#vm_div').addClass("border-left-info");
     $('#voicemail_status').html("Disabling...");
 
-    remove_cuc_user(username).then(function() {
+    remove_cuc_user(username).then(function(result) {
+        console.log(result);
         check_vm_status();
     });
 }
@@ -162,5 +180,31 @@ function disable_cms() {
 
     remove_cms_space(username).then(function() {
         check_cms_status();
+    });
+}
+
+function update_cuc_version() {
+    get_cuc_version().then(function(result) {
+        console.log(result);
+        if (result['success'] == true) {
+            version = result['response']['version'];
+        } else {
+            version = "unknown";
+        }
+
+        $('#cuc_version').html(version);
+    });
+}
+
+function update_cms_version() {
+    get_cms_version().then(function(result) {
+        console.log(result);
+        if (result != null) {
+            version = result;
+        } else {
+            version = "unknown";
+        }
+
+        $('#cms_version').html(version);
     });
 }

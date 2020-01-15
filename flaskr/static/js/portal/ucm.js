@@ -51,6 +51,14 @@ function get_device_detail(device_name) {
 	});
 }
 
+function get_ucm_version() {
+    return $.ajax({
+		type: 'GET',
+		url: '/api/v1/cucm/version'
+	});
+}
+
+
 function refresh_perfmon_data() {
     get_perfmon_data().then(function(data) {
         console.log(data['perfmon_counters_result'])
@@ -111,13 +119,15 @@ function refresh_perfmon_data() {
   
       });
 
-    get_service_status().then(function(data) {
+    get_service_status(service_status_table).then(function(data) {
         var health_text;
         var health_bg; 
 
         var services_active = 0;
         var services_deactivated = 0; 
         var services_down = 0;
+
+        var service_list_data = [];
 
         if (data['service_info']['ReasonCode'] == -1) {
             var service_info_list = data['service_info']['ServiceInfoList']['item'];
@@ -126,6 +136,12 @@ function refresh_perfmon_data() {
                 service_reason = service['ReasonCode'];
                 service_name = service['ServiceName'];
                 console.log(service_name + ': ' + service_reason);
+
+                service_list_data.push([
+                    service_name, 
+                    service['ServiceStatus'], 
+                    service['StartTime']
+                ]);
 
                 switch (service_reason) {
                     case -1:
@@ -159,7 +175,13 @@ function refresh_perfmon_data() {
 
         $("#system_health_text").html(health_text);
         $("#system_health_card").removeClass("bg-info").removeClass("bg-success").removeClass("bg-danger").addClass("bg-" + health_bg);
-
+        
+        console.log(service_list_data);
+        
+        $('#service_status_table').DataTable().clear();
+        $('#service_status_table').DataTable().rows.add(service_list_data);
+        $('#service_status_table').DataTable().columns.adjust().draw();
+        
     });
 }
 
@@ -255,6 +277,22 @@ function display_device_table(device_list) {
                     e.preventDefault();
                     var data = device_datatable.row( $(this).parents('tr') ).data();
                     console.log(data);
+                    device_name = data[0];
+
+                    get_device_detail(device_name).then(function(device_details) {
+                        console.log(device_details);
+
+                        if (device_details['success'] == true) {
+                            device_data = device_details['phone_data'];
+                            console.log(device_data);
+                            device_detail_html = "<pre>" + JSON.stringify(device_data, null, 3) + "</pre>";
+                            
+                            $('#modal_device_details_title').html("Device Details for <b>"  + device_name + "</b>");
+                            $('#modal_device_details').html(device_detail_html);
+                            $('#device_modal').modal().show();
+                        }
+
+                    });
                 });
         
             }
@@ -348,5 +386,18 @@ function remove_device(device_name, table_row) {
         } else {
             console.log(result);
         }
+    });
+}
+
+function update_ucm_version() {
+    get_ucm_version().then(function(result) {
+        console.log(result);
+        if (result['success'] == true) {
+            version = result['version'];
+        } else {
+            version = "unknown";
+        }
+
+        $('#ucm_version').html(version);
     });
 }

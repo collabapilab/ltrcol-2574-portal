@@ -167,21 +167,27 @@ class cuc_user_api(Resource):
         """
         Delete user from Unity Connection using the user ID / alias.
         """
+
+        print("Deleting Unity User")
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
         # Look up the CUC user
         user = cuc.get_user_by_id(userid)
-
+        print(user)
         # Either a single user was returned, no users were found, or an error occurred.
         try:
             # Single user found.  Delete the user using the object ID
             if user['response']['@total'] == '1':
+                print("deleting")
                 return cuc.delete_user(id=user['response']['ObjectId'])
             else:
                 # No users were found
+                print("none found")
                 return {'success': False,
                         'msg': 'Found {} users to import with user id {}'.format(user['response']['@total'], userid),
                         'response': user['response']}
         except KeyError:
             # Return the errored user look up data
+            print("error")
             return user
+
