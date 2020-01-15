@@ -5,7 +5,6 @@ from flaskr.api.v1.cucm import api as cucm
 from flaskr.api.v1.cuc import api as cuc
 from flaskr.api.v1.cms import api as cms
 from flaskr.api.v1.wbxt import api as wbxt
-from flaskr.api.v1.uc import api as uc
 
 v1_blueprint = Blueprint('api_v1', __name__,
                          template_folder='templates',
@@ -17,4 +16,3 @@ v1api.add_namespace(cucm)
 v1api.add_namespace(cuc)
 v1api.add_namespace(cms)
 v1api.add_namespace(wbxt)
-v1api.add_namespace(uc)
