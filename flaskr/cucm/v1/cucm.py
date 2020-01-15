@@ -2,6 +2,7 @@ import requests
 import re
 import functools
 import os
+from time import sleep
 from zeep.xsd.valueobjects import CompoundValue
 from lxml import etree
 from collections import OrderedDict
@@ -62,11 +63,14 @@ class AXL:
         self.host = host
         self.username = username
         self.password = password
-        self.axlclient = None           # This is the AXL Client Object
-        self.axl_tls_verify = False     # TLS Verify on AXL HTTPS connections
-        self.axl_version = "10.0"       # This is the default AXL version we will use
-        self.axl_timeout = 30           # Default Timeout in Seconds for AXL Queries
-        self.axl_logging = False        # This controls the SOAP Logging
+        self.axlclient = None                   # This is the AXL Client Object
+        self.axl_tls_verify = False             # TLS Verify on AXL HTTPS connections
+        self.axl_version = "10.0"               # This is the default AXL version we will use
+        self.axl_timeout = 30                   # Default Timeout in Seconds for AXL Queries
+        self.axl_attempts = 0                   # AXL Request Attempt Count
+        self.axl_max_retries = 3                # AXL Request Max Retries
+        self.axl_backoff_times = [1, 5, 10]     # AXL Reqeust Retry Timeouts
+        self.axl_logging = False                # This controls the SOAP Logging
 
     class Decorators(object):
         @staticmethod
@@ -80,14 +84,26 @@ class AXL:
             return axl_setup_check
 
         @staticmethod
-        def axl_result_check(func):
+        def axl_result_check_with_retry(func):
             @functools.wraps(func)
             def axl_result_check_wrapper(self, *args, **kwargs):
-                value = func(self, *args, **kwargs)
-                if value is None:
-                    if self.axlclient.last_exception:
-                        raise Exception(str(self.axlclient.last_exception))
-                return serialize_object(value)
+                while self.axl_attempts <= self.axl_max_retries:
+                    try:
+                        value = func(self, *args, **kwargs)
+                        if value is None:
+                            if self.axlclient.last_exception:
+                                if "HTTP Status 503" in str(self.axlclient.last_exception.detail):
+                                    if self.axl_attempts >= self.axl_max_retries:
+                                        raise Exception(f"Received 503 -- AXL Throttling hit {self.axl_max_retries} times")
+                                    sleep(self.axl_backoff_times[self.axl_attempts])
+                                    self.axl_attempts += 1
+                                else:
+                                    raise Exception(str(self.axlclient.last_exception))
+                        else:
+                            return serialize_object(value)
+                    except Exception as e:
+                        self.axl_attempts = 0
+                        raise Exception(e)
             return axl_result_check_wrapper
 
     def _axl_setup(self):
@@ -129,31 +145,31 @@ class AXL:
             if self.axlclient.last_exception:
                 raise Exception("Exception with get_ccm_version --- " + str(self.axlclient.last_exception))
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def add_phone(self, phone_data=None):
         axl_result = self.axlclient.add_phone(phone_data=phone_data)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def get_phone(self, name=None):
         axl_result = self.axlclient.get_phone(name)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def delete_phone(self, name=None):
         axl_result = self.axlclient.remove_phone(name)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def apply_phone(self, name=None):
         axl_result = self.axlclient.apply_phone(name)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def list_phone(self, search_criteria_data=None, returned_tags=None):
         axl_result = self.axlclient.list_phone(search_criteria_data, returned_tags)
@@ -161,31 +177,31 @@ class AXL:
             raise Exception("List Phone did not return any Results given the search criteria")
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def update_phone(self, phone_data=None):
         axl_result = self.axlclient.update_phone(phone_data=phone_data)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def update_line(self, line_data=None):
         axl_result = self.axlclient.update_line(line_data=line_data)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def apply_line(self, dn=None, partition=None):
         axl_result = self.axlclient.apply_line(dn=dn, partition=partition)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def get_user(self, userid=None):
         axl_result = self.axlclient.get_user(userid=userid)
         return axl_result
 
-    @Decorators.axl_result_check
+    @Decorators.axl_result_check_with_retry
     @Decorators.axl_setup
     def update_user(self, user_data=None):
         axl_result = self.axlclient.update_user(user_data=user_data)
