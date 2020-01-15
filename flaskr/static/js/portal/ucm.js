@@ -310,7 +310,13 @@ function user_search() {
                 user_data = data['user_data']
                 console.log(user_data);
                 display_user_data(user_data);
-                display_device_table(user_data['associatedDevices']['device']);
+                associated_devices = [];
+                if ('associatedDevices' in user_data) {
+                    if (user_data['associatedDevices'] !== null) {
+                        associated_devices = user_data['associatedDevices']['device'];
+                    }
+                } 
+                display_device_table(associated_devices);
                 check_vm_status();
                 check_cms_status();
                 show_user_fields();
