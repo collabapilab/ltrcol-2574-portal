@@ -31,4 +31,4 @@ default_cms = {
 
 # Retrieve access token from:
 # https://developer.webex.com/docs/api/getting-started/accounts-and-authentication
-wbxt_access_token = 'MWJiY2U5YmItNDE3Mi00ZTllLTkzYzgtZDdlYmNlODgxODA5OTEyYTZiMmEtM2Vm_PF84_consumer'
+wbxt_access_token = 'OGZiM2Y5ZDEtZmY1ZS00YWExLWIyNGMtNDZkYzJkNzA3ODk4MzVhZGM5YTUtYjRh_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f'
