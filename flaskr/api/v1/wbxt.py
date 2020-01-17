@@ -35,13 +35,13 @@ class wbxt_send_api(Resource):
                             'messages': 'Successfully sent message {}'.format(message.id), 
                             'response': ''}
 
+            # Room was not found
+            return {'success': False, 
+                    'messages': 'Could not find Room "{}"'.format(args['room_name']),
+                    'response': ''}
+
         except ApiError as e:
             # Return any API error that may have been raised
             return {'success': False,
                     'messages': 'API Error encountered',
                     'response': '{}'.format(e)}
-
-        # Room was not found
-        return {'success': False, 
-                'messages': 'Could not find Room "{}"'.format(args['room_name']),
-                'response': ''}
