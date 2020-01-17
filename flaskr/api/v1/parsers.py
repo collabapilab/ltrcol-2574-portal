@@ -111,5 +111,5 @@ cuc_users_put_args.add_argument('ResetMailbox', type=bool, help='Reset mailbox')
 
 # Webex Teams API Arguments
 wbxt_messages_post_args = reqparse.RequestParser()
-wbxt_messages_post_args.add_argument('room_name', type=str, required=True, help='The Space (Room) title to send the mssage to')
+wbxt_messages_post_args.add_argument('room_name', type=str, required=True, help='The Space (Room) title to send the message to')
 wbxt_messages_post_args.add_argument('text', type=str, help='The message, in plain text')
