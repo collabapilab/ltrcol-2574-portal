@@ -11,7 +11,7 @@ class wbxt_send_api(Resource):
     @api.expect(wbxt_messages_post_args, Validate=True)
     def post(self):
         '''
-        Sends Message to Webex Teams Room by Room title
+        Sends Message to Webex Teams Space (Room) by Room Title
         '''
         pass
 
