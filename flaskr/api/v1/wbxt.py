@@ -19,32 +19,27 @@ class wbxt_send_api(Resource):
         if 'text' not in args:
             args['text'] = ''
 
-        # Initialize the webex teams API with our token
-        api = WebexTeamsAPI(access_token=wbxt_access_token)
-
         try:
+            # Initialize the webex teams API with our token
+            api = WebexTeamsAPI(access_token=wbxt_access_token)
+
             # Get the Rooms list (only group type, not direct)
             rooms = api.rooms.list(type='group')
-        except ApiError as e:
-             # Return any API error that may have been raised
-            return {'success': False,
-                    'messages': 'Error getting Rooms List',
-                    'response': '{}'.format(e)}
 
-        # Search through the Rooms to match the room title
-        for room in rooms:
-            if args['room_name'].strip() == room.title.strip():
-                try:
+            # Search through the Rooms to match the room title
+            for room in rooms:
+                if args['room_name'].strip() == room.title.strip():
                     # Found the room, send a message
                     message = api.messages.create(roomId=room.id, text=args['text'])
                     return {'success': True, 
                             'messages': 'Successfully sent message {}'.format(message.id), 
                             'response': ''}
-                except ApiError as e:
-                    # Return any API error that may have been raised
-                    return {'success': False,
-                            'messages': 'Error sending message',
-                            'response': '{}'.format(e)}
+
+        except ApiError as e:
+            # Return any API error that may have been raised
+            return {'success': False,
+                    'messages': 'API Error encountered',
+                    'response': '{}'.format(e)}
 
         # Room was not found
         return {'success': False, 
