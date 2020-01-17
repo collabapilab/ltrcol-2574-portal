@@ -21,16 +21,16 @@ class wbxt_send_api(Resource):
 
         try:
             # Initialize the webex teams API with our token
-            api = WebexTeamsAPI(access_token=wbxt_access_token)
+            wbxt_api = WebexTeamsAPI(access_token=wbxt_access_token)
 
             # Get the Rooms list (only group type, not direct)
-            rooms = api.rooms.list(type='group')
+            rooms = wbxt_api.rooms.list(type='group')
 
             # Search through the Rooms to match the room title
             for room in rooms:
                 if args['room_name'].strip() == room.title.strip():
                     # Found the room, send a message
-                    message = api.messages.create(roomId=room.id, text=args['text'])
+                    message = wbxt_api.messages.create(roomId=room.id, text=args['text'])
                     return {'success': True, 
                             'messages': 'Successfully sent message {}'.format(message.id), 
                             'response': ''}
