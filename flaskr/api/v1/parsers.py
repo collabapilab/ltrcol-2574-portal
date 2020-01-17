@@ -110,19 +110,6 @@ cuc_users_put_args.add_argument('PIN', type=int, help='New PIN for the voicemail
 cuc_users_put_args.add_argument('ResetMailbox', type=bool, help='Reset mailbox')
 
 # Webex Teams API Arguments
-wbxt_rooms_get_args = reqparse.RequestParser()
-wbxt_rooms_get_args.add_argument('teamId', type=str,
-                                 help='List rooms associated with a team, by ID')
-wbxt_rooms_get_args.add_argument('type', type=str, choices=['direct', 'group'],
-                                 help='List rooms by type')
-wbxt_rooms_get_args.add_argument('sortBy', type=str, required=False, choices=['id', 'lastactivity', 'created'],
-                                 help='Sort results')
-wbxt_rooms_get_args.add_argument('max', type=int, default=100,
-                                 help='Maximum number of rooms in the response')
-
-
 wbxt_messages_post_args = reqparse.RequestParser()
-wbxt_messages_post_args.add_argument('roomId', type=str, required=True, help='The room ID of the message')
-wbxt_messages_post_args.add_argument('text', type=str, required=False, help='The message, in plain text')
-wbxt_messages_post_args.add_argument('markdown', type=str, required=False,
-                                     help='The message, in Markdown format. The maximum message length is 7439 bytes')
+wbxt_messages_post_args.add_argument('room_name', type=str, required=True, help='The room ID of the message')
+wbxt_messages_post_args.add_argument('text', type=str, help='The message, in plain text')

@@ -31,6 +31,7 @@ requests-toolbelt==0.9.1
 six==1.13.0
 typed-ast==1.4.0
 urllib3==1.25.7
+webexteamssdk==1.2
 Werkzeug==0.16.0
 wrapt==1.11.2
 xmltodict==0.12.0
