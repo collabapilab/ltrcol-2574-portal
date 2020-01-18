@@ -81,11 +81,11 @@ cms_spaces_get_args.add_argument('offset', type=int, default=0,
 cuc_importldap_user_post_args = reqparse.RequestParser()
 cuc_importldap_user_post_args.add_argument('templateAlias', type=str, default='voicemailusertemplate',
                                            help='User template alias to create the account with')
-cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=str,
-                                           help='Play initial enrollment conversation (to record a name, request \
-                                           password, etc)')
-cuc_importldap_user_post_args.add_argument('ListInDirectory', type=str,
+cuc_importldap_user_post_args.add_argument('ListInDirectory', type=bool, default=True,
                                            help='List in the Unity Connection Auto Attendant Directory')
+cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=bool, default=True,
+                                           help='Play initial enrollment conversation (to record a name, \
+                                                 request new password, etc)')
 
 cuc_users_get_args = reqparse.RequestParser()
 cuc_users_get_args.add_argument('column', type=str, default='alias',
