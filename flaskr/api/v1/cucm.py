@@ -102,6 +102,10 @@ class cucm_phone_api(Resource):
             user_associatedDevices.append(device_name)
             cucm_update_user_data_dict = {
                 "userid": cucm_add_phone_query_parsed_args['ownerUserName'],
+                'primaryExtension': {
+                    "pattern": user_telephoneNumber,
+                    "routePartitionName": 'DN_PT'
+                },
                 "associatedDevices": {
                     'device': user_associatedDevices
                 }
