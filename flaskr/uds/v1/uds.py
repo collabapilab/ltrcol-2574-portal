@@ -126,5 +126,19 @@ class UDS(REST):
     def get_user(self, parameters={}):
         '''
         Retrieve user via UDS.
+
+        :returns: Dictionary with the following key/value pairs:
+            - success (bool): Whether or not an error was encountered
+            - message (string): Detailed message about the message sent/received
+            - num_found (int): number of users found (should be 1 or 0)
+            - response (dict): the user object retrieved
         '''
-        return self._uds_request("users", parameters = parameters)
+        user = self._uds_request("users", parameters=parameters)
+
+        user['num_found'] = 0
+        if user['success']:
+            try:
+                user['num_found'] = int(user['response']['users']['@totalCount'])
+            except KeyError:
+                pass
+        return user

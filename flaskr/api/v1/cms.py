@@ -114,7 +114,7 @@ class cms_space_api(Resource):
 
         payload = {}
         if user['success']:
-            if user['response']['users']['@totalCount'] == '1':
+            if user['num_found'] == 1:
                 payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
                 payload['uri'] = user['response']['users']['user'][0]['userName']
                 payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
@@ -125,7 +125,7 @@ class cms_space_api(Resource):
             else:
                 return {'success': False,
                         'message': 'Found {} users with userid "{}"'.format(
-                            user['response']['users']['@totalCount'], args['userid'])}
+                                    user['num_found'], args['userid'])}
         else:
             # User lookup failed completely
             return user
