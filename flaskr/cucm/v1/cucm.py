@@ -388,7 +388,8 @@ class SXML:
             raise Exception("SXML Authentication error " + str(r.status_code) + " - " + r.reason)
         if r.status_code == 200:
             self.sxmlclient = self.service_map[service]['toolkit'](
-                    username=self.username, password=self.password, server_ip=self.host, tls_verify=self.sxml_tls_verify, timeout=self.sxml_timeout)
+                    username=self.username, password=self.password, server_ip=self.host, tls_verify=self.sxml_tls_verify,
+                    timeout=self.sxml_timeout, logging_enabled=self.sxml_logging)
         else:
             raise Exception("SXML Connectivity Exception:" + str(r.status_code) + " - " + r.reason)
 
