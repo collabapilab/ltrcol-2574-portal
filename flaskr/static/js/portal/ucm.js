@@ -195,23 +195,13 @@ function get_user(username) {
 function display_user_data(user_data) {
     var name = user_data['firstName'] + ' ' + user_data['lastName'];
     var userid = user_data['userid'];
-    var primary_extension = "";
-
-    try {
-        primary_extension = user_data['extensionsInfo']['extension'][0]['pattern']['_value_1'];
-    } catch (error) {  
-    
-    }
-
-    user_data['primary_extension'] = primary_extension;    
-
     var template = `
     <div> 
         <p><strong>Name:</strong> <span id="owner_name">{{firstName}} {{lastName}}</span></p>
         <p><strong>User ID:</strong> <span id="owner_id">{{userid}}</span></p>
         <p><strong>Email Address:</strong> {{mailid}}</p>
         <p><strong>Department:</strong> {{department}}</p>
-        <p><strong>Primary Extension:</strong> {{primary_extension}}</p>
+        <p><strong>Phone Number:</strong> {{telephoneNumber}}</p>
         <p><strong>Directory URI:</strong> {{directoryUri}}</p>
         
     </div>
@@ -313,7 +303,11 @@ function user_search() {
                 associated_devices = [];
                 if ('associatedDevices' in user_data) {
                     if (user_data['associatedDevices'] !== null) {
-                        associated_devices = user_data['associatedDevices']['device'];
+                        try {
+                            associated_devices = user_data['associatedDevices']['device'];
+                        } catch (e) {
+                            console.log(e);
+                        }
                     }
                 } 
                 display_device_table(associated_devices);
