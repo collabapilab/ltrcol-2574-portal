@@ -25,7 +25,7 @@ class UDS(REST):
 
     def __init__(self, host, username=None, password=None, port=8443):
         '''
-        Initialize the CMS class as a child of the REST class. Define the CMS-specific headers, and API base_url
+        Initialize the UDS class as a child of the REST class. Define the UDS-specific headers, and API base_url
         '''
         # Define the header structure for UDS. 
         headers = {
@@ -123,7 +123,7 @@ class UDS(REST):
 
         return result
 
-    def get_user(self, parameters={}):
+    def get_user(self, userid=None):
         '''
         Retrieve user via UDS.
 
@@ -131,14 +131,19 @@ class UDS(REST):
             - success (bool): Whether or not an error was encountered
             - message (string): Detailed message about the message sent/received
             - num_found (int): number of users found (should be 1 or 0)
-            - response (dict): the user object retrieved
+            - response (dict): the user object dictionary, if found.
         '''
-        user = self._uds_request("users", parameters=parameters)
+        params = {'username': userid}
+        user = self._uds_request("users", parameters=params)
 
         user['num_found'] = 0
         if user['success']:
             try:
+                # For a specific user search, @totalCount will be 1 or generate a KeyError
                 user['num_found'] = int(user['response']['users']['@totalCount'])
+                # Assign the response to just that single user's information
+                user['response'] = user['response']['users']['user'][0]
+
             except KeyError:
                 pass
         return user

@@ -23,7 +23,6 @@ class cms_system_status_api(Resource):
 
 @api.route("/version")
 class cms_version_api(Resource):
-    # @api.expect(system_status_data)
     def get(self):
         """
         Retrieves the version of the CMS system software.
@@ -138,14 +137,14 @@ class cms_space_api(Resource):
                   default_cms['password'], port=default_cms['port'])
 
         cucm_uds = UDS(default_cucm['host'])
-        user = cucm_uds.get_user(parameters={'username': userid})
+        user = cucm_uds.get_user(userid)
 
-        payload = {}
         if user['success']:
+            payload = {}
             if user['num_found'] == 1:
-                payload['name'] = "{}'s Space".format(user['response']['users']['user'][0]['displayName'])
-                payload['uri'] = user['response']['users']['user'][0]['userName']
-                payload['secondaryUri'] = user['response']['users']['user'][0]['phoneNumber']
+                payload['name'] = "{}'s Space".format(user['response']['displayName'])
+                payload['uri'] = user['response']['userName']
+                payload['secondaryUri'] = user['response']['phoneNumber']
                 # Overwrite payload with whatever values were passed via args
                 payload.update(args)
 
@@ -153,7 +152,7 @@ class cms_space_api(Resource):
             else:
                 return {'success': False,
                         'message': 'Found {} users with userid "{}"'.format(
-                                    user['num_found'], args['userid'])}
+                                    user['num_found'], userid)}
         else:
             # User lookup failed completely
             return user
