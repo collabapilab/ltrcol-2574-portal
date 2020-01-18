@@ -72,8 +72,7 @@ class REST:
         except RequestException as e:
             result = {
                 'success': False,
-                'message': 'RequestException: {}'.format(e)
-            }
+                'message': 'RequestException {} request to: {} :: {}'.format(http_method, url, e)}
         return result
 
     def _check_response(self, raw_response):

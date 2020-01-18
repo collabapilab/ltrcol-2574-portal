@@ -18,7 +18,6 @@ class REST:
     :type headers: Dict
     :returns: return an REST object
     :rtype: REST
-
     """
 
     def __init__(self, host, base_url=None, headers={}, port=443):
@@ -48,20 +47,29 @@ class REST:
 
         :returns: returns a dictionary indicating success with the raw response or
                   a message indicating the error encountered.
-
+        :returns: return a dictionary with the following keys:
+           'success'  :rtype:Bool:   Whether the response received from the server is deemed a success
+           'message'  :rtype:String: A message indicating success or details of any exception encountered
+           'response' :rtype:requests.models.Response:   The raw response from the python requests library
         :rtype: Dict
         """
-
+        result = {'success': False, 'message': '', 'response': ''}
         # Set the URL using the parameters of the object and the api_method requested
         # in a format such as: https//host:port/api/v1/api_method
 
 
         # Send the request and handle RequestException that may occur
-        pass
+
 
     def _check_response(self, raw_response):
         """
-        Check the response status.  If it has a non-2XX value, then set the 'success' result
+        Evaluates a response status.  If it has a non-2XX value, then set the 'success' result
         to false and place the exception in the 'message'
+
+        :param raw_response: The raw response from a _send_request. 
+
+        :returns: Returns a the same dictionary passed to it, with the 'success' and 'message'
+                  keys modified, if needed.
+        :rtype:  Dict 
         """
         pass

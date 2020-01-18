@@ -10,7 +10,7 @@ v1_blueprint = Blueprint('api_v1', __name__,
                          template_folder='templates',
                          static_folder='static')
 
-v1api = Api(v1_blueprint)
+v1api = Api(v1_blueprint, title="LTRCOL-2574 Portal APIs", version='1.0')
 
 v1api.add_namespace(cucm)
 v1api.add_namespace(cuc)

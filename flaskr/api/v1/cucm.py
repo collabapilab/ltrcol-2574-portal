@@ -51,11 +51,14 @@ class cucm_phone_api(Resource):
         """
         Adds a new Phone Device to CUCM
 
-        This API method utilizes AXL addPhone and getUser requests along with the supplied parameters
+        This API method utilizes AXL getUser, addPhone and updateUser requests along with the supplied parameters
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getUser.html
         <br>
         https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_addPhone.html
         <br>
-        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getUser.html
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_updateUser.html
+        <br>
         """
         try:
             cucm_add_phone_query_parsed_args = cucm_add_phone_query_args.parse_args(request)
@@ -102,6 +105,10 @@ class cucm_phone_api(Resource):
             user_associatedDevices.append(device_name)
             cucm_update_user_data_dict = {
                 "userid": cucm_add_phone_query_parsed_args['ownerUserName'],
+                'primaryExtension': {
+                    "pattern": user_telephoneNumber,
+                    "routePartitionName": 'DN_PT'
+                },
                 "associatedDevices": {
                     'device': user_associatedDevices
                 }

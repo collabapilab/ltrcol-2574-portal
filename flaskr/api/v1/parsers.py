@@ -81,11 +81,11 @@ cms_spaces_get_args.add_argument('offset', type=int, default=0,
 cuc_importldap_user_post_args = reqparse.RequestParser()
 cuc_importldap_user_post_args.add_argument('templateAlias', type=str, default='voicemailusertemplate',
                                            help='User template alias to create the account with')
-cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=str,
-                                           help='Play initial enrollment conversation (to record a name, request \
-                                           password, etc)')
-cuc_importldap_user_post_args.add_argument('ListInDirectory', type=str,
+cuc_importldap_user_post_args.add_argument('ListInDirectory', type=bool, default=True,
                                            help='List in the Unity Connection Auto Attendant Directory')
+cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=bool, default=True,
+                                           help='Play initial enrollment conversation (to record a name, \
+                                                 request new password, etc)')
 
 cuc_users_get_args = reqparse.RequestParser()
 cuc_users_get_args.add_argument('column', type=str, default='alias',
@@ -110,19 +110,6 @@ cuc_users_put_args.add_argument('PIN', type=int, help='New PIN for the voicemail
 cuc_users_put_args.add_argument('ResetMailbox', type=bool, help='Reset mailbox')
 
 # Webex Teams API Arguments
-wbxt_rooms_get_args = reqparse.RequestParser()
-wbxt_rooms_get_args.add_argument('teamId', type=str,
-                                 help='List rooms associated with a team, by ID')
-wbxt_rooms_get_args.add_argument('type', type=str, choices=['direct', 'group'],
-                                 help='List rooms by type')
-wbxt_rooms_get_args.add_argument('sortBy', type=str, required=False, choices=['id', 'lastactivity', 'created'],
-                                 help='Sort results')
-wbxt_rooms_get_args.add_argument('max', type=int, default=100,
-                                 help='Maximum number of rooms in the response')
-
-
 wbxt_messages_post_args = reqparse.RequestParser()
-wbxt_messages_post_args.add_argument('roomId', type=str, required=True, help='The room ID of the message')
-wbxt_messages_post_args.add_argument('text', type=str, required=False, help='The message, in plain text')
-wbxt_messages_post_args.add_argument('markdown', type=str, required=False,
-                                     help='The message, in Markdown format. The maximum message length is 7439 bytes')
+wbxt_messages_post_args.add_argument('room_name', type=str, required=True, help='The Space (Room) title to send the message to')
+wbxt_messages_post_args.add_argument('text', type=str, help='The message, in plain text')
