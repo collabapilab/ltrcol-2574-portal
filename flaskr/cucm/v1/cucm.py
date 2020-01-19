@@ -47,10 +47,10 @@ class AXL:
     """
     The CUCM AXL class
 
-    Use this class to connect and make AXL API Calls to CUCM
+    Wrapper class further extends CUCMAXLToolkit class to provide automated setup, retry, fault detection when making AXL API Calls to CUCM
 
     :param host: The Hostname / IP Address of the server
-    :param username: The username of an account with access to the API.
+    :param username: The username with CUCM AXL API access
     :param password: The password for your user account
     :type host: String
     :type username: String
@@ -63,18 +63,31 @@ class AXL:
         self.host = host
         self.username = username
         self.password = password
-        self.axlclient = None                   # This is the AXL Client Object
-        self.axl_tls_verify = False             # TLS Verify on AXL HTTPS connections
-        self.axl_version = "10.0"               # This is the default AXL version we will use
-        self.axl_timeout = 30                   # Default Timeout in Seconds for AXL Queries
+        self.axlclient = None                   # This is the AXL Client Object (CUCMAxlToolkit from axltoolkit)
+        self.axl_tls_verify = False             # Certificate validation check for HTTPs connection
+        self.axl_version = "10.0"               # This is the default AXL version to try to find current version
+        self.axl_timeout = 30                   # Default Timeout in Seconds awaiting for AXL Response
         self.axl_attempts = 0                   # AXL Request Attempt Count
-        self.axl_max_retries = 3                # AXL Request Max Retries
-        self.axl_backoff_times = [1, 5, 10]     # AXL Reqeust Retry Timeouts
-        self.axl_logging = False                # This controls the SOAP Logging
+        self.axl_max_retries = 3                # AXL Request Max Number of Retries when throttled
+        self.axl_backoff_times = [1, 5, 10]     # AXL Retry Request Backoff Timers in seconds. Invoked if we get throttling response 503
+        self.axl_logging = False                 # This controls the SOAP Request Logging to /tmp/axltoolkit.log
 
     class Decorators(object):
+        """
+        Inner Class holding Decorator methods for the parent Class
+
+        These Static decorator methods enables us to:
+            - Dynamically setup API Sessions and cache Authentication Cookie named JSESSIONIDSSO for subsequent requests.
+                This enables us to re-use the Authenticated Session
+            - Handle AXL Result validation, retry with backoff when requests are throttled, 
+                and dynamically covert Zeep/Soap objects to native python objects (serialize)
+        """
         @staticmethod
         def axl_setup(func):
+            """
+            Decorator method that checks if we already have a client session setup,
+            if not initiates AXL._axl_setup(), and then executes the original decorated class method and returns its return value.
+            """
             @functools.wraps(func)
             def axl_setup_check(self, *args, **kwargs):
                 if not self.axlclient:
@@ -85,6 +98,10 @@ class AXL:
 
         @staticmethod
         def axl_result_check_with_retry(func):
+            """
+            Decorator method that checks the results returned as a result of our query and retries
+
+            """
             @functools.wraps(func)
             def axl_result_check_wrapper(self, *args, **kwargs):
                 while self.axl_attempts <= self.axl_max_retries:
@@ -108,16 +125,18 @@ class AXL:
 
     def _axl_setup(self):
         """
-        Tests and establishes AXL connection to a given VOS device. Initializes self.axlclient if successful
+        Internal AXL Class method which Tests and establishes AXL connection to a given VOS device.
 
-        If AXL Services are not running or if we are not authorized we fail
+        Calls _axl_get_schema which initializes self.axlclient if AXL Services are up and if user is authenticated.
+
+        If AXL Services are not running or if user is authorized Raise Exception with appropriate error.
 
         """
         axl_test_url = "https://" + self.host + "/axl"
         r = requests.get(axl_test_url,
                          auth=(self.username, self.password),
                          timeout=self.axl_timeout,
-                         verify=False)
+                         verify=self.axl_tls_verify)
         if r.status_code == 404:
             raise Exception("AXL Services Not Running: " + str(r.status_code) + " - " + r.reason)
         if r.status_code == 401:
@@ -128,6 +147,17 @@ class AXL:
             raise Exception("AXL Connectivity Exception:" + str(r.status_code) + " - " + r.reason)
 
     def _axl_set_schema(self):
+        """
+        Internal AXL Class method which detects the CUCM version and instanciates the CUCMAxlToolkit with the
+        appropriate WSDL file.
+
+        First we use the Default AXL Version self.axl_version and run getCCMVersion AXL request.
+
+        Strip the major version from the response. ie: 11.5 or 12.5
+
+        Initialize the self.axlclient with the current CUCM version
+
+        """
         schema_folder_path = os.path.dirname(os.path.realpath(__file__)) + "/axltoolkit/"
         self.axlclient = CUCMAxlToolkit(username=self.username, password=self.password,
                                         server_ip=self.host, version=self.axl_version,
