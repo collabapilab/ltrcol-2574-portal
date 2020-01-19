@@ -24,6 +24,7 @@ function insert_device(device_name, device_description, device_model, clid_name,
             "description": device_description,
             "device_name": device_name,
             "phonetype": device_model,
+            "devicecss": "Unrestricted_CSS",
             "calleridname": clid_name, 
             "ownerUserName": owner_userid
         }

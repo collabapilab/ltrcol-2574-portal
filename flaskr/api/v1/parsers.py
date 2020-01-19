@@ -11,6 +11,7 @@ To document and limit what can be entered on the /api/v1/ Swagger web page
 cucm_add_phone_query_args = reqparse.RequestParser()
 cucm_add_phone_query_args.add_argument('description', type=str, required=False, help='Phone Device Description', default='Cisco Live LTRCOL2574 - pod31user2')
 cucm_add_phone_query_args.add_argument('phonetype', type=str, required=False, help='Phone Device Type', default='Cisco Unified Client Services Framework')
+cucm_add_phone_query_args.add_argument('devicecss', type=str, required=False, help='Phone Device Calling Search Space')
 cucm_add_phone_query_args.add_argument('ownerUserName', type=str, required=True, help='Device Owner User Name', default='pod31user2')
 cucm_add_phone_query_args.add_argument('calleridname', type=str, required=True, help='Line 1 Caller ID Name', default='Pod31 User2')
 
@@ -90,7 +91,7 @@ cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=bool, default=Tr
 cuc_users_get_args = reqparse.RequestParser()
 cuc_users_get_args.add_argument('column', type=str, default='alias',
                                 help='CUC database column to search')
-cuc_users_get_args.add_argument('match_type', type=str, choices=['startswith', 'is'], default='is',
+cuc_users_get_args.add_argument('match_type', type=str, choices=['startswith', 'is'],
                                 help='How to perform the search query (column match_type search)')
 cuc_users_get_args.add_argument('search', type=str, help='The string to search for')
 cuc_users_get_args.add_argument('sortorder', type=str, choices=['asc', 'desc'],
