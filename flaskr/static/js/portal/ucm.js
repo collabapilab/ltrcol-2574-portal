@@ -369,8 +369,24 @@ function add_device() {
                 e.preventDefault();
                 var data = device_datatable.row( $(this).parents('tr') ).data();
                 console.log(data);
+                device_name = data[0];
+
+                get_device_detail(device_name).then(function(device_details) {
+                    console.log(device_details);
+
+                    if (device_details['success'] == true) {
+                        device_data = device_details['phone_data'];
+                        console.log(device_data);
+                        device_detail_html = "<pre>" + JSON.stringify(device_data, null, 3) + "</pre>";
+                        
+                        $('#modal_device_details_title').html("Device Details for <b>"  + device_name + "</b>");
+                        $('#modal_device_details').html(device_detail_html);
+                        $('#device_modal').modal().show();
+                    }
+
+                });
             });
-            
+
         } else {
             message = "Failed to add " + device_name;
             post_wbxt_notification(message + " for user" + owner_userid);
