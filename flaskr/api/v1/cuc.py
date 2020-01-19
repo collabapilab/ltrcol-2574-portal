@@ -110,19 +110,20 @@ class cuc_user_api(Resource):
         args = request.args.to_dict()
         if 'templateAlias' not in args:
             args['templateAlias'] = 'voicemailusertemplate'
+
         cuc = CUPI(default_cuc['host'], default_cuc['username'],
                    default_cuc['password'], port=default_cuc['port'])
 
         # Look up pkid from user ID
         params = {'query': '(alias is {})'.format(userid)}
-
         user = cuc._cupi_request("import/users/ldap", parameters=params)
 
         # Either a single user was returned, no users were found, or an error occurred.
         try:
-            # Single user found.  Import the user using the pkid and settings
             if user['response']['@total'] == '1':
-                args['pkid'] = user['response']['ImportUser'][0]['pkid']                    
+                # Single user found.  Import the user using the pkid and settings
+                args['pkid'] = user['response']['ImportUser'][0]['pkid']            
+                # The templateAlias needs to be a parameter, while the pkid and other settings are part of payload
                 params = {'templateAlias': args['templateAlias']}
                 return cuc._cupi_request("import/users/ldap", parameters=params, payload=args, http_method='POST')
 
@@ -143,6 +144,8 @@ class cuc_user_api(Resource):
         """
         user_settings = ['ListInDirectory', 'IsVmEnrolled']
         args = request.args.to_dict()
+        
+        # If no arguments were detected, there's nothing to do
         if len(args) > 0:
             cuc = CUPI(default_cuc['host'], default_cuc['username'],
                     default_cuc['password'], port=default_cuc['port'])
