@@ -78,6 +78,7 @@ class cucm_phone_api(Resource):
                 "protocol": "SIP",
                 "protocolSide": "User",
                 "commonPhoneConfigName": "Standard Common Phone Profile",
+                "callingSearchSpaceName": cucm_add_phone_query_parsed_args['devicecss'],
                 "devicePoolName": "Default",
                 "locationName": "Hub_None",
                 "securityProfileName": "Universal Device Template - Model-independent Security Profile",
