@@ -14,7 +14,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class AXLHistoryPlugin(HistoryPlugin):
-    """Simple HistoryPlugin extension for easy xml extraction"""
+    """
+        Extends Zeep HistoryPlugin for easy xml extraction
+    """
 
     @staticmethod
     def _parse_envelope(envelope):
@@ -34,8 +36,29 @@ class AXLHistoryPlugin(HistoryPlugin):
 
 
 class AxlToolkit:
-    wsdl = ""
-    last_exception = None
+    """
+    The AxlToolkit Common AXL SOAP API class
+    This class enables us to connect and make SOAP API calls to CUCM & IM&P utilizing Zeep Python Package as the SOAP Client
+
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param version: (optional) The major version of CUCM / IM&P Cluster (default: 12.5)
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :param schema_folder_path: (optional) Sub Directory Location for AXL schema versions (default: None)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type version: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :type schema_folder_path: str
+    :returns: return an AxlToolkit object
+    :rtype: AxlToolkit
+    """
 
     def __init__(self, username, password, server_ip, version='12.5', tls_verify=True, timeout=10,
                  logging_enabled=False, schema_folder_path=None):
@@ -49,6 +72,8 @@ class AxlToolkit:
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
         self.history = AXLHistoryPlugin(maxlen=1)
+        self.wsdl = None
+        self.last_exception = None
 
         filedir = os.path.dirname(__file__)
         if schema_folder_path is not None:
@@ -74,7 +99,8 @@ class AxlToolkit:
         self.client = Client(wsdl=self.wsdl, plugins=[self.history],
                              transport=Transport(timeout=timeout, operation_timeout=timeout,
                              cache=self.cache, session=self.session))
-
+        # Update the Default SOAP API Binding Address Location with server_ip for all API Service Endpoints
+        # Default: (https://CCMSERVERNAME:8443/axl/)
         self.service = self.client.create_service("{http://www.cisco.com/AXLAPIService/}AXLAPIBinding",
                                                   "https://{0}:8443/axl/".format(server_ip))
 
@@ -83,11 +109,18 @@ class AxlToolkit:
 
     @staticmethod
     def _enable_logging():
+        """
+        Enables Logging of SOAP Request and Response Payloads to /tmp/axltoolkit.log
+
+        Use http://xmlprettyprint.com/ to help with SOAP XML payloads
+
+        Its a staticmethod in order to allow other classes in this file to utilize it directly
+        """
         logging.config.dictConfig({
             'version': 1,
             'formatters': {
                 'verbose': {
-                    'format': '%(name)s: %(message)s'
+                    'format': '%(asctime)s | %(name)s: %(message)s'
                 }
             },
             'handlers': {
@@ -189,13 +222,36 @@ class AxlToolkit:
 
 class CUCMAxlToolkit(AxlToolkit):
     """
+    The CUCMAxlToolkit based on parent class AxlToolkit
+    This class enables us to connect and make unique CUCM AXL API requests
 
-    Constructor - Create new instance based on AxlToolkit parent class
-
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param version: (optional) The major version of CUCM / IM&P Cluster (default: 12.5)
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :param schema_folder_path: (optional) Sub Directory Location for AXL schema versions (default: None)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type version: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :type schema_folder_path: str
+    :returns: return an CUCMAxlToolkit object
+    :rtype: CUCMAxlToolkit
     """
+
     def __init__(self, username, password, server_ip, version='12.5', tls_verify=True, timeout=10,
                  logging_enabled=False, schema_folder_path=None):
         schema_folder_path += "CUCM/"
+
+        # Create a super class, where the CUCMAxlToolkit class inherits from the AxlToolkit class.
+        # This enables us to extend the parent class AxlToolkit with CUCM AXL API specic methods
+        # Reference:  https://realpython.com/python-super/
         super().__init__(username, password, server_ip, version=version, tls_verify=tls_verify, timeout=timeout,
                          logging_enabled=logging_enabled, schema_folder_path=schema_folder_path)
     """
@@ -270,41 +326,6 @@ class CUCMAxlToolkit(AxlToolkit):
         return result
 
     def list_user(self, search_Criteria_data, returned_tags=None):
-
-        # def list_user(self, **kwargs):
-        #
-        #     allowed_tags = ['firstName', 'lastName', 'userid', 'department']
-        #     search_criteria = {}
-        #     users = {}
-        #
-        #     if kwargs is not None:
-        #         for key, value in kwargs.iteritems():
-        #             if key in allowed_tags:
-        #                 search_criteria[key] = value
-        #
-        #     if len(search_criteria) == 0:
-        #         search_criteria['userid'] = '%'
-        #
-        #     returned_tags = {'firstName': '', 'lastName': '', 'userid': ''}
-        #
-        #     try:
-        #         result = self.service.listUser(searchCriteria=search_criteria, returnedTags=returned_tags)
-        #
-        #         if result['return'] is not None:
-        #
-        #             for user in result['return']['user']:
-        #                 users[user['userid']] = {}
-        #
-        #                 users[user['userid']]['uuid'] = user['uuid']
-        #                 users[user['userid']]['firstName'] = user['firstName']
-        #                 users[user['userid']]['lastName'] = user['lastName']
-        #                 users[user['userid']]['userid'] = user['userid']
-        #
-        #     except Exception as fault:
-        #         users = None
-        #         self.last_exception = fault
-        #
-        #     return users
 
         if returned_tags is None:
             returned_tags = {
@@ -418,7 +439,6 @@ class CUCMAxlToolkit(AxlToolkit):
 
     def sql_remove_user_from_group(self, userid, group_name):
         pass
-        # TODO: Need to add this code
 
     """
 
@@ -834,10 +854,11 @@ class CUCMAxlToolkit(AxlToolkit):
 
         return result
 
-    # Accepts a list of partitions, either as a list of strings with Partition names, or a list of dictionaries
-    # containing the name and description for each partition.
-
     def add_partitions(self, partition_list):
+        """
+        Accepts a list of partitions, either as a list of strings with Partition names, or a list of dictionaries
+        containing the name and description for each partition.
+        """
 
         result = []
 
@@ -1000,7 +1021,6 @@ class CUCMAxlToolkit(AxlToolkit):
         return result
 
     def update_route_group(self, name):
-        # TODO: Need to implement
         pass
 
     def add_route_list(self, name, description, cm_group, enabled, roan, members, ddi=None):
@@ -1104,7 +1124,6 @@ class CUCMAxlToolkit(AxlToolkit):
         return result
 
     def update_route_pattern(self, name):
-        # TODO: Need to implement
         pass
 
     """
@@ -1152,7 +1171,6 @@ class CUCMAxlToolkit(AxlToolkit):
         return result
 
     def update_translation_pattern(self, name):
-        # TODO: Need to implement
         pass
 
     """
@@ -1199,7 +1217,6 @@ class CUCMAxlToolkit(AxlToolkit):
         return result
 
     def update_sip_route_pattern(self, name):
-        # TODO: Need to implement
         pass
 
     """
@@ -1254,34 +1271,8 @@ class CUCMAxlToolkit(AxlToolkit):
     def remove_cfb(self, name):
         pass
 
-        # try:
-        #     result = self.service.removeCss(name=name)
-        # except Exception as fault:
-        #     result = None
-        #     self.last_exception = fault
-        #
-        # return result
-
     def update_cfb(self, css_name, description, partition_list):
         pass
-
-        # members = {'member': []}
-        #
-        # css_index = 1
-        #
-        # for partition in partition_list:
-        #     partition_data = {'routePartitionName': partition,
-        #                       'index': css_index}
-        #     members['member'].append(partition_data)
-        #     css_index += 1
-        #
-        # try:
-        #     result = self.service.updateCss(name=css_name, description=description, members=members)
-        # except Exception as fault:
-        #     result = None
-        #     self.last_exception = fault
-        #
-        # return result
 
     """
 
@@ -1692,43 +1683,6 @@ class CUCMAxlToolkit(AxlToolkit):
         """
         Add UC Service Profile
         """
-        # from lxml import etree
-
-        # obj = self.service.element(_value_1={'Inbox': 'BlahInbox', 'TrashFolder': 'Garbage'})
-        #
-        # val1 = etree.XML("<Inbox>INBOXnew</Inbox>")
-        # val2 = etree.XML("<TrashFolder>Deleted Itemsnew</TrashFolder>")
-        # value = xsd.AnyObject(xsd.String(), "<Inbox>BlahInbox</Inbox><TrashFolder>Garbage</TrashFolder>")
-
-        # service_profile_data = {
-        #     'name': 'DEL261-jsontest',
-        #     'serviceProfileInfos': [
-        #         {
-        #             'serviceProfileInfo': {
-        #                 'profileName': "MailStore Profile",
-        #                 'primary': "myms",
-        #                 # 'secondary': None,
-        #                 # 'serviceProfileXml': {
-        #                 #     'Inbox': "BlahInbox",
-        #                 #     'TrashFolder': "Deleted Itemsnew"
-        #                 # }
-        #                 # 'serviceProfileXml': {
-        #                 #     '_value_1': "<Inbox>INBOXnew</Inbox><TrashFolder>Deleted Itemsnew</TrashFolder>"
-        #                 #     # '_value_1': val1,
-        #                 #     # '_value_2': val2
-        #                 # },
-        #                 # 'serviceProfileXml': {
-        #                 #     '_value_1': val1,
-        #                 #     '_value_2': val2
-        #                 # }
-        #                 'serviceProfileXml': value
-        #                 # 'serviceProfileXml': "<Inbox\>BlahInbox</Inbox><TrashFolder>Garbage</TrashFolder>"
-        #                 # 'serviceProfileXml': [etree.XML("<Inbox>INBOXnew</Inbox>"),
-        #                 #                       etree.XML("<TrashFolder>Deleted Itemsnew</TrashFolder>")]
-        #             }
-        #         }
-        #     ]
-        # }
 
         try:
             result = self.service.addServiceProfile(serviceProfile=service_profile_data)
@@ -1844,12 +1798,36 @@ class CUCMAxlToolkit(AxlToolkit):
 
 class IMPAxlToolkit(AxlToolkit):
     """
-    Constructor - Create new instance based on AxlToolkit parent class
+    The IMPAxlToolkit based on parent class AxlToolkit
+    This class enables us to connect and make unique IM&P AXL API requests
+
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param version: (optional) The major version of CUCM / IM&P Cluster (default: 12.5)
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :param schema_folder_path: (optional) Sub Directory Location for AXL schema versions (default: None)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type version: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :type schema_folder_path: str
+    :returns: return an IMPAxlToolkit object
+    :rtype: IMPAxlToolkit
     """
 
     def __init__(self, username, password, server_ip, version='11.5', tls_verify=True, timeout=10,
                  logging_enabled=False, schema_folder_path=None):
         schema_folder_path += "IMP/"
+
+        # Create a super class, where the CUCMAxlToolkit class inherits from the AxlToolkit class.
+        # This enables us to extend the parent class AxlToolkit with CUCM AXL API specic methods
+        # Reference:  https://realpython.com/python-super/
         super().__init__(username, password, server_ip, version=version, tls_verify=tls_verify, timeout=timeout,
                          logging_enabled=logging_enabled, schema_folder_path=schema_folder_path)
 
@@ -1869,18 +1847,37 @@ class IMPAxlToolkit(AxlToolkit):
 
 
 class UcmServiceabilityToolkit:
-    last_exception = None
+    """
+    The UcmServiceabilityToolkit SOAP API class
+    This class enables us to connect and make Control Center Services API calls utilizing Zeep Python Package as the SOAP Client
+
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :returns: return an UcmServiceabilityToolkit object
+    :rtype: UcmServiceabilityToolkit
+    """
 
     def __init__(self, username, password, server_ip, tls_verify=True, timeout=10, logging_enabled=False):
         """
         Constructor - Create new instance
         """
-        self.wsdl = 'https://{0}:8443/controlcenterservice2/services/ControlCenterServices?wsdl'.format(server_ip)
 
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
-        self.history = HistoryPlugin(maxlen=1)
+        self.history = AXLHistoryPlugin(maxlen=1)
+        self.wsdl = 'https://{0}:8443/controlcenterservice2/services/ControlCenterServices?wsdl'.format(server_ip)
+        self.last_exception = None
 
         self.cache = SqliteCache(path='/tmp/sqlite_serviceability_{0}.db'.format(server_ip), timeout=60)
 
@@ -1889,6 +1886,8 @@ class UcmServiceabilityToolkit:
                                                                                          cache=self.cache,
                                                                                          session=self.session))
 
+        # Update the Default SOAP API Binding Address Location with server_ip for all API Service Endpoints
+        # Default: (https://localhost:8443/controlcenterservice2/services/ControlCenterServices)
         control_svc_ip = "https://{0}:8443/controlcenterservice2/services/ControlCenterServices".format(server_ip)
         self.service = self.client.create_service("{http://schemas.cisco.com/ast/soap}ControlCenterServicesBinding",
                                                   control_svc_ip)
@@ -1901,26 +1900,47 @@ class UcmServiceabilityToolkit:
 
 
 class UcmRisPortToolkit:
-    last_exception = None
+    """
+    The UcmRisPortToolkit SOAP API class
+    This class enables us to connect and make RisPort70 API calls utilizing Zeep Python Package as the SOAP Client
+
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :returns: return an UcmRisPortToolkit object
+    :rtype: UcmRisPortToolkit
+    """
 
     def __init__(self, username, password, server_ip, tls_verify=True, timeout=30, logging_enabled=False):
         """
         Constructor - Create new instance
         """
-        wsdl = 'https://{0}:8443/realtimeservice2/services/RISService70?wsdl'.format(server_ip)
 
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
-        self.history = HistoryPlugin(maxlen=1)
+        self.history = AXLHistoryPlugin(maxlen=1)
+        self.wsdl = 'https://{0}:8443/realtimeservice2/services/RISService70?wsdl'.format(server_ip)
+        self.last_exception = None
 
         self.cache = SqliteCache(path='/tmp/sqlite_risport_{0}.db'.format(server_ip), timeout=60)
 
-        self.client = Client(wsdl=wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
-                                                                                    operation_timeout=timeout,
-                                                                                    cache=self.cache,
-                                                                                    session=self.session))
+        self.client = Client(wsdl=self.wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                         operation_timeout=timeout,
+                                                                                         cache=self.cache,
+                                                                                         session=self.session))
 
+        # Update the Default SOAP API Binding Address Location with server_ip for all API Service Endpoints
+        # Default: (https://localhost:8443/realtimeservice2/services/RISService70)
         self.service = self.client.create_service("{http://schemas.cisco.com/ast/soap}RisBinding",
                                                   "https://{0}:8443/realtimeservice2/services/RISService70".format(server_ip))
 
@@ -1932,29 +1952,49 @@ class UcmRisPortToolkit:
 
 
 class UcmPerfMonToolkit:
-    last_exception = None
+    """
+    The UcmPerfMonToolkit SOAP API class
+    This class enables us to connect and make PerfMon API calls utilizing Zeep Python Package as the SOAP Client
+
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :returns: return an UcmPerfMonToolkit object
+    :rtype: UcmPerfMonToolkit
+    """
 
     def __init__(self, username, password, server_ip, tls_verify=True, timeout=30, logging_enabled=False):
         """
         Constructor - Create new instance
         """
-        wsdl = 'https://{0}:8443/perfmonservice2/services/PerfmonService?wsdl'.format(server_ip)
 
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
-        self.history = HistoryPlugin(maxlen=1)
+        self.history = AXLHistoryPlugin(maxlen=1)
+        self.wsdl = 'https://{0}:8443/perfmonservice2/services/PerfmonService?wsdl'.format(server_ip)
+        self.last_exception = None
 
         self.cache = SqliteCache(path='/tmp/sqlite_perfmon_{0}.db'.format(server_ip), timeout=60)
 
-        self.client = Client(wsdl=wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
-                                                                                    operation_timeout=timeout,
-                                                                                    cache=self.cache,
-                                                                                    session=self.session))
+        self.client = Client(wsdl=self.wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                         operation_timeout=timeout,
+                                                                                         cache=self.cache,
+                                                                                         session=self.session))
 
+        # Update the Default SOAP API Binding Address Location with server_ip for all API Service Endpoints
+        # Default: (https://localhost:8443/perfmonservice2/services/PerfmonService)
         self.service = self.client.create_service("{http://schemas.cisco.com/ast/soap}PerfmonBinding",
-                                                  "https://{0}:8443/perfmonservice2/services/PerfmonService".format(
-                                                      server_ip))
+                                                  "https://{0}:8443/perfmonservice2/services/PerfmonService".format(server_ip))
 
         if logging_enabled:
             AxlToolkit._enable_logging()
@@ -2016,99 +2056,174 @@ class UcmPerfMonToolkit:
 
 
 class UcmLogCollectionToolkit:
-    last_exception = None
+    """
+    The UcmLogCollectionToolkit SOAP API class
+    This class enables us to connect and make Log Collection API calls utilizing Zeep Python Package as the SOAP Client
 
-    def __init__(self, username, password, server_ip, tls_verify=True):
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :returns: return an UcmLogCollectionToolkit object
+    :rtype: UcmLogCollectionToolkit
+    """
+
+    def __init__(self, username, password, server_ip, tls_verify=True, timeout=30, logging_enabled=False):
         """
         Constructor - Create new instance
         """
-        wsdl = 'https://{0}:8443/logcollectionservice2/services/LogCollectionPortTypeService?wsdl'.format(server_ip)
 
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
+        self.history = AXLHistoryPlugin(maxlen=1)
+        self.wsdl = 'https://{0}:8443/logcollectionservice2/services/LogCollectionPortTypeService?wsdl'.format(server_ip)
+        self.last_exception = None
 
         self.cache = SqliteCache(path='/tmp/sqlite_logcollection.db', timeout=60)
 
-        self.client = Client(wsdl=wsdl, transport=Transport(cache=self.cache, session=self.session))
+        self.client = Client(wsdl=self.wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                         operation_timeout=timeout,
+                                                                                         cache=self.cache,
+                                                                                         session=self.session))
 
-        self.service = self.client.service
+        # Update the Default SOAP API Binding Address Location with server_ip for all API Service Endpoints
+        # Default: (https://localhost:8443/logcollectionservice2/services/LogCollectionPortTypeService)
+        self.service = self.client.create_service("{http://schemas.cisco.com/ast/soap}LogCollectionPortSoapBinding",
+                                                  "https://{0}:8443/logcollectionservice2/services/LogCollectionPortTypeService".format(server_ip))
 
-        # enable_logging()
+        if logging_enabled:
+            AxlToolkit._enable_logging()
 
     def get_service(self):
         return self.service
 
 
 class UcmDimeGetFileToolkit:
-    last_exception = None
+    """
+    The UcmDimeGetFileToolkit SOAP API class
+    This class enables us to connect and make DimeGetFileService API calls utilizing Zeep Python Package as the SOAP Client
 
-    def __init__(self, username, password, server_ip, tls_verify=True):
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :returns: return an UcmDimeGetFileToolkit object
+    :rtype: UcmDimeGetFileToolkit
+    """
+
+    def __init__(self, username, password, server_ip, tls_verify=True, timeout=30, logging_enabled=False):
         """
         Constructor - Create new instance
         """
 
-        wsdl = 'https://{0}:8443/logcollectionservice/services/DimeGetFileService?wsdl'.format(server_ip)
-
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
+        self.history = AXLHistoryPlugin(maxlen=1)
+        self.wsdl = 'https://{0}:8443/logcollectionservice/services/DimeGetFileService?wsdl'.format(server_ip)
+        self.last_exception = None
 
-        self.cache = SqliteCache(path='/tmp/sqlite_logcollection.db', timeout=60)
+        self.cache = SqliteCache(path='/tmp/sqlite_logcollectiondime.db', timeout=60)
 
-        self.client = Client(wsdl=wsdl, transport=Transport(cache=self.cache, session=self.session))
+        self.client = Client(wsdl=self.wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                         operation_timeout=timeout,
+                                                                                         cache=self.cache,
+                                                                                         session=self.session))
 
         self.service = self.client.service
 
-        # enable_logging()
+        if logging_enabled:
+            AxlToolkit._enable_logging()
 
     def get_service(self):
         return self.service
 
 
 class PawsToolkit:
-    last_exception = None
+    """
+    The PawsToolkit SOAP API class
+    This class enables us to connect and make PAWS API calls utilizing Zeep Python Package as the SOAP Client
 
-    def __init__(self, username, password, server_ip, service, tls_verify=True, timeout=10, logging_enabled=False):
+    :param username: The username used for Basic HTTP Authentication
+    :param password: The password used for Basic HTTP Authentication
+    :param server_ip: The Hostname / IP Address of the server
+    :param service: The PAWS API service name
+    :param tls_verify: (optional) Certificate validation check for HTTPs connection (default: True)
+    :param timeout: (optional) Zeep Client Transport Response Timeout in seconds (default: 10)
+    :param logging_enabled: (optional) Zeep SOAP message Logging (default: False)
+    :type username: str
+    :type password: str
+    :type server_ip: str
+    :type service: str
+    :type tls_verify: bool
+    :type timeout: int
+    :type logging_enabled: bool
+    :returns: return an PawsToolkit object
+    :rtype: PawsToolkit
+    """
+
+    def __init__(self, username, password, server_ip, service, tls_verify=True, timeout=30, logging_enabled=False):
         """
         Constructor - Create new instance
         """
-        dir = os.path.dirname(__file__)
-
-        if service == 'HardwareInformation':
-            wsdl = os.path.join(dir, 'paws/hardware_information_service.wsdl')
-            binding = "{http://services.api.platform.vos.cisco.com}HardwareInformationServiceSoap11Binding"
-            endpoint = "https://{0}:8443/platform-services/services/HardwareInformationService.HardwareInformationServiceHttpsSoap11Endpoint/".format(server_ip)  # nopep8
-        elif service == 'OptionsService':
-            wsdl = 'https://{0}:8443/platform-services/services/OptionsService?wsdl'.format(server_ip)
-            binding = "{http://services.api.platform.vos.cisco.com}OptionsServiceSoap12Binding"
-            endpoint = "https://{0}:8443/platform-services/services/OptionsService.OptionsServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
-        elif service == 'ProductService':
-            wsdl = 'https://{0}:8443/platform-services/services/ProductService?wsdl'.format(server_ip)
-            binding = "{http://services.api.platform.vos.cisco.com}ProductServiceSoap12Binding"
-            endpoint = "https://{0}:8443/platform-services/services/ProductService.ProductServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
-        elif service == 'VersionService':
-            wsdl = 'https://{0}:8443/platform-services/services/VersionService?wsdl'.format(server_ip)
-            binding = "{http://services.api.platform.vos.cisco.com}VersionServiceSoap12Binding"
-            endpoint = "https://{0}:8443/platform-services/services/VersionService.VersionServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
-        elif service == 'ClusterNodesService':
-            wsdl = 'https://{0}:8443/platform-services/services/ClusterNodesService?wsdl'.format(server_ip)
-            binding = "{http://services.api.platform.vos.cisco.com}ClusterNodesServiceSoap12Binding"
-            endpoint = "https://{0}:8443/platform-services/services/ClusterNodesService.ClusterNodesServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
 
         self.session = Session()
         self.session.auth = HTTPBasicAuth(username, password)
         self.session.verify = tls_verify
-        self.history = HistoryPlugin(maxlen=1)
+        self.history = AXLHistoryPlugin(maxlen=1)
+        self.wsdl = None
+        self.binding = None
+        self.endpoint = None
+        self.last_exception = None
 
         self.cache = SqliteCache(path='/tmp/sqlite_paws_{0}.db'.format(server_ip), timeout=60)
 
-        self.client = Client(wsdl=wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
-                                                                                    operation_timeout=timeout,
-                                                                                    cache=self.cache,
-                                                                                    session=self.session))
+        dir = os.path.dirname(__file__)
 
-        self.service = self.client.create_service(binding, endpoint)
+        if service == 'HardwareInformation':
+            self.wsdl = os.path.join(dir, 'paws/hardware_information_service.wsdl')
+            self.binding = "{http://services.api.platform.vos.cisco.com}HardwareInformationServiceSoap11Binding"
+            self.endpoint = "https://{0}:8443/platform-services/services/HardwareInformationService.HardwareInformationServiceHttpsSoap11Endpoint/".format(server_ip)  # nopep8
+        elif service == 'OptionsService':
+            self.wsdl = 'https://{0}:8443/platform-services/services/OptionsService?wsdl'.format(server_ip)
+            self.binding = "{http://services.api.platform.vos.cisco.com}OptionsServiceSoap12Binding"
+            self.endpoint = "https://{0}:8443/platform-services/services/OptionsService.OptionsServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
+        elif service == 'ProductService':
+            self.wsdl = 'https://{0}:8443/platform-services/services/ProductService?wsdl'.format(server_ip)
+            self.binding = "{http://services.api.platform.vos.cisco.com}ProductServiceSoap12Binding"
+            self.endpoint = "https://{0}:8443/platform-services/services/ProductService.ProductServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
+        elif service == 'VersionService':
+            self.wsdl = 'https://{0}:8443/platform-services/services/VersionService?wsdl'.format(server_ip)
+            self.binding = "{http://services.api.platform.vos.cisco.com}VersionServiceSoap12Binding"
+            self.endpoint = "https://{0}:8443/platform-services/services/VersionService.VersionServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
+        elif service == 'ClusterNodesService':
+            self.wsdl = 'https://{0}:8443/platform-services/services/ClusterNodesService?wsdl'.format(server_ip)
+            self.binding = "{http://services.api.platform.vos.cisco.com}ClusterNodesServiceSoap12Binding"
+            self.endpoint = "https://{0}:8443/platform-services/services/ClusterNodesService.ClusterNodesServiceHttpsSoap12Endpoint/".format(server_ip)  # nopep8
+
+        self.client = Client(wsdl=self.wsdl, plugins=[self.history], transport=Transport(timeout=timeout,
+                                                                                         operation_timeout=timeout,
+                                                                                         cache=self.cache,
+                                                                                         session=self.session))
+
+        self.service = self.client.create_service(self.binding, self.endpoint)
 
         if logging_enabled:
             AxlToolkit._enable_logging()
