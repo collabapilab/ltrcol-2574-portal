@@ -74,11 +74,15 @@ def get_user_by_id(cuc, userid):
     https://www.cisco.com/c/en/us/td/docs/voice_ip_comm/connection/REST-API/CUPI_API/b_CUPI-API/b_CUPI-API_chapter_0111.html#id_38638
     '''
 
+    # Build the parameter dictionary for the request
     params = {'query': '(alias is {})'.format(userid)}
     user = cuc._cupi_request("users", parameters=params)
+    # Verify there were no errors returned
     if user['success']:
         try:
+            # If @total exists, it will be 1, otherwise a KeyError will be raised
             if user['response']['@total'] == '1':
+                # Retrieve the first (and only member of the users list)
                 return cuc._cupi_request('users/' + user['response']['User'][0]['ObjectId'])
         except KeyError:
             pass

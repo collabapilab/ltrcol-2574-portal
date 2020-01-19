@@ -91,7 +91,7 @@ cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=bool, default=Tr
 cuc_users_get_args = reqparse.RequestParser()
 cuc_users_get_args.add_argument('column', type=str, default='alias',
                                 help='CUC database column to search')
-cuc_users_get_args.add_argument('match_type', type=str, choices=['startswith', 'is'], default='is',
+cuc_users_get_args.add_argument('match_type', type=str, choices=['startswith', 'is'],
                                 help='How to perform the search query (column match_type search)')
 cuc_users_get_args.add_argument('search', type=str, help='The string to search for')
 cuc_users_get_args.add_argument('sortorder', type=str, choices=['asc', 'desc'],
