@@ -142,6 +142,7 @@ function enable_vm() {
     $('#voicemail_status').html("Enabling...");
 
     add_cuc_user(username).then(function() {
+        post_wbxt_notification("Voicemail Enabled for " + username);
         check_vm_status();
     });
 }
@@ -154,7 +155,7 @@ function disable_vm() {
     $('#voicemail_status').html("Disabling...");
 
     remove_cuc_user(username).then(function(result) {
-        console.log(result);
+        post_wbxt_notification("Voicemail Disabled for " + username);
         check_vm_status();
     });
 }
@@ -167,6 +168,7 @@ function enable_cms() {
     $('#cms_status').html("Enabling...");
 
     add_cms_space(username).then(function() {
+        post_wbxt_notification("Meeting Room Enabled for " + username);
         check_cms_status();
     });
 }
@@ -179,6 +181,7 @@ function disable_cms() {
     $('#cms_status').html("Disabling...");
 
     remove_cms_space(username).then(function() {
+        post_wbxt_notification("Meeting Room Disabled for " + username);
         check_cms_status();
     });
 }

@@ -14,7 +14,7 @@ class wbxt_send_api(Resource):
         '''
         Sends Message to Webex Teams Space (Room) by Room Title
         '''
-        args = request.args.to_dict()
+        args = wbxt_messages_post_args.parse_args(request)
         # Populate the text key if not specified
         if 'text' not in args:
             args['text'] = ''
@@ -30,7 +30,7 @@ class wbxt_send_api(Resource):
             for room in rooms:
                 if args['room_name'].strip() == room.title.strip():
                     # Found the room, send a message
-                    message = wbxt_api.messages.create(roomId=room.id, text=args['text'])
+                    message = wbxt_api.messages.create(roomId=room.id, markdown=args['text'])
                     return {'success': True, 
                             'messages': 'Successfully sent message {}'.format(message.id), 
                             'response': ''}

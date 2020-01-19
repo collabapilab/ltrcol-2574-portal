@@ -333,6 +333,7 @@ function add_device() {
         console.log(result);
         if (result['success'] == true) {
             message = "Successfully added " + device_name;
+            post_wbxt_notification(message + " for user " + owner_userid);
             $("#add_device_status").removeClass('text-danger');
             $("#add_device_status").addClass('text-success');
 
@@ -371,6 +372,7 @@ function add_device() {
             
         } else {
             message = "Failed to add " + device_name;
+            post_wbxt_notification(message + " for user" + owner_userid);
             $("#add_device_status").removeClass('text-success');
             $("#add_device_status").addClass('text-danger');
         }
@@ -383,6 +385,7 @@ function remove_device(device_name, table_row) {
     delete_device(device_name).then(function(result) {
         if (result['success'] == true) {
             table_row.remove().draw();
+            post_wbxt_notification("Successfully Deleted Device " + device_name);
         } else {
             console.log(result);
         }
