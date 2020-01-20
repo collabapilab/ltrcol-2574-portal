@@ -9,25 +9,11 @@ from flaskr.api.v1.parsers import cms_spaces_post_args
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
 
-@api.route("/system_status")
-class cms_system_status_api(Resource):
-    def get(self):
-        """
-        Retrieves CMS system status.
-        """
-        cms = CMS(default_cms['host'], default_cms['username'],
-                  default_cms['password'], port=default_cms['port'])
-
-        return cms._cms_request("system/status")
-
-
 @api.route("/version")
 class cms_version_api(Resource):
     def get(self):
         """
         Retrieves the version of the CMS system software.
-
-        Use this method to query for the CMS software version.
         """
         cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
         # Retrieve the CMS system/status
@@ -38,11 +24,11 @@ class cms_version_api(Resource):
         return cms_status
 
 
-def get_matched_uri(space_list, uri):
+def match_space_uri(space_list, uri):
     """
-    Returns pkid of the Space where the URI or Secondary URI match the searched uri.
-    If neither is matched, return None.  Neither uri or secondaryUri are required
-    Space settings, so we need to take that into account.
+    Searches a list of coSpaces and returns the id of the first coSpace that matches 
+    either the URI or Secondary URI (if present) of the coSpace. 
+    If neither is matched, return None.
     """
     for space in space_list:
         try:
@@ -60,72 +46,71 @@ def get_matched_uri(space_list, uri):
     return None
 
 
-def get_coSpace_pkid(cms, userid):
+def get_coSpace_id(cms, userid):
     '''
-    Return the coSpace object ID given a user ID.
-
+    Returns the coSpace object ID given a user ID and CMS object.
+    Since CMS searching/filtering does not allow for an exact-match option, this function
+    will search using the userid as a filter and then search through all results to find
+    an exact match, if present.  
+    Furthermore, any query may only return a subset of matches, therefore this function
+    implements paging so as to examine all matches.  
+    
     :param cms: (CMS) CMS object type
     :param userid: (string)  UserID which will correspond to the coSpace URI or secondaryURI.
 
     :returns: Dictionary with keys: 'success' (bool), 'message' (str), and 'response' (str).
-                The 'response' key will have the pkid, if available.
+              The 'response' key will have the id, if available.
     '''
 
-    parameters = {'filter': userid, 'offset': 0}
+    params = {'filter': userid, 'offset': 0}
 
-    matched_spaces = cms._cms_request("coSpaces", parameters=parameters)
+    # Retrieve a list of coSpaces, using the userid as the filter
+    matched_spaces = cms._cms_request("coSpaces", parameters=params)
     try:
+        # @total indicates the total number of matches, even if less coSpaces were returned in matched_spaces
         total_matches = int(matched_spaces['response']['coSpaces']['@total'])
 
+        # Check if the total # of matches equals the number coSpaces in matched_spaces
         if total_matches == len(matched_spaces['response']['coSpaces']['coSpace']):
-            # Received all matches back
-            pkid = get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'], uri=userid)
-            if pkid:
-                return {'success': True, 'message': 'Found Space for  "{}"'.format(userid), 'response': pkid}
+            id = match_space_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'], uri=userid)
+            if id:
+                return {'success': True, 'message': 'Found Space for  "{}"'.format(userid), 'response': id}
+
+        # The list of matches is not 0; we did not get a complete result from our first query
         elif total_matches > 0:
-            # The list of results was not the complete set of results
             all_spaces = matched_spaces['response']['coSpaces']['coSpace']
 
             while total_matches > len(all_spaces):
-                pkid = get_matched_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'], uri=userid)
-                if pkid:
-                    return {'success': True, 'message': 'Found Space for  "{}"'.format(userid), 'response': pkid}
-                parameters['offset'] = len(all_spaces)
-                matched_spaces = cms._cms_request("coSpaces", parameters=parameters)
+                id = match_space_uri(space_list=matched_spaces['response']['coSpaces']['coSpace'], uri=userid)
+                if id:
+                    return {'success': True, 'message': 'Found Space for  "{}"'.format(userid), 'response': id}
+                # Adjust the offset to the total number of elements found so far
+                params['offset'] = len(all_spaces)
+                # Get another "page" using the adjusted offet in the params
+                matched_spaces = cms._cms_request("coSpaces", parameters=params)
+                # Re-read total_matches, in case something was deleted between our queries
+                total_matches = int(matched_spaces['response']['coSpaces']['@total'])
                 all_spaces += matched_spaces['response']['coSpaces']['coSpace']
     except KeyError:
         pass
     return {'success': False, 'message': 'Could not find a Space for user "{}"'.format(userid), 'response': ''}
 
 
-@api.route("/spaces")
-class cms_spaces_api(Resource):
-
-    @api.expect(cms_spaces_get_args)
-    def get(self):
-        """
-        Retrieves all CMS Spaces.
-        """
-        args = request.args.to_dict()
-        cms = CMS(default_cms['host'], default_cms['username'],
-                  default_cms['password'], port=default_cms['port'])
-        return cms._cms_request("coSpaces", parameters=args)
-
-
 @api.route("/spaces/<userid>")
 @api.param('userid', 'The user ID associated with the Space')
-class cms_space_api(Resource):
+class cms_spaces_api(Resource):
     def get(self, userid):
         """
         Retrieves a CMS Space by user id.
         """
-        cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        # pkid = cms.get_coSpace_pkid(userid=userid)
-        pkid = get_coSpace_pkid(cms, userid=userid)
-        if pkid['success']:
-            return cms._cms_request(("coSpaces/" + pkid['response']))
+        cms = CMS(default_cms['host'], default_cms['username'],
+                  default_cms['password'], port=default_cms['port'])
+
+        id = get_coSpace_id(cms, userid=userid)
+        if id['success']:
+            return cms._cms_request(("coSpaces/" + id['response']))
         else:
-            return pkid
+            return id
 
     @api.expect(cms_spaces_post_args)
     def post(self, userid):
@@ -166,10 +151,10 @@ class cms_space_api(Resource):
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
 
-        pkid = get_coSpace_pkid(cms, userid=userid)
-        if pkid['success']:
-            return cms._cms_request("coSpaces/" + pkid['response'], payload=args, http_method='PUT')
-        return pkid
+        id = get_coSpace_id(cms, userid=userid)
+        if id['success']:
+            return cms._cms_request("coSpaces/" + id['response'], payload=args, http_method='PUT')
+        return id
 
     def delete(self, userid):
         """
@@ -178,7 +163,7 @@ class cms_space_api(Resource):
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
 
-        pkid = get_coSpace_pkid(cms, userid=userid)
-        if pkid['success']:
-            return cms._cms_request("coSpaces/" + pkid['response'], http_method="DELETE")
-        return pkid
+        id = get_coSpace_id(cms, userid=userid)
+        if id['success']:
+            return cms._cms_request("coSpaces/" + id['response'], http_method="DELETE")
+        return id

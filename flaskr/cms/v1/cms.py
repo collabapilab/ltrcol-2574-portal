@@ -146,8 +146,8 @@ class CMS(REST):
 
             # Check if we had returned a 200-299 response code
             if result['success']:
-                # In cases where there is exactly one user/object/etc, xmltodict
-                # will create not place the dict in a list
+                # In cases where there is exactly one user/object/etc, the child object
+                # will contain a dict, instead of having a list of dicts for each child
                 try:
                     childobj = list(parsed_response[rootobj].keys())[1]
 
