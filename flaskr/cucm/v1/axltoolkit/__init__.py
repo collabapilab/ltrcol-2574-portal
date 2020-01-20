@@ -38,7 +38,7 @@ class AXLHistoryPlugin(HistoryPlugin):
 class AxlToolkit:
     """
     The AxlToolkit Common AXL SOAP API class
-    This class enables us to connect and make SOAP API calls to CUCM & IM&P utilizing Zeep Python Package as the SOAP Client
+    This Parent class enables us to connect and make SOAP API calls to CUCM & IM&P utilizing Zeep Python Package as the SOAP Client
 
     :param username: The username used for Basic HTTP Authentication
     :param password: The password used for Basic HTTP Authentication

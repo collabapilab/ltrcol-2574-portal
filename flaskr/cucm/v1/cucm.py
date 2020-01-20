@@ -359,7 +359,7 @@ class SXML:
     """
     The CUCM Serviceability XML API
 
-    Wrapper class further extends multiple serviceability API classes under axltoolkit and provide automated
+    Wrapper class further extends multiple serviceability API classes from axltoolkit module to provide automated
     setup, retry, fault detection when making SXML API Calls to CUCM
 
     https://developer.cisco.com/docs/sxml/
