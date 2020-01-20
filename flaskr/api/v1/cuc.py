@@ -51,21 +51,6 @@ class cuc_import_ldapuser_api(Resource):
         return cuc._cupi_request("import/users/ldap", parameters=params)
 
 
-@api.route("/users")
-class cuc_get_user_api(Resource):
-    @api.expect(cuc_users_get_args, validate=True)
-    def get(self):
-        """
-        Returns Unity Connection users (with and without voicemail mailboxes).
-        """
-        args = cuc_users_get_args.parse_args(request)
-        params = get_search_params(args)
-
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
-        return cuc._cupi_request("users", parameters=params)
-
-
 def get_user_by_id(cuc, userid):
     '''
     Get a voicemail user from the Unity Connection system by user alias.

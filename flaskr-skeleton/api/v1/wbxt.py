@@ -14,4 +14,3 @@ class wbxt_send_api(Resource):
         Sends Message to Webex Teams Space (Room) by Room Title
         '''
         pass
-

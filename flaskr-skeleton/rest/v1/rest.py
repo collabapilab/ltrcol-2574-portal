@@ -59,7 +59,7 @@ class REST:
 
 
         # Send the request and handle RequestException that may occur
-
+        
 
     def _check_response(self, raw_response):
         """

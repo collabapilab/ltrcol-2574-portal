@@ -1,29 +1,27 @@
-import xmltodict
 import json
-import urllib.parse
-import xml.etree.ElementTree as ET
+import xmltodict
+import xml.parsers.expat
 from flaskr.rest.v1.rest import REST
 from base64 import b64encode
-import xml.parsers.expat
 
 
 class CMS(REST):
-    """The CMS Server class
+    '''
+    The CMS Server class
 
-    Use this class to connect and make API calls to an most REST-based devices.
+    Use this class to connect and make API calls to an most Cisco Meeting Server devices.
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
-    :param port: (optiona) The server port for API access (default: 443)
+    :param port: (optional) The server port for API access (default: 443)
     :type host: String
     :type username: String
     :type password: String
     :type port: Integer
     :returns: return an CMS object
     :rtype: CMS
-
-    """
+    '''
 
     def __init__(self, host, username, password, port=443):
         '''
@@ -34,7 +32,8 @@ class CMS(REST):
         headers = {
         }
 
-        # CMS documents its error codes in its API documentation. We have simply converted it to a dict
+        # Create a super class, where the CMS class inherits from the REST class.
+
         # CMS documents its error codes in its API documentation. We have simply converted it to a dict
         self.error_codes = {
             "accessMethodDoesNotExist": "You tried to modify or remove an accessMethod using an ID that did not correspond to a valid access method",
@@ -80,94 +79,51 @@ class CMS(REST):
             "tenantParticipantLimitReached": "You tried to add a new participant beyond the maximum number allowed for the owning tenant",
             "tooManyCdrReceivers": "You tried to add a new CDR receiver when the maximum number were already present. R1.8 supports up to 2 CDR receivers",
             "tooManyLdapSyncs": "A method to create a new LDAP synchronization method failed. Try again later",
-            "unrecognisedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you tried to perform a GET on /api/v1/system/profile rather than (the correct) /api/v1/system/profiles",
+            "66unrecognisedObject": " There are elements in the URI you are accessing that are not recognized; e.g, you specified the wrong object ID in the URI",
             "userDoesNotExist": "You tried to modify or remove a user using an ID that did not correspond to a valid user",
             "userProfileDoesNotExist": "You tried to modify a user profile using an ID that did not correspond to a valid user profile"
         }
 
-    def _cms_request(self, method, parameters={}, payload=None, http_method='GET'):
+    def _cms_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         '''
         Send a request to a CMS server using the given parameters, payload, and method. Check results for
         HTTP-response errors, then parse the CMS response and return its value.
 
-        Returns a dictionionary consisting of the following keys:
-           'success' (bool) - whether the response received from the server is deemed a success
-           'message' (str) - contains error information, either from the server or from the CMS, if available
-           'response' (dict) - the parsed response, converted from the XML of the raw response.
+        :param api_method:  The API method, such as "coSpaces" that will be used with the existing base_url to form a
+                            complete url, such as "/api/v1/coSpaces"
+        :param parameters:  A dictionary of parameters to be sent, such as {'filter': 'sales'}
+        :param payload:     The payload to be sent, typically with a POST or PUT
+        :param http_method: The request verb. CMS only supports 'GET', 'PUT', 'POST', and 'DELETE'
+        :type method: String
+        :type parameters: Dict
+        :type payload: String
+        :type http_method: String
+        :returns: return a response dictionary with the following keys:
+           'success'  :rtype:Bool:   Whether the response received from the server is deemed a success
+           'message'  :rtype:String: Contains error information, either from the server or from the CMS, if available
+           'response' :rtype:Dict:   The parsed response, converted from the XML of the raw response.
+        :rtype: Dict
         '''
-        # Change the parameters from dictionary to an encoded string
-
         pass
 
     def _cms_parse_response(self, raw_resp):
         '''
+        Return a parsed dictionary with the response from the raw response from _cms_request.
+
         This function takes a raw response from _cms_request and attempts to convert the response key
         to a dict type (from its original Response type).  Within this response, based on the @total
         key, the contents may either be a list of dictionaries or just a dictionary (if @total=1).
         For ease of processing later on, we will always return a list of dictionaries.
 
-        Returns a result dictionionary consisting of the following keys:
-           'success' (bool) - whether the response is deemed successful or if there may have been an error
-           'message' (str) - contains error information, if available
-           'response' (dict) - the parsed response, converted from the XML of the raw response.
+        :param raw_resp: Dictionary with minimally the following key:
+           'response' :rtype:requests.models.Response: The raw response from the requests library.
+        :rtype Dict
+
+        :returns: return a dictionary with the following keys:
+           'success'  :rtype:Bool:  Whether the response received from the server is deemed a success
+           'message'  :rtype:String: Contains error information, either from the server or from the CMS, if available
+           'response' :rtype:Dict: The parsed response, converted from the XML of the raw response.
+        :rtype: Dict
         '''
-        result = {'success': False, 'message': '', 'response': ''}
-
-        return result
-
-    def get_system_status(self):
-        """
-        Get information on the current system status, e.g. software version, uptime etc.
-        """
-        pass
-
-    def get_coSpaces(self, parameters={}):
-        """
-        Get the coSpaces within CMS
-
-        :param parameters: A dictionary of parameters
-        :type parameters: Dict
-        """
-        pass
-
-    def create_coSpace(self, payload={}):
-        """
-        Create a new coSpace
-
-        :param payload: Details the initial state of the newly created coSpace
-        :type payload: Dict
-        """
-        pass
-
-    def update_coSpace(self, id, payload):
-        """
-        Modify a coSpace, using the coSpace ID.
-
-        :param coSpace_id: The ID of the coSpace to modify.
-        :type coSpace_id: String
-
-        :param payload: Updated settings for the new coSpace. A parameter not specified will not be changed
-        :type payload: Dict
-        """
-        pass
-
-    def get_coSpace(self, id):
-        """
-        Get the details of a coSpace, using the coSpace ID.
-
-        :param coSpace_id: The ID of the coSpace to modify.
-        :type coSpace_id: String
-
-        :param parameters: Filters for the query
-        :type parameters: Dict
-        """
-        pass
-
-    def delete_coSpace(self, id):
-        """
-        Delete a coSpace, using the coSpace ID.
-
-        :param coSpace_id: The ID of the coSpace to modify.
-        :type coSpace_id: String
-        """
-        pass
+        result = {'success': raw_resp['success'],
+                  'message': raw_resp['message'], 'response': ''}
