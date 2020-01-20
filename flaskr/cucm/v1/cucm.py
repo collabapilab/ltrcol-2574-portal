@@ -47,7 +47,10 @@ class AXL:
     """
     The CUCM AXL class
 
-    Wrapper class further extends CUCMAXLToolkit class to provide automated setup, retry, fault detection when making AXL API Calls to CUCM
+    Wrapper class further extends CUCMAXLToolkit class to provide automated setup, retry, fault detection
+    when making AXL API Calls to CUCM
+
+    https://developer.cisco.com/docs/axl/
 
     :param host: The Hostname / IP Address of the server
     :param username: The username with CUCM AXL API access
@@ -66,11 +69,11 @@ class AXL:
         self.axlclient = None                   # This is the AXL Client Object (CUCMAxlToolkit from axltoolkit)
         self.axl_tls_verify = False             # Certificate validation check for HTTPs connection
         self.axl_version = "10.0"               # This is the default AXL version to try to find current version
-        self.axl_timeout = 30                   # Default Timeout in Seconds awaiting for AXL Response
+        self.axl_timeout = 30                   # Default Timeout in Seconds awaiting for Response
         self.axl_attempts = 0                   # AXL Request Attempt Count
         self.axl_max_retries = 3                # AXL Request Max Number of Retries when throttled
         self.axl_backoff_times = [1, 5, 10]     # AXL Retry Request Backoff Timers in seconds. Invoked if we get throttling response 503
-        self.axl_logging = False                 # This controls the SOAP Request Logging to /tmp/axltoolkit.log
+        self.axl_logging = False                # This controls the SOAP Request Logging to /tmp/axltoolkit.log
 
     class Decorators(object):
         """
@@ -79,14 +82,15 @@ class AXL:
         These Static decorator methods enables us to:
             - Dynamically setup API Sessions and cache Authentication Cookie named JSESSIONIDSSO for subsequent requests.
                 This enables us to re-use the Authenticated Session
-            - Handle AXL Result validation, retry with backoff when requests are throttled, 
+            - Handle SOAP API Result validation, retry with backoff when requests are throttled,
                 and dynamically covert Zeep/Soap objects to native python objects (serialize)
         """
         @staticmethod
         def axl_setup(func):
             """
             Decorator method that checks if we already have a client session setup,
-            if not initiates AXL._axl_setup(), and then executes the original decorated class method and returns its return value.
+            if not initiates AXL._axl_setup(), and then executes the original decorated class method and returns
+            its return value.
             """
             @functools.wraps(func)
             def axl_setup_check(self, *args, **kwargs):
@@ -99,8 +103,12 @@ class AXL:
         @staticmethod
         def axl_result_check_with_retry(func):
             """
-            Decorator method that checks the results returned as a result of our query and retries
+            Decorator method that checks the results returned from the original method and re-tries it if
+            failure reason is due to AXL throttling (HTTP Status 503). Otherwise if the original decorated class method
+            returned value is None, it raises an Exception relaying the last SOAP exception message.
 
+            All successful responses will be dynamically converted from Zeep/Soap objects to native python objects
+            via the local serialize_object method.
             """
             @functools.wraps(func)
             def axl_result_check_wrapper(self, *args, **kwargs):
@@ -129,7 +137,7 @@ class AXL:
 
         Calls _axl_get_schema which initializes self.axlclient if AXL Services are up and if user is authenticated.
 
-        If AXL Services are not running or if user is authorized Raise Exception with appropriate error.
+        If AXL Services are not running or if user is not authorized Raise Exception with appropriate error.
 
         """
         axl_test_url = "https://" + self.host + "/axl"
@@ -240,18 +248,20 @@ class AXL:
 
 class PAWS:
     """
-    The CUCM PAWS class
+    The VOS Platform Administrative Web Services (PAWS) class
 
-    Use this class to connect and make PAWS API Calls to CUCM
+    Wrapper class further extends PawsToolkit class to provide automated setup, fault detection when making PAWS API Calls to CUCM
 
     https://developer.cisco.com/site/paws/documents/api-reference/
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
+    :param service: The PAWS API Service Name
     :type host: String
     :type username: String
     :type password: String
+    :type service: String
     :returns: return an PAWS object
     :rtype: PAWS
     """
@@ -260,15 +270,28 @@ class PAWS:
         self.host = host
         self.username = username
         self.password = password
-        self.service = service
-        self.pawsclient = None        # This is the PAWS Client Object
-        self.paws_tls_verify = False  # TLS Verify on PAWS HTTPS connections
-        self.paws_timeout = 30        # Default Timeout in Seconds for PAWS Queries
-        self.paws_logging = False     # This controls the SOAP Logging
+        self.pawsclient = None        # This is the PAWS Client Object (PawsToolkit from axltoolkit)
+        self.paws_tls_verify = False  # Certificate validation check for HTTPs connection
+        self.paws_timeout = 30        # Default Timeout in Seconds awaiting for Response
+        self.service = service        # This is the PAWS Service Name (ie: VersionService, ClusterNodesService)
+        self.paws_logging = False     # This controls the SOAP Request Logging to /tmp/axltoolkit.log
 
     class Decorators(object):
+        """
+        Inner Class holding Decorator methods for the parent Class
+
+        These Static decorator methods enables us to:
+            - Dynamically setup API Sessions and cache Authentication Cookie named JSESSIONIDSSO for subsequent requests.
+                This enables us to re-use the Authenticated Session
+            - Handle SOAP API Result validation, and dynamically covert Zeep/Soap objects to native python objects (serialize)
+        """
         @staticmethod
         def paws_setup(func):
+            """
+            Decorator method that checks if we already have a client session setup,
+            if not initiates AXL._paws_setup(), and then executes the original decorated class method and returns
+            its return value.
+            """
             @functools.wraps(func)
             def paws_setup_check(self, *args, **kwargs):
                 if not self.pawsclient:
@@ -279,6 +302,13 @@ class PAWS:
 
         @staticmethod
         def paws_result_check(func):
+            """
+            Decorator method that checks the results returned from the original method, if the original decorated class method
+            returned value is None, it raises an Exception relaying the last SOAP exception message.
+
+            All successful responses will be dynamically converted from Zeep/Soap objects to native python objects
+            via the local serialize_object method.
+            """
             @functools.wraps(func)
             def paws_result_check_wrapper(self, *args, **kwargs):
                 value = func(self, *args, **kwargs)
@@ -290,16 +320,19 @@ class PAWS:
 
     def _paws_setup(self):
         """
-        Tests and establishes PAWS connection to a given VOS device. Initializes self.pawsclient if successful
+        Internal PAWS Class method which Tests and establishes PAWS connection to a given VOS device.
 
-        If PAWS Services are not running or if we are not authorized we fail
+        If PAWS Services are up and if user is authenticated initializes self.pawsclient with a new PawsToolkit
+        for the chosen PAWS API Service (ie: VersionService, ClusterNodeServices)
+
+        If PAWS Services are not running or if user is not authorized Raise Exception with appropriate error.
 
         """
         paws_test_url = "https://" + self.host + "/platform-services/services/listServices"
         r = requests.get(paws_test_url,
                          auth=(self.username, self.password),
                          timeout=self.paws_timeout,
-                         verify=False)
+                         verify=self.paws_tls_verify)
         if r.status_code == 404:
             raise Exception("PAWS Services Not Running: " + str(r.status_code) + " - " + r.reason)
         if r.status_code == 401:
@@ -326,16 +359,19 @@ class SXML:
     """
     The CUCM Serviceability XML API
 
-    Use this class to connect and make Serviceability XML API Calls to CUCM
+    Wrapper class further extends multiple serviceability API classes under axltoolkit and provide automated
+    setup, retry, fault detection when making SXML API Calls to CUCM
 
     https://developer.cisco.com/docs/sxml/
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
     :param password: The password for your user account
+    :param service: The SXML API Service Name
     :type host: String
     :type username: String
     :type password: String
+    :type service: String
     :returns: return an SXML object
     :rtype: SXML
     """
@@ -344,12 +380,12 @@ class SXML:
         self.host = host
         self.username = username
         self.password = password
-        self.service = service
         self.sxmlclient = None        # This is the PAWS Client Object
         self.sxml_tls_verify = False  # TLS Verify on PAWS HTTPS connections
         self.sxml_timeout = 30        # Default Timeout in Seconds for PAWS Queries
+        self.service = service        # This is the SXML Service Name (ie: UcmRisPortToolkit, UcmServiceabilityToolkit, UcmPerfMonToolkit)
         self.sxml_logging = False     # This controls the SOAP Logging
-        self.service_map = {
+        self.service_map = {          # This maps Service Names to Service Test URLs and axltoolkit Classes
             "realtimeservice2": {
                 "service_test_url": "/realtimeservice2/services/listServices",
                 "toolkit": UcmRisPortToolkit
@@ -377,8 +413,21 @@ class SXML:
         }
 
     class Decorators(object):
+        """
+        Inner Class holding Decorator methods for the parent Class
+
+        These Static decorator methods enables us to:
+            - Dynamically setup API Sessions depending on the SXML Service Type, cache Authentication
+                Cookie named JSESSIONIDSSO for subsequent requests. This enables us to re-use the Authenticated Session
+            - Handle SOAP API Result validation, and dynamically covert Zeep/Soap objects to native python objects (serialize)
+        """
         @staticmethod
         def sxml_setup(service=None):
+            """
+            Decorator method that checks if we already have a client session setup and the right type/instance
+            if not initiates SXML._sxml_setup() with the chosen SXML service, and then executes the original
+            decorated class method and returns its return value.
+            """
             def decorator(func):
                 @functools.wraps(func)
                 def sxml_setup_check(self, *args, **kwargs):
@@ -391,6 +440,13 @@ class SXML:
 
         @staticmethod
         def sxml_result_check(func):
+            """
+            Decorator method that checks the results returned from the original method, if the original decorated class method
+            returned value is None, it raises an Exception relaying the last SOAP exception message.
+
+            All successful responses will be dynamically converted from Zeep/Soap objects to native python objects
+            via the local serialize_object method.
+            """
             @functools.wraps(func)
             def sxml_result_check_wrapper(self, *args, **kwargs):
                 value = func(self, *args, **kwargs)
@@ -402,16 +458,19 @@ class SXML:
 
     def _sxml_setup(self, service=None):
         """
-        Tests and establishes UC Manager Serviceability (SXML) Service connection to a given VOS device. Initializes self.sxmlclient if successful
+        Internal SXML Class method which Tests and establishes SXML connection to a given VOS device.
 
-        If given UC Manager Serviceability (SXML) Service is not running or if we are not authorized we fail
+        If given SXML Service is up and if user is authenticated initializes self.sxmlclient with a mapped axltoolkit
+        class for the chosen SXML API Service (ie: UcmRisPortToolkit, UcmServiceabilityToolkit, UcmPerfMonToolkit)
+
+        If given SXML Service is not running or if user is not authorized Raise Exception with appropriate error.
 
         """
         sxml_test_url = "https://" + self.host + self.service_map[service]['service_test_url']
         r = requests.get(sxml_test_url,
                          auth=(self.username, self.password),
                          timeout=self.sxml_timeout,
-                         verify=False)
+                         verify=self.sxml_tls_verify)
         if r.status_code == 404:
             raise Exception("SXML Services Not Running: " + str(r.status_code) + " - " + r.reason)
         if r.status_code == 401:
