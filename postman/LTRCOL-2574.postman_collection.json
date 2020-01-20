@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d8c50263-0089-4c94-ade1-6c5f6b674ea3",
+		"_postman_id": "44d583cb-8942-450e-9073-b5c2515ea3de",
 		"name": "LTRCOL-2574",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -402,11 +402,6 @@
 											"type": "text"
 										},
 										{
-											"key": "callId",
-											"value": "5555",
-											"type": "text"
-										},
-										{
 											"key": "uri",
 											"value": "space",
 											"type": "text"
@@ -440,28 +435,6 @@
 							"response": []
 						},
 						{
-							"name": "Get coSpaces",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "https://{{cms}}:8443/api/v1/coSpaces",
-									"protocol": "https",
-									"host": [
-										"{{cms}}"
-									],
-									"port": "8443",
-									"path": [
-										"api",
-										"v1",
-										"coSpaces"
-									]
-								},
-								"description": "Filter/limit by alias/uri using:  ?filter=blah&limit=2"
-							},
-							"response": []
-						},
-						{
 							"name": "Modify coSpace",
 							"request": {
 								"method": "PUT",
@@ -480,6 +453,11 @@
 											"key": "name",
 											"value": "Modified Space",
 											"type": "text"
+										},
+										{
+											"key": "uri",
+											"value": "newspace",
+											"type": "text"
 										}
 									],
 									"options": {
@@ -489,7 +467,7 @@
 									}
 								},
 								"url": {
-									"raw": "https://{{cms}}:8443/api/v1/coSpaces/2cb3a80a-51a4-4086-9487-fc06087e78ed",
+									"raw": "https://{{cms}}:8443/api/v1/coSpaces/362dc6ec-8fa3-4ad1-96a2-2ea02b40db67",
 									"protocol": "https",
 									"host": [
 										"{{cms}}"
@@ -499,9 +477,31 @@
 										"api",
 										"v1",
 										"coSpaces",
-										"2cb3a80a-51a4-4086-9487-fc06087e78ed"
+										"362dc6ec-8fa3-4ad1-96a2-2ea02b40db67"
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get coSpaces",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{cms}}:8443/api/v1/coSpaces",
+									"protocol": "https",
+									"host": [
+										"{{cms}}"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"coSpaces"
+									]
+								},
+								"description": "Filter/limit by alias/uri using:  ?filter=blah&limit=2"
 							},
 							"response": []
 						},
@@ -1404,37 +1404,37 @@
 	],
 	"variable": [
 		{
-			"id": "8a9b1092-5c1f-48c4-8584-cf2c2a26213d",
+			"id": "e0137c21-fc19-404a-877c-6e14aa027dcc",
 			"key": "pod_num",
 			"value": "31",
 			"type": "string"
 		},
 		{
-			"id": "4dba2a67-b8e6-4717-91c8-b06870aae013",
+			"id": "d391b530-70d4-4114-b982-af0ad2fd24d4",
 			"key": "cuc",
 			"value": "cuc1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "bb61da14-1ade-42d7-89fc-9d12032d7872",
+			"id": "fafba2c7-b15a-41b9-aabb-c1220666f06c",
 			"key": "cms",
 			"value": "cms1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "a205535d-33a3-4c1c-b8da-936cf811797c",
+			"id": "87b7b519-b8c3-4201-ab77-a56f1e07ecf5",
 			"key": "webexteams_access_token",
 			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
 			"type": "string"
 		},
 		{
-			"id": "761bb1fd-f73c-4268-94bd-947d2c527053",
+			"id": "b6133b02-d9bd-4ec5-8bf6-63d36ecd2bfd",
 			"key": "host",
 			"value": "dev1.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "5a067e28-cef5-4c2d-8df4-990116ed60d0",
+			"id": "4beff2e0-f5d1-47b2-a8d6-296d1501436b",
 			"key": "port",
 			"value": "5000",
 			"type": "string"

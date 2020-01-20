@@ -196,12 +196,12 @@ class cuc_user_api(Resource):
             try:
                 # Single user found.  Delete the user using the object ID
                 user_id = user['response']['ObjectId']
-                return cuc._cupi_request("users/" + user_id, http_method = 'DELETE')
+                return cuc._cupi_request("users/" + user_id, http_method='DELETE')
 
             except KeyError:
                 # No users were found
                 return {'success': False,
-                        'msg': 'Found 0 users to import with user id {}'.format(userid),
+                        'msg': 'Found 0 users to delete with user id {}'.format(userid),
                         'response': user['response']}
         else:
             # Error in querying for user
