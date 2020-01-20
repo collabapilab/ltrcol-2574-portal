@@ -16,12 +16,13 @@ from flaskr.api.v1.parsers import cucm_update_line_query_args
 
 api = Namespace('cucm', description='Cisco Unified Communications Manager APIs')
 
-
+# Core CUCM SOAP API Python Class Instances
 myAXL = AXL(default_cucm['host'], default_cucm['username'], default_cucm['password'])
 myPAWSVersionService = PAWS(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'VersionService')
 mySXMLRisPort70Service = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'realtimeservice2')
 mySXMLControlCenterServicesService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'controlcenterservice2')
 mySXMLPerfMonService = SXML(default_cucm['host'], default_cucm['username'], default_cucm['password'], 'perfmonservice2')
+###########################################
 
 
 @api.route("/version")
