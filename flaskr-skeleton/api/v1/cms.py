@@ -15,22 +15,7 @@ class cms_version_api(Resource):
         """
         Retrieves the version of the CMS system software.
         """
-        cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
-        # Retrieve the CMS system/status
-        cms_status = cms._cms_request("system/status")
-        if cms_status['success']:
-            # Return only the version component
-            return cms_status['response']['status']['softwareVersion']
-        return cms_status
-
-
-def match_space_uri(space_list, uri):
-    """
-    Searches a list of coSpaces and returns the id of the first coSpace that matches 
-    either the URI or Secondary URI (if present) of the coSpace. 
-    If neither is matched, return None.
-    """
-    pass
+        pass
 
 
 def get_coSpace_id(cms, userid):
@@ -52,6 +37,15 @@ def get_coSpace_id(cms, userid):
     params = {'filter': userid, 'offset': 0}
 
     # Retrieve a list of coSpaces, using the userid as the filter
+
+
+def match_space_uri(space_list, uri):
+    """
+    Searches a list of coSpaces and returns the id of the first coSpace that matches 
+    either the URI or Secondary URI (if present) of the coSpace. 
+    If neither is matched, return None.
+    """
+    pass
 
 
 @api.route("/spaces/<userid>")
