@@ -29,10 +29,7 @@ class CMS(REST):
         '''
         # Define the header structure for CMS. CMS returns text/xml and except for the layoutTemplates,
         # requires Content-Type to be x-www-form-urlencoded
-        headers = {
-        }
 
-        # Create a super class, where the CMS class inherits from the REST class.
 
         # CMS documents its error codes in its API documentation. We have simply converted it to a dict
         self.error_codes = {
