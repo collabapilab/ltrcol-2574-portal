@@ -6,7 +6,7 @@ The following contains a sample web portal with skeleton code that allows you to
 
 ### Step 1
 
-Make sure python3 is installed (```python --version```).  You may also install/use a virtual environment.  
+Make sure python3 is installed (```/usr/bin/env python3 --version```).  You may also install/use a virtual environment.  
 
 ### Step 2
 
@@ -16,7 +16,7 @@ Install all python requirements with:
 
 ### Step 3
 
-Now you need to start the web service with ```python -m flask run``` in order to start the Flask development server. 
+Now you need to start the web service with ```./app.py``` in order to start the Flask development server.
 
 ### Step 4
 
@@ -28,7 +28,7 @@ The web server is ready once these messages appear:
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
  * Debug mode: on
- * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 255-014-512
@@ -38,27 +38,38 @@ The web server is ready once these messages appear:
 
 In your browser, access the page using `http://localhost:5000`
 
-## VS Code Setup ##
+## VS Code Debug Run Setup ##
 
-in your launch.json, to set breakpoints and debugs, you should have an entry such as:
+In your VSCode go to your Command Palette (Ctrl + Shift + P /  Cmd + Shift + P) and Type Debug: Open launch.json
+
+Populate your your launch.json file with the following or append to your existing configurations list:
 
 ```
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
         {
             "name": "Start LTRCOL-2574 Portal",
             "type": "python",
             "request": "launch",
             "module": "flask",
+            // https://flask.palletsprojects.com/en/1.1.x/config/#configuring-from-environment-variables
             "env": {
                 "FLASK_APP": "app.py",
                 "FLASK_ENV": "development",
-                "FLASK_DEBUG": "1"
+                "FLASK_DEBUG": "0"
             },
             "args": [
                 "run",
-                "--host=0.0.0.0",
+                "--host=127.0.0.1",
                 "--no-debugger",
                 "--no-reload"
             ],
             "jinja": true
-        },        
+        },  
+    ]
+}
 ```
