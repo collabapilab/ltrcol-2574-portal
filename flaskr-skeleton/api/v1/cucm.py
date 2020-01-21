@@ -58,60 +58,7 @@ class cucm_phone_api(Resource):
         <br>
         """
         try:
-            cucm_add_phone_query_parsed_args = cucm_add_phone_query_args.parse_args(request)
-            axl_get_user_result = myAXL.get_user(userid=cucm_add_phone_query_parsed_args['ownerUserName'])
-            user_telephoneNumber = None
-            if axl_get_user_result['return']['user'].get('telephoneNumber'):
-                user_telephoneNumber = re.sub(r"^\+", "\\+", axl_get_user_result['return']['user']['telephoneNumber'])
-            user_associatedDevices = []
-            if axl_get_user_result['return']['user']['associatedDevices']:
-                user_associatedDevices = axl_get_user_result['return']['user']['associatedDevices']['device']
-
-            cucm_add_phone_data_dict = {
-                "name": device_name,
-                "description": cucm_add_phone_query_parsed_args['description'],
-                "product": cucm_add_phone_query_parsed_args['phonetype'],
-                "class": "Phone",
-                "protocol": "SIP",
-                "protocolSide": "User",
-                "commonPhoneConfigName": "Standard Common Phone Profile",
-                "callingSearchSpaceName": cucm_add_phone_query_parsed_args['devicecss'],
-                "devicePoolName": "Default",
-                "locationName": "Hub_None",
-                "securityProfileName": "Universal Device Template - Model-independent Security Profile",
-                "sipProfileName": "Standard SIP Profile",
-                "ownerUserName": cucm_add_phone_query_parsed_args['ownerUserName'],
-                "lines": {
-                    "line": {
-                        "index": "1",
-                        "dirn": {
-                            "pattern": user_telephoneNumber,
-                            "routePartitionName": 'DN_PT'
-                        },
-                        "display": cucm_add_phone_query_parsed_args['calleridname'],
-                        "displayAscii": cucm_add_phone_query_parsed_args['calleridname'],
-                        "associatedEndusers": {
-                                "enduser": {
-                                    "userId": cucm_add_phone_query_parsed_args['ownerUserName']
-                                }
-                        }
-                    }
-                }
-            }
-
-            axl_add_phone_result = myAXL.add_phone(phone_data=cucm_add_phone_data_dict)
-            user_associatedDevices.append(device_name)
-            cucm_update_user_data_dict = {
-                "userid": cucm_add_phone_query_parsed_args['ownerUserName'],
-                'primaryExtension': {
-                    "pattern": user_telephoneNumber,
-                    "routePartitionName": 'DN_PT'
-                },
-                "associatedDevices": {
-                    'device': user_associatedDevices
-                }
-            }
-            axl_update_user_result = myAXL.update_user(user_data=cucm_update_user_data_dict)
+            raise Exception('Not implemented yet!!')
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
