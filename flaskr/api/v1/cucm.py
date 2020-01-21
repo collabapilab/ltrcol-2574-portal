@@ -47,6 +47,22 @@ class cucm_get_version_api(Resource):
 @api.route("/phone/<string:device_name>")
 @api.param('device_name', description='The Name of the Phone Device')
 class cucm_phone_api(Resource):
+    def get(self, device_name):
+        """
+        Retrieves a Phone device configuration from CUCM
+
+        This API method executes an getPhone AXL Request with the supplied device_name
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getPhone.html
+        """
+        try:
+            axlresult = myAXL.get_phone(device_name)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Phone Data Retrieved Successfully", 'phone_data': axlresult['return']['phone']}
+        return jsonify(apiresult)
+
     @api.expect(cucm_add_phone_query_args, validate=True)
     def post(self, device_name):
         """
@@ -124,38 +140,6 @@ class cucm_phone_api(Resource):
                      'user_uuid': axl_update_user_result['return']}
         return jsonify(apiresult)
 
-    def get(self, device_name):
-        """
-        Retrieves a Phone device configuration from CUCM
-
-        This API method executes an getPhone AXL Request with the supplied device_name
-        <br>
-        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getPhone.html
-        """
-        try:
-            axlresult = myAXL.get_phone(device_name)
-        except Exception as e:
-            apiresult = {'success': False, 'message': str(e)}
-            return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "Phone Data Retrieved Successfully", 'phone_data': axlresult['return']['phone']}
-        return jsonify(apiresult)
-
-    def delete(self, device_name):
-        """
-        Deletes a Phone device from CUCM
-
-        This API method executes an removePhone AXL Request with the supplied device_name
-        <br>
-        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_removePhone.html
-        """
-        try:
-            axlresult = myAXL.delete_phone(device_name)
-        except Exception as e:
-            apiresult = {'success': False, 'message': str(e)}
-            return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "Phone Successfully Deleted", 'uuid': axlresult['return']}
-        return jsonify(apiresult)
-
     @api.expect(cucm_update_phone_query_args, validate=True)
     def put(self, device_name):
         """
@@ -182,6 +166,22 @@ class cucm_phone_api(Resource):
             return jsonify(apiresult)
         apiresult = {'success': True, 'message': "Phone Configuration Updated & Applied Successfully",
                      'uuid': axl_update_phone_result['return']}
+        return jsonify(apiresult)
+
+    def delete(self, device_name):
+        """
+        Deletes a Phone device from CUCM
+
+        This API method executes an removePhone AXL Request with the supplied device_name
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_removePhone.html
+        """
+        try:
+            axlresult = myAXL.delete_phone(device_name)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Phone Successfully Deleted", 'uuid': axlresult['return']}
         return jsonify(apiresult)
 
 
