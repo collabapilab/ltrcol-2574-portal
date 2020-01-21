@@ -41,6 +41,7 @@ class cuc_import_ldapuser_api(Resource):
         """
         Retrieves LDAP users synched to Unity Connection.
         """
+        # Read arguments: column, match_type, search, sortorder, rowsPerPage, pageNumber
         args = cuc_users_get_args.parse_args(request)
         params = get_search_params(args)
 
@@ -75,7 +76,8 @@ class cuc_user_api(Resource):
         """
         Import Unity Connection user from LDAP using the user ID / alias.
         """
-        args = request.args.to_dict()
+        # Read arguments: ListInDirectory, IsVmEnrolled, PIN, and/or ResetMailbox
+        args = cuc_importldap_user_post_args.parse_args(request)
 
 
     @api.expect(cuc_users_put_args, validate=True)
@@ -84,8 +86,11 @@ class cuc_user_api(Resource):
         """
         Update user from Unity Connection using the user ID / alias.
         """
+        # Need to distinguish which arguments go with which update, since they're different methods
         user_settings = ['ListInDirectory', 'IsVmEnrolled']
-        args = request.args.to_dict()
+        pin_settings = ['PIN', 'ResetMailbox']
+        # Read arguments: ListInDirectory, IsVmEnrolled, PIN, and/or ResetMailbox
+        args = cuc_users_put_args.parse_args(request)
         
         # If no arguments were detected, there's nothing to do
 

@@ -62,7 +62,8 @@ class cms_spaces_api(Resource):
         """
         Creates a CMS space by user id
         """
-        args = request.args.to_dict()
+        # Read available arguments: name, uri, secondaryUri, passcode, defaultLayout
+        args = cms_spaces_post_args.parse_args()
 
 
     @api.expect(cms_spaces_post_args)
@@ -70,8 +71,9 @@ class cms_spaces_api(Resource):
         """
         Edits a CMS space by object id
         """
-        args = request.args.to_dict()
-        
+        # Read available arguments: name, uri, secondaryUri, passcode, defaultLayout
+        args = cms_spaces_post_args.parse_args()
+
 
     def delete(self, userid):
         """

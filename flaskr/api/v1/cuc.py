@@ -43,6 +43,7 @@ class cuc_import_ldapuser_api(Resource):
         """
         Retrieves LDAP users synched to Unity Connection.
         """
+        # Read arguments: column, match_type, search, sortorder, rowsPerPage, pageNumber
         args = cuc_users_get_args.parse_args(request)
         params = get_search_params(args)
 
@@ -92,7 +93,8 @@ class cuc_user_api(Resource):
         """
         Import Unity Connection user from LDAP using the user ID / alias.
         """
-        args = request.args.to_dict()
+        # Read arguments: ListInDirectory, IsVmEnrolled, PIN, and/or ResetMailbox
+        args = cuc_importldap_user_post_args.parse_args(request)
         if 'templateAlias' not in args:
             args['templateAlias'] = 'voicemailusertemplate'
 
@@ -115,7 +117,7 @@ class cuc_user_api(Resource):
             else:
                 # No users were found
                 return {'success': False,
-                        'msg': 'Found {} users to import with user id {}'.format(user['response']['@total'], userid), 
+                        'message': 'Found {} users to import with user id {}'.format(user['response']['@total'], userid), 
                         'response': user['response']}
         except KeyError:
             # Return the errored user look up data
@@ -127,9 +129,12 @@ class cuc_user_api(Resource):
         """
         Update user from Unity Connection using the user ID / alias.
         """
+        # Need to distinguish which arguments go with which update, since they're different methods
         user_settings = ['ListInDirectory', 'IsVmEnrolled']
-        args = request.args.to_dict()
-        
+        pin_settings = ['PIN', 'ResetMailbox']
+        # Read arguments: ListInDirectory, IsVmEnrolled, PIN, and/or ResetMailbox
+        args = cuc_users_put_args.parse_args(request)
+
         # If no arguments were detected, there's nothing to do
         if len(args) > 0:
             cuc = CUPI(default_cuc['host'], default_cuc['username'],
@@ -149,6 +154,7 @@ class cuc_user_api(Resource):
                         for user_setting in user_settings:
                             if user_setting in args:
                                 payload[user_setting] = args[user_setting]
+                        # Update the user's settings
                         user_result = cuc._cupi_request("users/" + user_id,
                                                         payload=payload, http_method='PUT')
 
@@ -157,7 +163,7 @@ class cuc_user_api(Resource):
                             return user_result
 
                     # Check if PIN or ResetMailbox were supplied
-                    if 'PIN' in args or 'ResetMailbox' in args:
+                    if any(pin_setting in args for pin_setting in pin_settings):
                         cred_payload = {}
                         if 'PIN' in args:
                             cred_payload['Credentials'] = args['PIN']                            
@@ -167,11 +173,12 @@ class cuc_user_api(Resource):
                             cred_payload['TimeHacked'] = []
                         # Update the user's credentials
                         return cuc._cupi_request('users/' + str(user['response']['ObjectId']) + '/credential/pin', 
-                                                payload=cred_payload, http_method='PUT')
+                                                 payload=cred_payload, http_method='PUT')
+                    return user_result
                 except KeyError:
                     # Zero users were found
                     return {'success': False,
-                            'msg': 'Found 0 users with user id {}'.format(userid), 
+                            'message': 'Found 0 users with user id {}'.format(userid), 
                             'response': user['response']}
             else:
                 # Error in querying for the user
@@ -201,7 +208,7 @@ class cuc_user_api(Resource):
             except KeyError:
                 # No users were found
                 return {'success': False,
-                        'msg': 'Found 0 users to delete with user id {}'.format(userid),
+                        'message': 'Found 0 users to delete with user id {}'.format(userid),
                         'response': user['response']}
         else:
             # Error in querying for user

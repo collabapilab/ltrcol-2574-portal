@@ -117,7 +117,8 @@ class cms_spaces_api(Resource):
         """
         Creates a CMS space by user id
         """
-        args = request.args.to_dict()
+        # Read available arguments: name, uri, secondaryUri, passcode, defaultLayout
+        args = cms_spaces_post_args.parse_args()
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
 
@@ -147,7 +148,8 @@ class cms_spaces_api(Resource):
         """
         Edits a CMS space by object id
         """
-        args = request.args.to_dict()
+        # Read available arguments: name, uri, secondaryUri, passcode, defaultLayout
+        args = cms_spaces_post_args.parse_args()
         cms = CMS(default_cms['host'], default_cms['username'],
                   default_cms['password'], port=default_cms['port'])
 

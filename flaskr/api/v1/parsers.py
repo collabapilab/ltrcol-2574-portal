@@ -56,14 +56,14 @@ cucm_service_status_query_args.add_argument('Services', type=str, required=False
 
 # Cisco Meeting Server API Arguments
 cms_spaces_post_args = reqparse.RequestParser()
-cms_spaces_post_args.add_argument('name', type=str, help='Name of the Space')
-cms_spaces_post_args.add_argument('uri', type=str,
+cms_spaces_post_args.add_argument('name', type=str, store_missing=False, help='Name of the Space')
+cms_spaces_post_args.add_argument('uri', type=str, store_missing=False,
                                   help='User URI part for SIP call to reach Space')
-cms_spaces_post_args.add_argument('secondaryUri', type=str,
+cms_spaces_post_args.add_argument('secondaryUri', type=str, store_missing=False, 
                                   help='Secondary URI for SIP call to reach Space')
-cms_spaces_post_args.add_argument('passcode', type=str,
+cms_spaces_post_args.add_argument('passcode', type=str, store_missing=False, 
                                   help='Security code for this Space')
-cms_spaces_post_args.add_argument('defaultLayout', type=str, default='automatic',
+cms_spaces_post_args.add_argument('defaultLayout', type=str, store_missing=False, default='automatic',
                                   choices=['automatic', 'allEqual', 'speakerOnly',
                                            'telepresence', 'stacked', 'allEqualQuarters'],
                                   help='Default Layout for this Space')
@@ -71,10 +71,10 @@ cms_spaces_post_args.add_argument('defaultLayout', type=str, default='automatic'
 cms_spaces_get_args = reqparse.RequestParser()
 cms_spaces_get_args.add_argument('filter', type=str,
                                  help='String to search for in Name, URI, and secondaryUri fields')
-cms_spaces_get_args.add_argument('limit', type=int, required=False, default=10,
+cms_spaces_get_args.add_argument('limit', type=int, store_missing=False, default=10,
                                  help='Maximum results to return. Note that CMS has an internal limit \
                                        of 10 even though a larger limit can be requested')
-cms_spaces_get_args.add_argument('offset', type=int, default=0,
+cms_spaces_get_args.add_argument('offset', type=int, store_missing=False, default=0,
                                  help='Return results starting with the offset specified')
 
 # Cisco Unity Connection API Arguments
@@ -102,13 +102,15 @@ cuc_users_get_args.add_argument('pageNumber', type=int,
                                 help='Page number to return', default=1)
 
 cuc_users_put_args = reqparse.RequestParser()
-cuc_users_put_args.add_argument('ListInDirectory', type=bool,
+cuc_users_put_args.add_argument('ListInDirectory', type=bool, store_missing=False,
                                 help='List in the Unity Connection Auto Attendant Directory')
-cuc_users_put_args.add_argument('IsVmEnrolled', type=bool,
+cuc_users_put_args.add_argument('IsVmEnrolled', type=bool, store_missing=False,
                                 help='Play initial enrollment conversation (to record a name, request new \
                                       password, etc)')
-cuc_users_put_args.add_argument('PIN', type=int, help='New PIN for the voicemail account')
-cuc_users_put_args.add_argument('ResetMailbox', type=bool, help='Reset mailbox')
+cuc_users_put_args.add_argument('PIN', type=int, store_missing=False,
+                                help='New PIN for the voicemail account')
+cuc_users_put_args.add_argument('ResetMailbox', type=bool, store_missing=False,
+                                help='Reset mailbox')
 
 # Webex Teams API Arguments
 wbxt_messages_post_args = reqparse.RequestParser()
