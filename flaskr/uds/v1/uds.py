@@ -31,11 +31,9 @@ class UDS(REST):
         headers = {
             'Accept': 'application/xml'
         }
-        if username and password:
-            headers['Authorization']=  "Basic {}".format(b64encode(str.encode(username + ":" + password)).decode("utf-8"))
 
         # Create a super class, where the UDS class inherits from the REST class.
-        super().__init__(host, base_url='/cucm-uds', headers=headers, port=port)
+        super().__init__(host, username, password, base_url='/cucm-uds', headers=headers, port=port)
 
 
     def _uds_request(self, api_method, parameters={}, payload=None, http_method='GET'):

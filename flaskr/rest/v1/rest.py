@@ -10,10 +10,14 @@ class REST:
     Use this class to connect and make API calls to an most REST-based devices.
 
     :param host: The Hostname / IP Address of the server
+    :param username: The username of user with REST/API access
+    :param password: The password for user
     :param port: (optional) The server port for API access (default: 443)
     :param base_url: (optional) The base URL, such as "/api/v1" for a given API
     :param headers: (optional) A dictionary of header key/value pairs
     :type host: String
+    :type username: String
+    :type password: String
     :type port: Integer
     :type base_url: String
     :type headers: Dict
