@@ -13,8 +13,7 @@ myCUPI = CUPI(default_cuc['host'], default_cuc['username'],
 
 @api.route("/version")
 class cuc_version_api(Resource):
-    def get(self, host=default_cuc['host'], port=default_cuc['port'],
-            username=default_cuc['username'], password=default_cuc['password']):
+    def get(self):
         """
         Retrieves Unity Connection version.
         """
@@ -38,8 +37,7 @@ def get_search_params(args):
 @api.route("/ldap_users")
 class cuc_import_ldapuser_api(Resource):
     @api.expect(cuc_users_get_args, validate=True)
-    def get(self, host=default_cuc['host'], port=default_cuc['port'],
-            username=default_cuc['username'], password=default_cuc['password']):
+    def get(self):
         """
         Retrieves LDAP users synched to Unity Connection.
         """
@@ -76,16 +74,14 @@ def get_user_by_id(userid):
 @api.route("/users/<userid>")
 @api.param('userid', 'The userid (alias) of the user')
 class cuc_user_api(Resource):
-    def get(self, userid, host=default_cuc['host'], port=default_cuc['port'],
-            username=default_cuc['username'], password=default_cuc['password']):
+    def get(self, userid):
         """
         Get user from Unity Connection using the user ID / alias.
         """
         return get_user_by_id(userid)
 
     @api.expect(cuc_importldap_user_post_args, validate=True)
-    def post(self, userid, host=default_cuc['host'], port=default_cuc['port'],
-            username=default_cuc['username'], password=default_cuc['password']):
+    def post(self, userid):
         """
         Import Unity Connection user from LDAP using the user ID / alias.
         """
@@ -113,12 +109,12 @@ class cuc_user_api(Resource):
                         'message': 'Found {} users to import with user id {}'.format(user['response']['@total'], userid), 
                         'response': user['response']}
         except KeyError:
-            # Return the errored user look up data
-            return user
+            pass
+        # Return the errored user look up data
+        return user
 
     @api.expect(cuc_users_put_args, validate=True)
-    def put(self, userid, host=default_cuc['host'], port=default_cuc['port'],
-            username=default_cuc['username'], password=default_cuc['password']):
+    def put(self, userid):
         """
         Update user from Unity Connection using the user ID / alias.
         """
@@ -178,8 +174,7 @@ class cuc_user_api(Resource):
             # No arguments supplied besides the userid
             return {'success': True, 'message': 'No changes specified for {}'.format(userid), 'response': ''}
 
-    def delete(self, userid, host=default_cuc['host'], port=default_cuc['port'],
-               username=default_cuc['username'], password=default_cuc['password']):
+    def delete(self, userid):
         """
         Delete user from Unity Connection using the user ID / alias.
         """
