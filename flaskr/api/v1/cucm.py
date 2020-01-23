@@ -185,52 +185,6 @@ class cucm_phone_api(Resource):
         return jsonify(apiresult)
 
 
-@api.route("/apply_phone/<string:device_name>")
-@api.param('device_name', description='The Name of the Phone Device')
-class cucm_apply_phone_api(Resource):
-    def put(self, device_name):
-        """
-        Applies a Phone Device Configuration on CUCM
-        """
-        try:
-            axlresult = myAXL.apply_phone(device_name)
-        except Exception as e:
-            apiresult = {'success': False, 'message': str(e)}
-            return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "Phone Configuration Applied Successfully", 'uuid': axlresult['return']}
-        return jsonify(apiresult)
-
-
-@api.route("/phones")
-class cucm_list_phone_api(Resource):
-    @api.expect(cucm_list_phones_search_criteria_query_args, cucm_list_phones_returned_tags_query_args, validate=True)
-    def get(self):
-        """
-        Lists all provisioned phone details from CUCM
-
-        This API method executes listPhone AXL Request with the supplied search criteria
-        <br>
-        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_listPhone.html#Link986
-
-        """
-        try:
-            list_phones_search_criteria_query_parsed_args = cucm_list_phones_search_criteria_query_args.parse_args(request)
-            list_phones_returned_tags_query_parsed_args = cucm_list_phones_returned_tags_query_args.parse_args(request)
-            returned_tags = None
-            if list_phones_returned_tags_query_parsed_args['returnedTags'] is not None:
-                returned_tags_str = list_phones_returned_tags_query_parsed_args['returnedTags']
-                returned_tags = list(map(str.strip, returned_tags_str.split(',')))
-            axlresult = myAXL.list_phone(search_criteria_data=list_phones_search_criteria_query_parsed_args,
-                                         returned_tags=returned_tags)
-        except Exception as e:
-            apiresult = {'success': False, 'message': str(e)}
-            return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "Phone List Retrieved Successfully",
-                     'phone_list_count': len(axlresult['return']['phone']),
-                     'phone_list_data': axlresult['return']['phone']}
-        return jsonify(apiresult)
-
-
 @api.route("/device_search")
 class cucm_device_search_api(Resource):
     @api.expect(cucm_device_search_criteria_query_args, validate=True)
@@ -364,6 +318,52 @@ class cucm_perfmon_api(Resource):
         apiresult = {'success': True, 'message': "PerfMon Data Retrieved Successfully",
                      'perfmon_class_result': perfmon_class_result,
                      'perfmon_counters_result': perfmon_counters_result}
+        return jsonify(apiresult)
+
+
+@api.route("/apply_phone/<string:device_name>")
+@api.param('device_name', description='The Name of the Phone Device')
+class cucm_apply_phone_api(Resource):
+    def put(self, device_name):
+        """
+        Applies a Phone Device Configuration on CUCM
+        """
+        try:
+            axlresult = myAXL.apply_phone(device_name)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Phone Configuration Applied Successfully", 'uuid': axlresult['return']}
+        return jsonify(apiresult)
+
+
+@api.route("/phones")
+class cucm_list_phone_api(Resource):
+    @api.expect(cucm_list_phones_search_criteria_query_args, cucm_list_phones_returned_tags_query_args, validate=True)
+    def get(self):
+        """
+        Lists all provisioned phone details from CUCM
+
+        This API method executes listPhone AXL Request with the supplied search criteria
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_listPhone.html#Link986
+
+        """
+        try:
+            list_phones_search_criteria_query_parsed_args = cucm_list_phones_search_criteria_query_args.parse_args(request)
+            list_phones_returned_tags_query_parsed_args = cucm_list_phones_returned_tags_query_args.parse_args(request)
+            returned_tags = None
+            if list_phones_returned_tags_query_parsed_args['returnedTags'] is not None:
+                returned_tags_str = list_phones_returned_tags_query_parsed_args['returnedTags']
+                returned_tags = list(map(str.strip, returned_tags_str.split(',')))
+            axlresult = myAXL.list_phone(search_criteria_data=list_phones_search_criteria_query_parsed_args,
+                                         returned_tags=returned_tags)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "Phone List Retrieved Successfully",
+                     'phone_list_count': len(axlresult['return']['phone']),
+                     'phone_list_data': axlresult['return']['phone']}
         return jsonify(apiresult)
 
 
