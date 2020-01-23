@@ -1,7 +1,7 @@
 from requests import get, post, put, delete, packages, request
 from requests.exceptions import RequestException, HTTPError
 from requests.auth import HTTPBasicAuth
-from requests import Session, Request
+from requests import Session
 
 
 class REST:
