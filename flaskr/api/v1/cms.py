@@ -105,6 +105,7 @@ class cms_spaces_api(Resource):
         """
         Retrieves a CMS Space by user id.
         """
+        # Look up user's id by userid
         id = get_coSpace_id(userid=userid)
         if id['success']:
             return myCMS._cms_request(("coSpaces/" + id['response']))
@@ -148,6 +149,7 @@ class cms_spaces_api(Resource):
         # Read available arguments: name, uri, secondaryUri, passcode, defaultLayout
         args = cms_spaces_post_args.parse_args()
 
+        # Look up user's id by userid
         id = get_coSpace_id(userid=userid)
         if id['success']:
             return myCMS._cms_request("coSpaces/" + id['response'], payload=args, http_method='PUT')
@@ -157,6 +159,7 @@ class cms_spaces_api(Resource):
         """
         Removes a CMS space by user id
         """
+        # Look up user's id by userid
         id = get_coSpace_id(userid=userid)
         if id['success']:
             return myCMS._cms_request("coSpaces/" + id['response'], http_method="DELETE")
