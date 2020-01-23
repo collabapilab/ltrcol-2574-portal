@@ -1,6 +1,7 @@
 from requests import get, post, put, delete, packages, request
 from requests.exceptions import RequestException, HTTPError
 from requests.auth import HTTPBasicAuth
+from requests import Session, Request
 
 
 class REST:
@@ -20,14 +21,18 @@ class REST:
     :rtype: REST
     """
 
-    def __init__(self, host, base_url=None, headers={}, port=443):
+    def __init__(self, host, username=None, password=None, base_url=None, headers={}, port=443, tls_verify=False):
         """
         Initialize an object with the host, port, and base_url using the parameters passed in.
         """
         self.host = host
         self.port = str(port)
         self.base_url = base_url
-        self.headers = headers
+
+        self.session = Session()
+        self.session.auth = HTTPBasicAuth(username, password)
+        self.session.verify = tls_verify
+        self.session.headers.update(headers)
 
     def _send_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         """
@@ -60,15 +65,22 @@ class REST:
 
         # Send the request and handle RequestException that may occur
         try:
-            raw_response = request(http_method, url, data=payload, params=parameters,
-                                   headers=self.headers, verify=False, timeout=2)
+            if http_method in ['GET', 'POST', 'PUT', 'DELETE']:
+                if http_method == 'GET':
+                    raw_response = self.session.get(url, params=parameters)
+                elif http_method == 'POST':
+                    raw_response = self.session.post(url, data=payload, params=parameters)
+                elif http_method == 'PUT':
+                    raw_response = self.session.put(url, data=payload, params=parameters)
+                elif http_method == 'DELETE':
+                    raw_response = self.session.delete(url)
 
-            result = {
-                'success': True,
-                'response': raw_response,
-                'message': 'Successful {} request to: {}'.format(http_method, url)
-            }
-
+                result = {
+                    'success': True,
+                    'response': raw_response,
+                    'message': 'Successful {} request to: {}'.format(http_method, url)
+                }
+                
         except RequestException as e:
             result = {
                 'success': False,

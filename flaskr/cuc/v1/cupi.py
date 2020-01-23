@@ -22,20 +22,19 @@ class CUPI(REST):
     :rtype: CUPI
     '''
 
-    def __init__(self, host, username, password, port=443):
+    def __init__(self, host, username, password, port=443, tls_verify=False):
         '''
         Initialize the CUPI class as a child of the REST class. Define the CUPI-specific headers, and API base_url
         '''
         # Define the header structure for CUPI
         headers = {
-            'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
 
         # Create a super class, where the CUPI class inherits from the REST class.  This will allow us to
         # add CUPI-specific items.  Reference:  https://realpython.com/python-super/
-        super().__init__(host, base_url='/vmrest', headers=headers, port=port)
+        super().__init__(host, username, password, base_url='/vmrest', headers=headers, port=port, tls_verify=tls_verify)
 
     def _cupi_request(self, api_method, parameters={}, payload=None, http_method='GET'):
         '''

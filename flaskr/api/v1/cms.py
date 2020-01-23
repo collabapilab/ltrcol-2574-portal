@@ -8,6 +8,10 @@ from flaskr.api.v1.parsers import cms_spaces_post_args
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
+myCMS = CMS(default_cms['host'], default_cms['username'],
+          default_cms['password'], port=default_cms['port'])
+myCUCMuds = UDS(default_cucm['host'])
+
 
 @api.route("/version")
 class cms_version_api(Resource):
@@ -15,9 +19,8 @@ class cms_version_api(Resource):
         """
         Retrieves the version of the CMS system software.
         """
-        cms = CMS(default_cms['host'], default_cms['username'], default_cms['password'], port=default_cms['port'])
         # Retrieve the CMS system/status
-        cms_status = cms._cms_request("system/status")
+        cms_status = myCMS._cms_request("system/status")
         if cms_status['success']:
             # Return only the version component
             return cms_status['response']['status']['softwareVersion']
@@ -46,16 +49,15 @@ def match_space_uri(space_list, uri):
     return None
 
 
-def get_coSpace_id(cms, userid):
+def get_coSpace_id(userid):
     '''
-    Returns the coSpace object ID given a user ID and CMS object.
+    Returns the coSpace object ID given a user ID.
     Since CMS searching/filtering does not allow for an exact-match option, this function
     will search using the userid as a filter and then search through all results to find
     an exact match, if present.  
     Furthermore, any query may only return a subset of matches, therefore this function
     implements paging so as to examine all matches.  
     
-    :param cms: (CMS) CMS object type
     :param userid: (string)  UserID which will correspond to the coSpace URI or secondaryURI.
 
     :returns: Dictionary with keys: 'success' (bool), 'message' (str), and 'response' (str).
@@ -65,7 +67,7 @@ def get_coSpace_id(cms, userid):
     params = {'filter': userid, 'offset': 0}
 
     # Retrieve a list of coSpaces, using the userid as the filter
-    matched_spaces = cms._cms_request("coSpaces", parameters=params)
+    matched_spaces = myCMS._cms_request("coSpaces", parameters=params)
     try:
         # @total indicates the total number of matches, even if less coSpaces were returned in matched_spaces
         total_matches = int(matched_spaces['response']['coSpaces']['@total'])
@@ -87,7 +89,7 @@ def get_coSpace_id(cms, userid):
                 # Adjust the offset to the total number of elements found so far
                 params['offset'] = len(all_spaces)
                 # Get another "page" using the adjusted offet in the params
-                matched_spaces = cms._cms_request("coSpaces", parameters=params)
+                matched_spaces = myCMS._cms_request("coSpaces", parameters=params)
                 # Re-read total_matches, in case something was deleted between our queries
                 total_matches = int(matched_spaces['response']['coSpaces']['@total'])
                 all_spaces += matched_spaces['response']['coSpaces']['coSpace']
@@ -103,12 +105,9 @@ class cms_spaces_api(Resource):
         """
         Retrieves a CMS Space by user id.
         """
-        cms = CMS(default_cms['host'], default_cms['username'],
-                  default_cms['password'], port=default_cms['port'])
-
-        id = get_coSpace_id(cms, userid=userid)
+        id = get_coSpace_id(userid=userid)
         if id['success']:
-            return cms._cms_request(("coSpaces/" + id['response']))
+            return myCMS._cms_request(("coSpaces/" + id['response']))
         else:
             return id
 
@@ -119,11 +118,9 @@ class cms_spaces_api(Resource):
         """
         # Read available arguments: name, uri, secondaryUri, passcode, defaultLayout
         args = cms_spaces_post_args.parse_args()
-        cms = CMS(default_cms['host'], default_cms['username'],
-                  default_cms['password'], port=default_cms['port'])
 
-        cucm_uds = UDS(default_cucm['host'])
-        user = cucm_uds.get_user(userid)
+        # Look up user via CUCM UDS
+        user = myCUCMuds.get_user(userid)
 
         if user['success']:
             payload = {}
@@ -134,7 +131,7 @@ class cms_spaces_api(Resource):
                 # Overwrite payload with whatever values were passed via args
                 payload.update(args)
 
-                return cms._cms_request("coSpaces", payload=payload, http_method='POST')
+                return myCMS._cms_request("coSpaces", payload=payload, http_method='POST')
             else:
                 return {'success': False,
                         'message': 'Found {} users with userid "{}"'.format(
@@ -150,22 +147,17 @@ class cms_spaces_api(Resource):
         """
         # Read available arguments: name, uri, secondaryUri, passcode, defaultLayout
         args = cms_spaces_post_args.parse_args()
-        cms = CMS(default_cms['host'], default_cms['username'],
-                  default_cms['password'], port=default_cms['port'])
 
-        id = get_coSpace_id(cms, userid=userid)
+        id = get_coSpace_id(userid=userid)
         if id['success']:
-            return cms._cms_request("coSpaces/" + id['response'], payload=args, http_method='PUT')
+            return myCMS._cms_request("coSpaces/" + id['response'], payload=args, http_method='PUT')
         return id
 
     def delete(self, userid):
         """
         Removes a CMS space by user id
         """
-        cms = CMS(default_cms['host'], default_cms['username'],
-                  default_cms['password'], port=default_cms['port'])
-
-        id = get_coSpace_id(cms, userid=userid)
+        id = get_coSpace_id(userid=userid)
         if id['success']:
-            return cms._cms_request("coSpaces/" + id['response'], http_method="DELETE")
+            return myCMS._cms_request("coSpaces/" + id['response'], http_method="DELETE")
         return id

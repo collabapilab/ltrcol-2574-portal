@@ -8,6 +8,8 @@ from flaskr.api.v1.parsers import cuc_users_put_args
 
 api = Namespace('cuc', description='Cisco Unity Connection APIs')
 
+myCUPI = CUPI(default_cuc['host'], default_cuc['username'],
+              default_cuc['password'], port=default_cuc['port'])
 
 @api.route("/version")
 class cuc_version_api(Resource):
@@ -16,9 +18,7 @@ class cuc_version_api(Resource):
         """
         Retrieves Unity Connection version.
         """
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
-        return cuc._cupi_request("version/product/")
+        return myCUPI._cupi_request("version/product/")
 
 def get_search_params(args):
     """
@@ -47,12 +47,10 @@ class cuc_import_ldapuser_api(Resource):
         args = cuc_users_get_args.parse_args(request)
         params = get_search_params(args)
 
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
-        return cuc._cupi_request("import/users/ldap", parameters=params)
+        return myCUPI._cupi_request("import/users/ldap", parameters=params)
 
 
-def get_user_by_id(cuc, userid):
+def get_user_by_id(userid):
     '''
     Get a voicemail user from the Unity Connection system by user alias.
 
@@ -62,14 +60,14 @@ def get_user_by_id(cuc, userid):
 
     # Build the parameter dictionary for the request
     params = {'query': '(alias is {})'.format(userid)}
-    user = cuc._cupi_request("users", parameters=params)
+    user = myCUPI._cupi_request("users", parameters=params)
     # Verify there were no errors returned
     if user['success']:
         try:
             # If @total exists, it will be 1, otherwise a KeyError will be raised
             if user['response']['@total'] == '1':
                 # Retrieve the first (and only member of the users list)
-                return cuc._cupi_request('users/' + user['response']['User'][0]['ObjectId'])
+                return myCUPI._cupi_request('users/' + user['response']['User'][0]['ObjectId'])
         except KeyError:
             pass
     return user
@@ -83,9 +81,7 @@ class cuc_user_api(Resource):
         """
         Get user from Unity Connection using the user ID / alias.
         """
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
-        return get_user_by_id(cuc, userid)
+        return get_user_by_id(userid)
 
     @api.expect(cuc_importldap_user_post_args, validate=True)
     def post(self, userid, host=default_cuc['host'], port=default_cuc['port'],
@@ -98,12 +94,9 @@ class cuc_user_api(Resource):
         if 'templateAlias' not in args:
             args['templateAlias'] = 'voicemailusertemplate'
 
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
-
         # Look up pkid from user ID
         params = {'query': '(alias is {})'.format(userid)}
-        user = cuc._cupi_request("import/users/ldap", parameters=params)
+        user = myCUPI._cupi_request("import/users/ldap", parameters=params)
 
         # Either a single user was returned, no users were found, or an error occurred.
         try:
@@ -112,7 +105,7 @@ class cuc_user_api(Resource):
                 args['pkid'] = user['response']['ImportUser'][0]['pkid']            
                 # The templateAlias needs to be a parameter, while the pkid and other settings are part of payload
                 params = {'templateAlias': args['templateAlias']}
-                return cuc._cupi_request("import/users/ldap", parameters=params, payload=args, http_method='POST')
+                return myCUPI._cupi_request("import/users/ldap", parameters=params, payload=args, http_method='POST')
 
             else:
                 # No users were found
@@ -137,10 +130,8 @@ class cuc_user_api(Resource):
 
         # If no arguments were detected, there's nothing to do
         if len(args) > 0:
-            cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                    default_cuc['password'], port=default_cuc['port'])
             # Look up the CUC user
-            user = get_user_by_id(cuc, userid)
+            user = get_user_by_id(userid)
 
             if user['success']:
                 # Either a single user was returned, no users were found, or an error occurred.
@@ -155,8 +146,8 @@ class cuc_user_api(Resource):
                             if user_setting in args:
                                 payload[user_setting] = args[user_setting]
                         # Update the user's settings
-                        user_result = cuc._cupi_request("users/" + user_id,
-                                                        payload=payload, http_method='PUT')
+                        user_result = myCUPI._cupi_request("users/" + user_id,
+                                                           payload=payload, http_method='PUT')
 
                         # If the update failed, return; don't continue to try to update again with creds
                         if not user_result['success']:
@@ -172,8 +163,8 @@ class cuc_user_api(Resource):
                             cred_payload['HackCount'] = 0
                             cred_payload['TimeHacked'] = []
                         # Update the user's credentials
-                        return cuc._cupi_request('users/' + str(user['response']['ObjectId']) + '/credential/pin', 
-                                                 payload=cred_payload, http_method='PUT')
+                        return myCUPI._cupi_request('users/' + str(user['response']['ObjectId']) + '/credential/pin', 
+                                                    payload=cred_payload, http_method='PUT')
                     return user_result
                 except KeyError:
                     # Zero users were found
@@ -192,18 +183,15 @@ class cuc_user_api(Resource):
         """
         Delete user from Unity Connection using the user ID / alias.
         """
-
-        cuc = CUPI(default_cuc['host'], default_cuc['username'],
-                   default_cuc['password'], port=default_cuc['port'])
         # Look up the CUC user
-        user =  get_user_by_id(cuc, userid)
+        user =  get_user_by_id(userid)
 
         # Either a single user was returned, no users were found, or an error occurred.
         if user['success']:
             try:
                 # Single user found.  Delete the user using the object ID
                 user_id = user['response']['ObjectId']
-                return cuc._cupi_request("users/" + user_id, http_method='DELETE')
+                return myCUPI._cupi_request("users/" + user_id, http_method='DELETE')
 
             except KeyError:
                 # No users were found

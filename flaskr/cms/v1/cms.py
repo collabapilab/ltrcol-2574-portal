@@ -23,20 +23,19 @@ class CMS(REST):
     :rtype: CMS
     '''
 
-    def __init__(self, host, username, password, port=443):
+    def __init__(self, host, username, password, port=443, tls_verify=False):
         '''
         Initialize the CMS class as a child of the REST class. Define the CMS-specific headers, and API base_url
         '''
         # Define the header structure for CMS. CMS returns text/xml and except for the layoutTemplates,
         # requires Content-Type to be x-www-form-urlencoded
         headers = {
-            'Authorization': "Basic " + b64encode(str.encode(username + ":" + password)).decode("utf-8"),
             'Accept': 'text/xml',
             'Content-Type': 'x-www-form-urlencoded'
         }
 
         # Create a super class, where the CMS class inherits from the REST class.
-        super().__init__(host, base_url='/api/v1', headers=headers, port=port)
+        super().__init__(host, username, password, base_url='/api/v1', headers=headers, port=port, tls_verify=tls_verify)
 
         # CMS documents its error codes in its API documentation. We have simply converted it to a dict
         self.error_codes = {
