@@ -107,7 +107,6 @@ class CMS(REST):
            'response' :rtype:Dict:   The parsed response, converted from the XML of the raw response.
         :rtype: Dict
         '''
-
         resp = self._send_request(api_method, parameters=parameters, 
                                   payload=payload, http_method=http_method)
         if resp['success']:

@@ -8,9 +8,9 @@ from flaskr.api.v1.parsers import cms_spaces_post_args
 
 api = Namespace('cms', description='Cisco Meeting Server REST API')
 
-myCMS = CMS(default_cms['host'], default_cms['username'],
-          default_cms['password'], port=default_cms['port'])
 myCUCMuds = UDS(default_cucm['host'])
+myCMS = CMS(default_cms['host'], default_cms['username'],
+            default_cms['password'], port=default_cms['port'])
 
 
 @api.route("/version")
