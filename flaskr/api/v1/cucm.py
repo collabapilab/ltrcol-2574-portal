@@ -270,19 +270,19 @@ class cucm_device_search_api(Resource):
         return jsonify(apiresult)
 
 
-@api.route("/user/<string:user_name>")
-@api.param('user_name', description='CUCM User Name')
+@api.route("/user/<string:userid>")
+@api.param('userid', description='CUCM End User ID')
 class cucm_user_api(Resource):
-    def get(self, user_name):
+    def get(self, userid):
         """
-        Retrieves a Phone device configuration from CUCM
+        Retrieves an End User's configuration from CUCM
 
-        This API method executes an getPhone AXL Request with the supplied device_name
+        This API method executes an getUser AXL Request with the supplied userid
         <br>
-        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getPhone.html
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getUser.html
         """
         try:
-            axlresult = myAXL.get_user(user_name)
+            axlresult = myAXL.get_user(userid)
         except Exception as e:
             apiresult = {'success': False, 'message': str(e)}
             return jsonify(apiresult)
