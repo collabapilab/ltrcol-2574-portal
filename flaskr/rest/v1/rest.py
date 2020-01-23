@@ -15,12 +15,14 @@ class REST:
     :param port: (optional) The server port for API access (default: 443)
     :param base_url: (optional) The base URL, such as "/api/v1" for a given API
     :param headers: (optional) A dictionary of header key/value pairs
+    :param tls_verify: (optional) Whether certificate validation will be performed.
     :type host: String
     :type username: String
     :type password: String
     :type port: Integer
     :type base_url: String
     :type headers: Dict
+    :type tls_verify: Bool
     :returns: return an REST object
     :rtype: REST
     """
