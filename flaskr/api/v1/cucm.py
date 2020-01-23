@@ -185,6 +185,26 @@ class cucm_phone_api(Resource):
         return jsonify(apiresult)
 
 
+@api.route("/user/<string:userid>")
+@api.param('userid', description='CUCM End User ID')
+class cucm_user_api(Resource):
+    def get(self, userid):
+        """
+        Retrieves an End User's configuration from CUCM
+
+        This API method executes an getUser AXL Request with the supplied userid
+        <br>
+        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getUser.html
+        """
+        try:
+            axlresult = myAXL.get_user(userid)
+        except Exception as e:
+            apiresult = {'success': False, 'message': str(e)}
+            return jsonify(apiresult)
+        apiresult = {'success': True, 'message': "User Data Retrieved Successfully", 'user_data': axlresult['return']['user']}
+        return jsonify(apiresult)
+
+
 @api.route("/device_search")
 class cucm_device_search_api(Resource):
     @api.expect(cucm_device_search_criteria_query_args, validate=True)
@@ -221,26 +241,6 @@ class cucm_device_search_api(Resource):
         apiresult = {'success': True, 'message': "Device Search Results Retrieved Successfully",
                      'TotalDevicesFound': risresult['SelectCmDeviceResult']['TotalDevicesFound'],
                      'ris_search_result': risresult}
-        return jsonify(apiresult)
-
-
-@api.route("/user/<string:userid>")
-@api.param('userid', description='CUCM End User ID')
-class cucm_user_api(Resource):
-    def get(self, userid):
-        """
-        Retrieves an End User's configuration from CUCM
-
-        This API method executes an getUser AXL Request with the supplied userid
-        <br>
-        https://pubhub.devnetcloud.com/media/axl-schema-reference/docs/Files/AXLSoap_getUser.html
-        """
-        try:
-            axlresult = myAXL.get_user(userid)
-        except Exception as e:
-            apiresult = {'success': False, 'message': str(e)}
-            return jsonify(apiresult)
-        apiresult = {'success': True, 'message': "User Data Retrieved Successfully", 'user_data': axlresult['return']['user']}
         return jsonify(apiresult)
 
 
