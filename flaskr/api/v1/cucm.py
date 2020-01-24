@@ -274,14 +274,14 @@ class cucm_service_api(Resource):
 @api.route("/perfmon")
 class cucm_perfmon_api(Resource):
     # CUCM Perfmon Query API Payload Model
-    cucm_perfmon_query_data = api.model('perfmon_post_data', {
+    cucm_perfmon_post_data = api.model('perfmon_post_data', {
         "perfmon_class": fields.String(description='Performance Class Name', example='Cisco SIP Stack', required=False),
         "perfmon_counters": fields.List(fields.String(description='Performance Counter Class + Instance + Name',
                                                       example='Cisco CallManager\\RegisteredOtherStationDevices', required=False))
     })
 
-    @api.expect(cucm_perfmon_query_data, validate=True)
-    def get(self):
+    @api.expect(cucm_perfmon_post_data, validate=True)
+    def post(self):
         """
         Query Performance Counters via PerfMon service on CUCM
 
