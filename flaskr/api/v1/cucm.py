@@ -274,14 +274,14 @@ class cucm_service_api(Resource):
 @api.route("/perfmon")
 class cucm_perfmon_api(Resource):
     # CUCM Perfmon Query API Payload Model
-    cucm_perfmon_post_data = api.model('perfmon_post_data', {
+    cucm_perfmon_query_data = api.model('perfmon_post_data', {
         "perfmon_class": fields.String(description='Performance Class Name', example='Cisco SIP Stack', required=False),
         "perfmon_counters": fields.List(fields.String(description='Performance Counter Class + Instance + Name',
                                                       example='Cisco CallManager\\RegisteredOtherStationDevices', required=False))
     })
 
-    @api.expect(cucm_perfmon_post_data, validate=True)
-    def post(self):
+    @api.expect(cucm_perfmon_query_data, validate=True)
+    def get(self):
         """
         Query Performance Counters via PerfMon service on CUCM
 
@@ -292,7 +292,7 @@ class cucm_perfmon_api(Resource):
         """
         try:
             if not ('perfmon_class' in api.payload or 'perfmon_counters' in api.payload):
-                raise Exception(f"perfmon_class or perfmon_counters are required in the payload")
+                raise Exception(f"perfmon_class or perfmon_counters is required in the payload")
             if api.payload.get('perfmon_class'):
                 perfmon_class_result = mySXMLPerfMonService.perfmon_query_class(perfmon_class_name=api.payload['perfmon_class'])
             else:
