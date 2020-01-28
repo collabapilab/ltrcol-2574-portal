@@ -2,18 +2,11 @@
 Default server hostname/port/credentials
 """
 
-# default_cucm = {
-#    'host': 'cucm1a.pod31.col.lab',
-#    'port': 8443,
-#    'username': 'admin',
-#    'password': 'c1sco123'
-# }
-
 default_cucm = {
-    'host': '10.0.131.41',
-    'port': 8443,
-    'username': 'admin',
-    'password': 'c1sco123'
+   'host': 'cucm1a.pod31.col.lab',
+   'port': 8443,
+   'username': 'admin',
+   'password': 'c1sco123'
 }
 
 default_cuc = {
@@ -30,5 +23,5 @@ default_cms = {
 }
 
 # Retrieve access token from:
-# https://developer.webex.com/docs/api/getting-started/accounts-and-authentication
-wbxt_access_token = 'OGZiM2Y5ZDEtZmY1ZS00YWExLWIyNGMtNDZkYzJkNzA3ODk4MzVhZGM5YTUtYjRh_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f'
+# https://developer.webex.com/docs/api/getting-started/
+wbxt_access_token = 'OGZiM2Y5ZDEtZmY1ZS00YWExLWIyNGMtNDZkYzJkNzA3ODk4MzVhZGM5YTUt'
