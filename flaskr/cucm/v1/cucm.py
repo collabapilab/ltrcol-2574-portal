@@ -156,7 +156,7 @@ class AXL:
 
     def _axl_set_schema(self):
         """
-        Internal AXL Class method which detects the CUCM version and instanciates the CUCMAxlToolkit with the
+        Internal AXL Class method which detects the CUCM version and instantiates the CUCMAxlToolkit with the
         appropriate WSDL file.
 
         First we use the Default AXL Version self.axl_version and run getCCMVersion AXL request.
@@ -340,7 +340,8 @@ class PAWS:
         if r.status_code == 200:
             self.pawsclient = PawsToolkit(username=self.username, password=self.password,
                                           server_ip=self.host, service=self.service,
-                                          tls_verify=self.paws_tls_verify, timeout=self.paws_timeout)
+                                          tls_verify=self.paws_tls_verify, timeout=self.paws_timeout,
+                                          logging_enabled=self.paws_logging)
         else:
             raise Exception("PAWS Connectivity Exception:" + str(r.status_code) + " - " + r.reason)
 
