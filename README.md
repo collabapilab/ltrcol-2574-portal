@@ -1,8 +1,12 @@
 # LTRCOL-2574 Sample Portal
 
-The following contains a sample web portal with skeleton code that allows you to perform certain administrative and/or user functions on Cisco Unified Collaboration products.
+This Repo contains a sample web portal (Provisioning Portal) that allows you to perform certain administrative and/or user functions on Cisco Collaboration products. This Repo is accompanying CiscoLive Lab LTRCOL-2574
 
-## Steps to start
+master Branch contains the fully built-out Portal
+skeleton Branch contains a partially built-out Portal that is meant to be used while Following the [CiscoLive Lab Guide](https://collabapilab.ciscolive.com/)
+
+
+## Steps to start up the Portal after Cloning
 
 ### Step 1
 
@@ -89,4 +93,3 @@ These terms govern this Cisco Systems, Inc. (“Cisco”), example or demo sourc
 5. DISCLAIMER OF WARRANTY: SAMPLE CODE IS INTENDED FOR EXAMPLE PURPOSES ONLY AND IS PROVIDED BY CISCO “AS IS” WITH ALL FAULTS AND WITHOUT WARRANTY OR SUPPORT OF ANY KIND. TO THE MAXIMUM EXTENT PERMITTED BY LAW, ALL EXPRESS AND IMPLIED CONDITIONS, REPRESENTATIONS, AND WARRANTIES INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTY OR CONDITION OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, SATISFACTORY QUALITY, NON-INTERFERENCE, AND ACCURACY, ARE HEREBY EXCLUDED AND EXPRESSLY DISCLAIMED BY CISCO. CISCO DOES NOT WARRANT THAT THE SAMPLE CODE IS SUITABLE FOR PRODUCTION OR COMMERCIAL USE, WILL OPERATE PROPERLY, IS ACCURATE OR COMPLETE, OR IS WITHOUT ERROR OR DEFECT.
 
 6. GENERAL: This License shall be governed by and interpreted in accordance with the laws of the State of California, excluding its conflict of laws provisions. You agree to comply with all applicable United States export laws, rules, and regulations. If any provision of this License is judged illegal, invalid, or otherwise unenforceable, that provision shall be severed and the rest of the License shall remain in full force and effect. No failure by Cisco to enforce any of its rights related to the Sample Code or to a breach of this License in a particular situation will act as a waiver of such rights. In the event of any inconsistencies with any other terms, this License shall take precedence.
-
