@@ -59,9 +59,9 @@ cms_spaces_post_args = reqparse.RequestParser()
 cms_spaces_post_args.add_argument('name', type=str, store_missing=False, help='Name of the Space')
 cms_spaces_post_args.add_argument('uri', type=str, store_missing=False,
                                   help='User URI part for SIP call to reach Space')
-cms_spaces_post_args.add_argument('secondaryUri', type=str, store_missing=False, 
+cms_spaces_post_args.add_argument('secondaryUri', type=str, store_missing=False,
                                   help='Secondary URI for SIP call to reach Space')
-cms_spaces_post_args.add_argument('passcode', type=str, store_missing=False, 
+cms_spaces_post_args.add_argument('passcode', type=str, store_missing=False,
                                   help='Security code for this Space')
 cms_spaces_post_args.add_argument('defaultLayout', type=str, store_missing=False, default='automatic',
                                   choices=['automatic', 'allEqual', 'speakerOnly',
