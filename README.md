@@ -2,8 +2,8 @@
 
 This Repo contains a sample web portal (Provisioning Portal) that allows you to perform certain administrative and/or user functions on Cisco Collaboration products. This Repo is accompanying CiscoLive Lab LTRCOL-2574
 
-master Branch contains the fully built-out Portal
-skeleton Branch contains a partially built-out Portal that is meant to be used while Following the [CiscoLive Lab Guide](https://collabapilab.ciscolive.com/)
+* master Branch contains the fully built-out Portal
+* skeleton Branch contains a partially built-out Portal that is meant to be used while Following the [CiscoLive Lab Guide](https://collabapilab.ciscolive.com/)
 
 
 ## Steps to start up the Portal after Cloning
