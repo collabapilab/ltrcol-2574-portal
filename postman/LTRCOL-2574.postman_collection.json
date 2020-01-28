@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "44d583cb-8942-450e-9073-b5c2515ea3de",
+		"_postman_id": "047c77b0-e7f7-4b35-95a6-25afc173e24e",
 		"name": "LTRCOL-2574",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -102,7 +102,7 @@
 									}
 								],
 								"url": {
-									"raw": "https://{{cuc}}/vmrest/import/users/ldap?query=(alias%20is%20pod{{pod_num}}user1)\"",
+									"raw": "https://{{cuc}}/vmrest/import/users/ldap?query=(alias%20is%20pod{{pod_num}}user1)",
 									"protocol": "https",
 									"host": [
 										"{{cuc}}"
@@ -116,7 +116,7 @@
 									"query": [
 										{
 											"key": "query",
-											"value": "(alias%20is%20pod{{pod_num}}user1)\""
+											"value": "(alias%20is%20pod{{pod_num}}user1)"
 										}
 									]
 								}
@@ -661,7 +661,7 @@
 			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Via API Gateway",
+			"name": "Via Portal API",
 			"item": [
 				{
 					"name": "CUCM",
@@ -890,36 +890,6 @@
 									]
 								},
 								"description": "Options:\nListInDirectory=true\nIsVmEnrolled=true"
-							},
-							"response": []
-						},
-						{
-							"name": "List CUC users",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json",
-										"disabled": true
-									}
-								],
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"v1",
-										"cuc",
-										"users"
-									]
-								},
-								"description": "Filter with:  ?column=alias&match_type=startswith&search=pod"
 							},
 							"response": []
 						},
@@ -1317,7 +1287,7 @@
 					"_postman_isSubFolder": true
 				}
 			],
-			"description": "These requests will be directed to our central API gateway host, which will the perform the requested API operation, be it CUCM AXL, CUPI REST API, etc.  It may also implement operations that leverage multiple different requests and/or API types to the backend servers/services.",
+			"description": "These requests will be directed to the host running our Portal, which will the perform the requested API operation, be it CUCM AXL, CUPI REST API, etc.  It may also implement operations that leverage multiple different requests and/or API types to the backend servers/services.",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -1404,37 +1374,37 @@
 	],
 	"variable": [
 		{
-			"id": "e0137c21-fc19-404a-877c-6e14aa027dcc",
+			"id": "18b5d9a3-7405-4d45-8c8f-0ea4b142b826",
 			"key": "pod_num",
 			"value": "31",
 			"type": "string"
 		},
 		{
-			"id": "d391b530-70d4-4114-b982-af0ad2fd24d4",
+			"id": "9451f303-02db-41aa-b071-ab33aaf5e01b",
 			"key": "cuc",
 			"value": "cuc1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "fafba2c7-b15a-41b9-aabb-c1220666f06c",
+			"id": "e64703e3-c3d7-4b11-88e1-a4757c983e9e",
 			"key": "cms",
 			"value": "cms1a.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "87b7b519-b8c3-4201-ab77-a56f1e07ecf5",
+			"id": "8b572d9a-7036-41ec-8488-ff6820910c71",
 			"key": "webexteams_access_token",
 			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
 			"type": "string"
 		},
 		{
-			"id": "b6133b02-d9bd-4ec5-8bf6-63d36ecd2bfd",
+			"id": "e2c6d824-8771-45ca-9289-d2ea6f821ec2",
 			"key": "host",
 			"value": "dev1.pod{{pod_num}}.col.lab",
 			"type": "string"
 		},
 		{
-			"id": "4beff2e0-f5d1-47b2-a8d6-296d1501436b",
+			"id": "70b89fc4-8f3b-4776-851c-482b2b9b49b9",
 			"key": "port",
 			"value": "5000",
 			"type": "string"
