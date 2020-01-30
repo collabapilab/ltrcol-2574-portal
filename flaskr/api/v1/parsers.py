@@ -82,9 +82,9 @@ cms_spaces_get_args.add_argument('offset', type=int, store_missing=False, defaul
 cuc_importldap_user_post_args = reqparse.RequestParser()
 cuc_importldap_user_post_args.add_argument('templateAlias', type=str, default='voicemailusertemplate',
                                            help='User template alias to create the account with')
-cuc_importldap_user_post_args.add_argument('ListInDirectory', type=bool, default=True,
+cuc_importldap_user_post_args.add_argument('ListInDirectory', type=inputs.boolean, default=True,
                                            help='List in the Unity Connection Auto Attendant Directory')
-cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=bool, default=True,
+cuc_importldap_user_post_args.add_argument('IsVmEnrolled', type=inputs.boolean, default=True,
                                            help='Play initial enrollment conversation (to record a name, \
                                                  request new password, etc)')
 
@@ -102,14 +102,14 @@ cuc_users_get_args.add_argument('pageNumber', type=int,
                                 help='Page number to return', default=1)
 
 cuc_users_put_args = reqparse.RequestParser()
-cuc_users_put_args.add_argument('ListInDirectory', type=bool, store_missing=False,
+cuc_users_put_args.add_argument('ListInDirectory', type=inputs.boolean, store_missing=False,
                                 help='List in the Unity Connection Auto Attendant Directory')
-cuc_users_put_args.add_argument('IsVmEnrolled', type=bool, store_missing=False,
+cuc_users_put_args.add_argument('IsVmEnrolled', type=inputs.boolean, store_missing=False,
                                 help='Play initial enrollment conversation (to record a name, request new \
                                       password, etc)')
 cuc_users_put_args.add_argument('PIN', type=int, store_missing=False,
                                 help='New PIN for the voicemail account')
-cuc_users_put_args.add_argument('ResetMailbox', type=bool, store_missing=False,
+cuc_users_put_args.add_argument('ResetMailbox', type=inputs.boolean, store_missing=False,
                                 help='Reset mailbox')
 
 # Webex Teams API Arguments
