@@ -285,7 +285,7 @@ class cucm_perfmon_api(Resource):
         """
         Query Performance Counters via PerfMon service on CUCM
 
-        This API Method needs to be a POST method even though we are not creating any new items/resources because Swagger UI does 
+        This API Method needs to be a POST method even though we are not creating any new items/resources because Swagger UI does
         not allow a payload body for GET requests.
 
         This API method executes multiple PerfMon API requests to get the Performance Counters values and sets results with returned Response data
