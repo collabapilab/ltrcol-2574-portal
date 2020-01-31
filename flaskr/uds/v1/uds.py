@@ -9,7 +9,7 @@ class UDS(REST):
     '''
     The UDS Server class
 
-    Use this class to connect and make API calls to an most Cisco Meeting Server devices.
+    Use this class to connect and make API calls to the UDS API on Unified CM.
 
     :param host: The Hostname / IP Address of the server
     :param username: The username of an account with access to the API.
