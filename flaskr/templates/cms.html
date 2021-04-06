@@ -1,0 +1,277 @@
+{% extends "core_base.html" %}
+{% block content %}
+<h1>Cisco Meeting Server</h1>
+<div class='row'>
+</div>
+<h2>System Status:  
+</h2>
+
+{% include 'main_table.html' %}
+
+<script type="text/javascript">
+
+var editor;
+var currentSpaces = [];
+
+// Display an Editor form that allows the user to pick the CSV data to apply to each column
+function selectColumns ( editor, csv, header ) {
+    var selectEditor = new $.fn.dataTable.Editor();
+    var fields = editor.order();
+    fields = fields.filter(e => e !== 'pkid');  // Remove PKID from fields
+    dynamicFields = ['Enter Test Name'];
+    options = dynamicFields.concat(header)
+ 
+    for ( var i=0 ; i<fields.length ; i++ ) {
+        var field = editor.field( fields[i] );
+ 
+        selectEditor.add( {
+            label: field.label(),
+            name: field.name(),
+            type: 'select',
+            options: options, //header,
+            def: options[i]
+        } );
+    }
+
+    selectEditor.create({
+        title: 'Map CSV fields',
+        buttons: 'Import '+csv.length+' records',
+        message: 'Select the CSV column you want to use the data from for each field.'
+    });
+
+    selectEditor.on('submitComplete', function (e, json, data, action) {
+        // Use the host Editor instance to show a multi-row create form allowing the user to submit the data.
+
+        editor.create( csv.length, {
+            title: 'Confirm import',
+            buttons: 'Submit',
+            message: 'Click the <i>Submit</i> button to confirm the import of '+csv.length+' rows of data. Optionally, override the value for a field to set a common value by clicking on the field below.'
+        } );
+
+        for ( var i=0 ; i<fields.length ; i++ ) {
+            var field = editor.field( fields[i] );
+            var mapped = data[ field.name() ];
+ 
+            for ( var j=0 ; j<csv.length ; j++ ) {
+                if ( !mapped || header.indexOf(mapped) === -1) {  // Not a field in CSV file
+                    field.multiSet( j, mapped);
+                } else {
+                    field.multiSet( j, csv[j][mapped] );
+                }
+
+            }
+        }
+    } );
+}
+ 
+
+
+$(document).ready(function() {
+
+    $('.display-0').html('Spaces Editor').hide();
+    $('#DT').html('Spaces');
+
+editor = new $.fn.dataTable.Editor(
+{
+    table: "#main-table",
+    idSrc: 'pkid',
+    ajax: {
+            create: {
+                type: 'POST',
+                url:  '/api/v1/cms/create_space'
+            },
+            edit: {
+                type: 'PUT',
+                url:  '/api/v1/cms/edit_space?id=_id_'
+            },
+            remove: {
+                type: 'POST',
+                url:  '/api/v1/cms/remove_space?id=_id_'
+            }
+        },
+    fields: [
+        {
+            "name": "pkid",
+            "label": "PKID:",
+            "type": "hidden"
+        },
+        {
+            "name": "coSpaceID",
+            "label": "coSpace ID:",
+            // "type": "hidden"
+        },
+        {
+            "name": "name",
+            "label": "Space Name:"
+        },
+        {
+            "name": "passcode",
+            "label": "Passcode:"
+        },
+        {
+            "name": "uri",
+            "label": "URI:"
+        },
+        {
+            "name": "secondaryUri",
+            "label": "Secondary URI:"
+        },
+    ]
+});
+
+
+var table = $("#main-table").DataTable({
+    ajax: {
+        url: "/api/v1/cms/create_space",
+        dataSrc: ''
+    },
+    rowId: 'pkid',
+    pageLength: 50,
+    order: [[1, 'asc']],
+    autoFill: {
+            editor:  editor
+        },
+    select: {
+        "style": "multi+shift",
+        "selector": "td:first-child"
+    },
+    columns: [
+        {
+            "data": null,
+            "defaultContent": "",
+            "className": "select-checkbox",
+            "orderable": false,
+            title: '&nbsp;&nbsp;&nbsp;'
+        },
+        {
+            "data": "coSpaceID",
+            "title": "coSpace ID"
+        },
+        {
+            "data": "name",
+            "title": "Space Name"
+        },
+        {
+            "data": "passcode",
+            "title": "Passcode"
+        },
+        {
+            "data": "uri",
+            "title": "URI"
+        },
+        {
+            "data": "secondaryUri",
+            "title": "Secondary URI"
+        },
+    ]
+});
+
+    // Activate an inline edit on click of a table cell
+    $('#main-table').on( 'click', 'tbody td:not(:first-child)', function (e) {
+        editor.inline( this, {
+            onBlur: 'submit',
+        } );
+    } );
+    
+
+
+    // Display the buttons
+    new $.fn.dataTable.Buttons( table, [
+        { extend: "create", editor: editor },
+        { extend: "edit",   editor: editor },
+        { extend: "remove", editor: editor }
+        ] );
+
+    table.buttons().container()
+        .prependTo( $(table.table().container() ) );
+
+
+    editor
+        .on( 'postCreate postRemove', function () {
+            // After create or edit, a number of other rows might have been effected -
+            // so we need to reload the table, keeping the paging in the current position
+            table.ajax.reload( null, false );
+        } )
+        .on( 'initCreate', function () {
+            // Enable order for create
+            editor.field( 'pkid' ).disable();
+        } )
+        .on( 'initEdit', function () {
+            // Disable for edit (re-ordering is performed by click and drag)
+            editor.field( 'pkid' ).disable();
+        } );
+});
+
+    $('#select_picker').select2({
+            //theme: "bootstrap4",  //Small text input with this option
+            allowClear: true,
+            placeholder: 'Select an test'
+    });
+
+$("#submit").on('click', function(event){
+
+    var val = $('#select_picker').val();
+    //console.log('submit', val)
+
+    if (val.length === 0) {
+        $('#error').html('Error: Space not selected');
+        return false;
+    }
+
+    var newVal = $('#dup').val();
+    //console.log('newVal', newVal)
+
+    if (newVal.length === 0) {
+        $('#error').html('Error: New Space name is blank');
+        return false;
+    }
+
+    if (currentSpaces.indexOf(newVal) >= 0) {
+        $('#error').html('Error: Duplicate Space name');
+        return false;
+    }
+ 
+
+    table = $("#main-table").DataTable();
+
+    var indexes = table
+      .rows()
+      .indexes()
+      .filter( function ( value, index ) {
+        return val === table.row(value).data().name;
+      } );
+
+    var data = table.rows(indexes).data().toArray();
+    //console.log(data)
+
+    
+    var fields = editor.order();
+    //console.log(data.length)
+    editor.create( data.length, false);
+    
+        for ( var i=0 ; i<fields.length ; i++ ) {
+            var field = editor.field( fields[i] );
+            var fieldName = field.name();
+            if (fieldName !== 'pkid') {
+                //console.log(fieldName)
+
+                for ( var j=0 ; j<data.length ; j++ ) {
+                    //console.log(j, data[j][fieldName]);
+                    field.multiSet( j, fieldName === 'name' ? newVal : data[j][fieldName] );
+                }
+
+
+            }
+        }
+        //console.log(editor.multiGet());
+        editor.submit();
+    
+        $("#contact-modal").modal('hide');
+});
+
+
+
+</script>
+
+
+{% endblock content %}

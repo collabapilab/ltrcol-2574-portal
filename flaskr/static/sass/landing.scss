@@ -1,0 +1,149 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    font-family: "CiscoFontLight", sans-serif;
+    color: #444;
+    -webkit-font-smoothing: antialiased;
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#00364a+0,0082b0+100 */
+    background: #00364a;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, #00364a 0%, #0082b0 100%);
+    /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #00364a 0%, #0082b0 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #00364a 0%, #0082b0 100%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00364a', endColorstr='#0082b0', GradientType=0);
+    /* IE6-9 */
+}
+
+#cl_logo {
+    -webkit-animation-name: bounceInDown;
+    -webkit-animation-fill-mode: both;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: bounceInDown;
+    -moz-animation-fill-mode: both;
+    -moz-animation-duration: 1.5s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: linear;
+    animation-name: bounceInDown;
+    animation-fill-mode: both;
+    animation-duration: 1.5s;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+}
+
+#lab_id {
+    text-align: left;
+    -webkit-animation-name: bounceInRight;
+    -webkit-animation-fill-mode: both;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: bounceInRight;
+    -moz-animation-fill-mode: both;
+    -moz-animation-duration: 1.5s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: linear;
+    animation-name: bounceInRight;
+    animation-fill-mode: both;
+    animation-duration: 1.5s;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    color: white;
+    font-family: "CiscoFontLight", sans-serif;
+
+    @media(min-width:300px) {
+        font-size: 2.0em;
+        line-height: 2rem;
+        margin: 20px 0px 20px 0px;
+
+    }
+
+    @media(min-width:768px) {
+        font-size: 4.0em;
+        line-height: 4rem
+    }
+
+    @media(min-width:992px) {
+        font-size: 5.0em;
+        line-height: 5rem
+    }
+
+    @media(min-width:1200px) {
+        font-size: 6.0em;
+        line-height: 6rem;
+    }
+
+}
+
+#lab_title {
+    text-align: left;
+    -webkit-animation-name: bounceInRight;
+    -webkit-animation-fill-mode: both;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: bounceInRight;
+    -moz-animation-fill-mode: both;
+    -moz-animation-duration: 1.5s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: linear;
+    animation-name: bounceInRight;
+    animation-fill-mode: both;
+    animation-duration: 1.5s;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    font-size: 2.0em;
+    color: white;
+    font-family: "CiscoFont", sans-serif;
+
+    @media(min-width:300px) {
+        font-size: 1.0em;
+        line-height: 1rem;
+        margin: 20px 0px 20px 0px;
+
+    }
+
+    @media(min-width:768px) {
+        font-size: 1.5em;
+        line-height: 2rem
+    }
+
+    @media(min-width:992px) {
+        font-size: 2em;
+        line-height: 2rem
+    }
+
+    @media(min-width:1200px) {
+        font-size: 2.0em;
+        line-height: 2rem;
+    }
+
+}
+
+#lab_abstract,
+#select_pod {
+    text-align: left;
+    -webkit-animation-name: lightSpeedIn;
+    -webkit-animation-fill-mode: both;
+    -webkit-animation-duration: 1.0s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: lightSpeedIn;
+    -moz-animation-fill-mode: both;
+    -moz-animation-duration: 1.0s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: linear;
+    animation-name: lightSpeedIn;
+    animation-fill-mode: both;
+    animation-duration: 1.0s;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    font-size: 1.0em;
+    color: white;
+    font-family: "CiscoFont", sans-serif;
+}

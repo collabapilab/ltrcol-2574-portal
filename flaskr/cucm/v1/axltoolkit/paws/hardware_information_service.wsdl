@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://services.api.platform.vos.cisco.com" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax293="http://element.services.api.platform.vos.cisco.com/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax294="http://api.platform.vos.cisco.com/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://services.api.platform.vos.cisco.com">
+  <wsdl:documentation>HardwareInformationService</wsdl:documentation>
+  <wsdl:types>
+    <xs:schema xmlns:ax295="http://api.platform.vos.cisco.com/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://element.services.api.platform.vos.cisco.com/xsd">
+      <xs:import namespace="http://api.platform.vos.cisco.com/xsd"/>
+      <xs:complexType name="RemoteResponse">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="remoteMessages" nillable="true" type="ax293:RemoteMessage"/>
+          <xs:element minOccurs="0" name="result" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="RemoteMessage">
+        <xs:complexContent>
+          <xs:extension base="ax294:Message">
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="messageParams" nillable="true" type="xs:string"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="HardwareInformationResponse">
+        <xs:complexContent>
+          <xs:extension base="ax293:RemoteResponse">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="hardwareInformation" nillable="true" type="ax293:HardwareInformation"/>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="DiskInformation">
+			<xs:sequence>
+			  <xs:element minOccurs="0" name="number" nillable="true" type="xs:int"/>
+			  <xs:element minOccurs="0" name="size" nillable="true" type="xs:int"/>
+			  <xs:element minOccurs="0" name="total" nillable="true" type="xs:int"/>
+			</xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PartitionInfo">
+			<xs:sequence>
+			  <xs:element minOccurs="0" name="available" nillable="true" type="xs:int"/>
+			  <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+			  <xs:element minOccurs="0" name="total" nillable="true" type="xs:int"/>
+			  <xs:element minOccurs="0" name="unrestricted" nillable="true" type="xs:string"/>
+			  <xs:element minOccurs="0" name="used" nillable="true" type="xs:int"/>
+			</xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="OpticalDriveInfo">
+			<xs:sequence>
+			  <xs:element minOccurs="0" name="driveTray" nillable="true" type="xs:string"/>
+			</xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="HardwareInformation">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="diskCount" type="xs:int"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="diskInformation" nillable="true" type="ax293:DiskInformation"/>
+          <xs:element minOccurs="0" name="hasMotorizedDriveTray" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="isServerHeadless" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="memory" type="xs:int"/>
+          <xs:element minOccurs="0" name="memoryAvailable" type="xs:int"/>
+          <xs:element minOccurs="0" name="memoryUsed" type="xs:int"/>
+          <xs:element minOccurs="0" name="model" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="objectId" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="oemModel" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="opticalDrives" nillable="true" type="ax293:OpticalDriveInfo"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="partitions" nillable="true" type="ax293:PartitionInfo"/>
+          <xs:element minOccurs="0" name="processorCount" type="xs:int"/>
+          <xs:element minOccurs="0" name="processorSpeed" type="xs:int"/>
+          <xs:element minOccurs="0" name="processorType" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="raidStatus" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="serialNumber" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="supportedHardware" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="virtualMachine" type="xs:boolean"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.platform.vos.cisco.com/xsd">
+      <xs:complexType name="Message">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="error" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="info" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="messageKey" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="messageType" nillable="true" type="xs:string"/>
+          <xs:element minOccurs="0" name="warning" type="xs:boolean"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:ax296="http://element.services.api.platform.vos.cisco.com/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://services.api.platform.vos.cisco.com">
+      <xs:import namespace="http://element.services.api.platform.vos.cisco.com/xsd"/>
+      <xs:element name="getHardwareInformation">
+        <xs:complexType>
+          <xs:sequence/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getHardwareInformationResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="ax293:HardwareInformationResponse"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="getHardwareInformationRequest">
+    <wsdl:part name="parameters" element="ns:getHardwareInformation"/>
+  </wsdl:message>
+  <wsdl:message name="getHardwareInformationResponse">
+    <wsdl:part name="parameters" element="ns:getHardwareInformationResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="HardwareInformationServicePortType">
+    <wsdl:operation name="getHardwareInformation">
+      <wsdl:input message="ns:getHardwareInformationRequest" wsaw:Action="urn:getHardwareInformation"/>
+      <wsdl:output message="ns:getHardwareInformationResponse" wsaw:Action="urn:getHardwareInformationResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="HardwareInformationServiceSoap11Binding" type="ns:HardwareInformationServicePortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="getHardwareInformation">
+      <soap:operation soapAction="urn:getHardwareInformation" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="HardwareInformationServiceSoap12Binding" type="ns:HardwareInformationServicePortType">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+    <wsdl:operation name="getHardwareInformation">
+      <soap12:operation soapAction="urn:getHardwareInformation" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="HardwareInformationServiceHttpBinding" type="ns:HardwareInformationServicePortType">
+    <http:binding verb="POST"/>
+    <wsdl:operation name="getHardwareInformation">
+      <http:operation location="getHardwareInformation"/>
+      <wsdl:input>
+        <mime:content type="application/xml" part="parameters"/>
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content type="application/xml" part="parameters"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="HardwareInformationService">
+    <wsdl:port name="HardwareInformationServiceHttpsSoap11Endpoint" binding="ns:HardwareInformationServiceSoap11Binding">
+      <soap:address location="https://vnt-cm1a.cisco.com:8443/platform-services/services/HardwareInformationService.HardwareInformationServiceHttpsSoap11Endpoint/"/>
+    </wsdl:port>
+    <wsdl:port name="HardwareInformationServiceHttpsSoap12Endpoint" binding="ns:HardwareInformationServiceSoap12Binding">
+      <soap12:address location="https://vnt-cm1a.cisco.com:8443/platform-services/services/HardwareInformationService.HardwareInformationServiceHttpsSoap12Endpoint/"/>
+    </wsdl:port>
+    <wsdl:port name="HardwareInformationServiceHttpsEndpoint" binding="ns:HardwareInformationServiceHttpBinding">
+      <http:address location="https://vnt-cm1a.cisco.com:8443/platform-services/services/HardwareInformationService.HardwareInformationServiceHttpsEndpoint/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,831 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://www.cisco.com/AXLAPIService/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:xsd1="http://www.cisco.com/AXL/API/12.5" targetNamespace="http://www.cisco.com/AXLAPIService/">
+  <import location="AXLSoap.xsd" namespace="http://www.cisco.com/AXL/API/12.5"/>
+  <message name="listCallManagerNodeIn">
+    <part element="xsd1:listCallManagerNode" name="axlParams"/>
+  </message>
+  <message name="listCallManagerNodeOut">
+    <part element="xsd1:listCallManagerNodeResponse" name="axlParams"/>
+  </message>
+  <message name="listUserIn">
+    <part element="xsd1:listUser" name="axlParams"/>
+  </message>
+  <message name="listUserOut">
+    <part element="xsd1:listUserResponse" name="axlParams"/>
+  </message>
+  <message name="updateDeskphoneControlUserSettingsIn">
+    <part element="xsd1:updateDeskphoneControlUserSettings" name="axlParams"/>
+  </message>
+  <message name="updateDeskphoneControlUserSettingsOut">
+    <part element="xsd1:updateDeskphoneControlUserSettingsResponse" name="axlParams"/>
+  </message>
+  <message name="getDeskphoneControlUserSettingsIn">
+    <part element="xsd1:getDeskphoneControlUserSettings" name="axlParams"/>
+  </message>
+  <message name="getDeskphoneControlUserSettingsOut">
+    <part element="xsd1:getDeskphoneControlUserSettingsResponse" name="axlParams"/>
+  </message>
+  <message name="listDeskphoneControlUserSettingsIn">
+    <part element="xsd1:listDeskphoneControlUserSettings" name="axlParams"/>
+  </message>
+  <message name="listDeskphoneControlUserSettingsOut">
+    <part element="xsd1:listDeskphoneControlUserSettingsResponse" name="axlParams"/>
+  </message>
+  <message name="addICSubclusterIn">
+    <part element="xsd1:addICSubcluster" name="axlParams"/>
+  </message>
+  <message name="addICSubclusterOut">
+    <part element="xsd1:addICSubclusterResponse" name="axlParams"/>
+  </message>
+  <message name="updateICSubclusterIn">
+    <part element="xsd1:updateICSubcluster" name="axlParams"/>
+  </message>
+  <message name="updateICSubclusterOut">
+    <part element="xsd1:updateICSubclusterResponse" name="axlParams"/>
+  </message>
+  <message name="removeICSubclusterIn">
+    <part element="xsd1:removeICSubcluster" name="axlParams"/>
+  </message>
+  <message name="removeICSubclusterOut">
+    <part element="xsd1:removeICSubclusterResponse" name="axlParams"/>
+  </message>
+  <message name="addICNodeIn">
+    <part element="xsd1:addICNode" name="axlParams"/>
+  </message>
+  <message name="addICNodeOut">
+    <part element="xsd1:addICNodeResponse" name="axlParams"/>
+  </message>
+  <message name="updateICNodeIn">
+    <part element="xsd1:updateICNode" name="axlParams"/>
+  </message>
+  <message name="updateICNodeOut">
+    <part element="xsd1:updateICNodeResponse" name="axlParams"/>
+  </message>
+  <message name="removeICNodeIn">
+    <part element="xsd1:removeICNode" name="axlParams"/>
+  </message>
+  <message name="removeICNodeOut">
+    <part element="xsd1:removeICNodeResponse" name="axlParams"/>
+  </message>
+  <message name="updateICUserIn">
+    <part element="xsd1:updateICUser" name="axlParams"/>
+  </message>
+  <message name="updateICUserOut">
+    <part element="xsd1:updateICUserResponse" name="axlParams"/>
+  </message>
+  <message name="updateICUserGroupWatcherListIn">
+    <part element="xsd1:updateICUserGroupWatcherList" name="axlParams"/>
+  </message>
+  <message name="updateICUserGroupWatcherListOut">
+    <part element="xsd1:updateICUserGroupWatcherListResponse" name="axlParams"/>
+  </message>
+  <message name="updateICTcAliasIn">
+    <part element="xsd1:updateICTcAlias" name="axlParams"/>
+  </message>
+  <message name="updateICTcAliasOut">
+    <part element="xsd1:updateICTcAliasResponse" name="axlParams"/>
+  </message>
+  <message name="updateICMaFeatureConfigIn">
+    <part element="xsd1:updateICMaFeatureConfig" name="axlParams"/>
+  </message>
+  <message name="updateICMaFeatureConfigOut">
+    <part element="xsd1:updateICMaFeatureConfigResponse" name="axlParams"/>
+  </message>
+  <message name="executeSQLQueryIn">
+    <part element="xsd1:executeSQLQuery" name="axlParams"/>
+  </message>
+  <message name="executeSQLQueryOut">
+    <part element="xsd1:executeSQLQueryResponse" name="axlParams"/>
+  </message>
+  <message name="executeSQLUpdateIn">
+    <part element="xsd1:executeSQLUpdate" name="axlParams"/>
+  </message>
+  <message name="executeSQLUpdateOut">
+    <part element="xsd1:executeSQLUpdateResponse" name="axlParams"/>
+  </message>
+  <message name="getCUPVersionIn">
+    <part element="xsd1:getCUPVersion" name="axlParams"/>
+  </message>
+  <message name="getCUPVersionOut">
+    <part element="xsd1:getCUPVersionResponse" name="axlParams"/>
+  </message>
+  <message name="getClusterInfoIn">
+    <part element="xsd1:getClusterInfo" name="axlParams"/>
+  </message>
+  <message name="getClusterInfoOut">
+    <part element="xsd1:getClusterInfoResponse" name="axlParams"/>
+  </message>
+  <message name="processInterclusterCertCNIn">
+    <part element="xsd1:processInterclusterCertCN" name="axlParams"/>
+  </message>
+  <message name="processInterclusterCertCNOut">
+    <part element="xsd1:processInterclusterCertCNResponse" name="axlParams"/>
+  </message>
+  <message name="getCertificateSummaryIn">
+    <part element="xsd1:getCertificateSummary" name="axlParams"/>
+  </message>
+  <message name="getCertificateSummaryOut">
+    <part element="xsd1:getCertificateSummaryResponse" name="axlParams"/>
+  </message>
+  <message name="getCertificatesIn">
+    <part element="xsd1:getCertificates" name="axlParams"/>
+  </message>
+  <message name="getCertificatesOut">
+    <part element="xsd1:getCertificatesResponse" name="axlParams"/>
+  </message>
+  <message name="getUserIn">
+    <part element="xsd1:getUser" name="axlParams"/>
+  </message>
+  <message name="getUserOut">
+    <part element="xsd1:getUserResponse" name="axlParams"/>
+  </message>
+  <message name="processInterclusterUserCNIn">
+    <part element="xsd1:processInterclusterUserCN" name="axlParams"/>
+  </message>
+  <message name="processInterclusterUserCNOut">
+    <part element="xsd1:processInterclusterUserCNResponse" name="axlParams"/>
+  </message>
+  <message name="getSyslogConfigurationIn">
+    <part element="xsd1:getSyslogConfiguration" name="axlParams"/>
+  </message>
+  <message name="getSyslogConfigurationOut">
+    <part element="xsd1:getSyslogConfigurationResponse" name="axlParams"/>
+  </message>
+  <message name="addSNMPCommunityStringIn">
+    <part element="xsd1:addSNMPCommunityString" name="axlParams"/>
+  </message>
+  <message name="addSNMPCommunityStringOut">
+    <part element="xsd1:addSNMPCommunityStringResponse" name="axlParams"/>
+  </message>
+  <message name="removeSNMPCommunityStringIn">
+    <part element="xsd1:removeSNMPCommunityString" name="axlParams"/>
+  </message>
+  <message name="removeSNMPCommunityStringOut">
+    <part element="xsd1:removeSNMPCommunityStringResponse" name="axlParams"/>
+  </message>
+  <message name="getSNMPCommunityStringIn">
+    <part element="xsd1:getSNMPCommunityString" name="axlParams"/>
+  </message>
+  <message name="getSNMPCommunityStringOut">
+    <part element="xsd1:getSNMPCommunityStringResponse" name="axlParams"/>
+  </message>
+  <message name="updateSNMPCommunityStringIn">
+    <part element="xsd1:updateSNMPCommunityString" name="axlParams"/>
+  </message>
+  <message name="updateSNMPCommunityStringOut">
+    <part element="xsd1:updateSNMPCommunityStringResponse" name="axlParams"/>
+  </message>
+  <message name="addSNMPUserIn">
+    <part element="xsd1:addSNMPUser" name="axlParams"/>
+  </message>
+  <message name="addSNMPUserOut">
+    <part element="xsd1:addSNMPUserResponse" name="axlParams"/>
+  </message>
+  <message name="getSNMPUserIn">
+    <part element="xsd1:getSNMPUser" name="axlParams"/>
+  </message>
+  <message name="getSNMPUserOut">
+    <part element="xsd1:getSNMPUserResponse" name="axlParams"/>
+  </message>
+  <message name="removeSNMPUserIn">
+    <part element="xsd1:removeSNMPUser" name="axlParams"/>
+  </message>
+  <message name="removeSNMPUserOut">
+    <part element="xsd1:removeSNMPUserResponse" name="axlParams"/>
+  </message>
+  <message name="updateSNMPUserIn">
+    <part element="xsd1:updateSNMPUser" name="axlParams"/>
+  </message>
+  <message name="updateSNMPUserOut">
+    <part element="xsd1:updateSNMPUserResponse" name="axlParams"/>
+  </message>
+  <message name="getSNMPMIB2ListIn">
+    <part element="xsd1:getSNMPMIB2List" name="axlParams"/>
+  </message>
+  <message name="getSNMPMIB2ListOut">
+    <part element="xsd1:getSNMPMIB2ListResponse" name="axlParams"/>
+  </message>
+  <message name="updateSNMPMIB2ListIn">
+    <part element="xsd1:updateSNMPMIB2List" name="axlParams"/>
+  </message>
+  <message name="updateSNMPMIB2ListOut">
+    <part element="xsd1:updateSNMPMIB2ListResponse" name="axlParams"/>
+  </message>
+  <message name="getPresenceViewerIn">
+    <part element="xsd1:getPresenceViewer" name="axlParams"/>
+  </message>
+  <message name="getPresenceViewerOut">
+    <part element="xsd1:getPresenceViewerResponse" name="axlParams"/>
+  </message>
+  <message name="getClusterNodesAndCriticalServicesIn">
+    <part element="xsd1:getClusterNodesAndCriticalServices" name="axlParams"/>
+  </message>
+  <message name="getClusterNodesAndCriticalServicesOut">
+    <part element="xsd1:getClusterNodesAndCriticalServicesResponse" name="axlParams"/>
+  </message>
+  <message name="getSubClusterHAStatusIn">
+    <part element="xsd1:getSubClusterHAStatus" name="axlParams"/>
+  </message>
+  <message name="getSubClusterHAStatusOut">
+    <part element="xsd1:getSubClusterHAStatusResponse" name="axlParams"/>
+  </message>
+  <message name="processHAOperationsIn">
+    <part element="xsd1:processHAOperations" name="axlParams"/>
+  </message>
+  <message name="processHAOperationsOut">
+    <part element="xsd1:processHAOperationsResponse" name="axlParams"/>
+  </message>
+  <message name="addContactIn">
+    <part element="xsd1:addContact" name="axlParams"/>
+  </message>
+  <message name="addContactOut">
+    <part element="xsd1:addContactResponse" name="axlParams"/>
+  </message>
+  <message name="updateContactIn">
+    <part element="xsd1:updateContact" name="axlParams"/>
+  </message>
+  <message name="updateContactOut">
+    <part element="xsd1:updateContactResponse" name="axlParams"/>
+  </message>
+  <message name="getContactListIn">
+    <part element="xsd1:getContactList" name="axlParams"/>
+  </message>
+  <message name="getContactListOut">
+    <part element="xsd1:getContactListResponse" name="axlParams"/>
+  </message>
+  <message name="removeContactIn">
+    <part element="xsd1:removeContact" name="axlParams"/>
+  </message>
+  <message name="removeContactOut">
+    <part element="xsd1:removeContactResponse" name="axlParams"/>
+  </message>
+  <portType name="AXLPort">
+    <operation name="listCallManagerNode">
+      <input message="s0:listCallManagerNodeIn"/>
+      <output message="s0:listCallManagerNodeOut"/>
+    </operation>
+    <operation name="listUser">
+      <input message="s0:listUserIn"/>
+      <output message="s0:listUserOut"/>
+    </operation>
+    <operation name="updateDeskphoneControlUserSettings">
+      <input message="s0:updateDeskphoneControlUserSettingsIn"/>
+      <output message="s0:updateDeskphoneControlUserSettingsOut"/>
+    </operation>
+    <operation name="getDeskphoneControlUserSettings">
+      <input message="s0:getDeskphoneControlUserSettingsIn"/>
+      <output message="s0:getDeskphoneControlUserSettingsOut"/>
+    </operation>
+    <operation name="listDeskphoneControlUserSettings">
+      <input message="s0:listDeskphoneControlUserSettingsIn"/>
+      <output message="s0:listDeskphoneControlUserSettingsOut"/>
+    </operation>
+    <operation name="addICSubcluster">
+      <input message="s0:addICSubclusterIn"/>
+      <output message="s0:addICSubclusterOut"/>
+    </operation>
+    <operation name="updateICSubcluster">
+      <input message="s0:updateICSubclusterIn"/>
+      <output message="s0:updateICSubclusterOut"/>
+    </operation>
+    <operation name="removeICSubcluster">
+      <input message="s0:removeICSubclusterIn"/>
+      <output message="s0:removeICSubclusterOut"/>
+    </operation>
+    <operation name="addICNode">
+      <input message="s0:addICNodeIn"/>
+      <output message="s0:addICNodeOut"/>
+    </operation>
+    <operation name="updateICNode">
+      <input message="s0:updateICNodeIn"/>
+      <output message="s0:updateICNodeOut"/>
+    </operation>
+    <operation name="removeICNode">
+      <input message="s0:removeICNodeIn"/>
+      <output message="s0:removeICNodeOut"/>
+    </operation>
+    <operation name="updateICUser">
+      <input message="s0:updateICUserIn"/>
+      <output message="s0:updateICUserOut"/>
+    </operation>
+    <operation name="updateICUserGroupWatcherList">
+      <input message="s0:updateICUserGroupWatcherListIn"/>
+      <output message="s0:updateICUserGroupWatcherListOut"/>
+    </operation>
+    <operation name="updateICTcAlias">
+      <input message="s0:updateICTcAliasIn"/>
+      <output message="s0:updateICTcAliasOut"/>
+    </operation>
+    <operation name="updateICMaFeatureConfig">
+      <input message="s0:updateICMaFeatureConfigIn"/>
+      <output message="s0:updateICMaFeatureConfigOut"/>
+    </operation>
+    <operation name="executeSQLQuery">
+      <input message="s0:executeSQLQueryIn"/>
+      <output message="s0:executeSQLQueryOut"/>
+    </operation>
+    <operation name="executeSQLUpdate">
+      <input message="s0:executeSQLUpdateIn"/>
+      <output message="s0:executeSQLUpdateOut"/>
+    </operation>
+    <operation name="getCUPVersion">
+      <input message="s0:getCUPVersionIn"/>
+      <output message="s0:getCUPVersionOut"/>
+    </operation>
+    <operation name="getClusterInfo">
+      <input message="s0:getClusterInfoIn"/>
+      <output message="s0:getClusterInfoOut"/>
+    </operation>
+    <operation name="processInterclusterCertCN">
+      <input message="s0:processInterclusterCertCNIn"/>
+      <output message="s0:processInterclusterCertCNOut"/>
+    </operation>
+    <operation name="getCertificateSummary">
+      <input message="s0:getCertificateSummaryIn"/>
+      <output message="s0:getCertificateSummaryOut"/>
+    </operation>
+    <operation name="getCertificates">
+      <input message="s0:getCertificatesIn"/>
+      <output message="s0:getCertificatesOut"/>
+    </operation>
+    <operation name="getUser">
+      <input message="s0:getUserIn"/>
+      <output message="s0:getUserOut"/>
+    </operation>
+    <operation name="processInterclusterUserCN">
+      <input message="s0:processInterclusterUserCNIn"/>
+      <output message="s0:processInterclusterUserCNOut"/>
+    </operation>
+    <operation name="getSyslogConfiguration">
+      <input message="s0:getSyslogConfigurationIn"/>
+      <output message="s0:getSyslogConfigurationOut"/>
+    </operation>
+    <operation name="addSNMPCommunityString">
+      <input message="s0:addSNMPCommunityStringIn"/>
+      <output message="s0:addSNMPCommunityStringOut"/>
+    </operation>
+    <operation name="removeSNMPCommunityString">
+      <input message="s0:removeSNMPCommunityStringIn"/>
+      <output message="s0:removeSNMPCommunityStringOut"/>
+    </operation>
+    <operation name="getSNMPCommunityString">
+      <input message="s0:getSNMPCommunityStringIn"/>
+      <output message="s0:getSNMPCommunityStringOut"/>
+    </operation>
+    <operation name="updateSNMPCommunityString">
+      <input message="s0:updateSNMPCommunityStringIn"/>
+      <output message="s0:updateSNMPCommunityStringOut"/>
+    </operation>
+    <operation name="addSNMPUser">
+      <input message="s0:addSNMPUserIn"/>
+      <output message="s0:addSNMPUserOut"/>
+    </operation>
+    <operation name="getSNMPUser">
+      <input message="s0:getSNMPUserIn"/>
+      <output message="s0:getSNMPUserOut"/>
+    </operation>
+    <operation name="removeSNMPUser">
+      <input message="s0:removeSNMPUserIn"/>
+      <output message="s0:removeSNMPUserOut"/>
+    </operation>
+    <operation name="updateSNMPUser">
+      <input message="s0:updateSNMPUserIn"/>
+      <output message="s0:updateSNMPUserOut"/>
+    </operation>
+    <operation name="getSNMPMIB2List">
+      <input message="s0:getSNMPMIB2ListIn"/>
+      <output message="s0:getSNMPMIB2ListOut"/>
+    </operation>
+    <operation name="updateSNMPMIB2List">
+      <input message="s0:updateSNMPMIB2ListIn"/>
+      <output message="s0:updateSNMPMIB2ListOut"/>
+    </operation>
+    <operation name="getPresenceViewer">
+      <input message="s0:getPresenceViewerIn"/>
+      <output message="s0:getPresenceViewerOut"/>
+    </operation>
+    <operation name="getClusterNodesAndCriticalServices">
+      <input message="s0:getClusterNodesAndCriticalServicesIn"/>
+      <output message="s0:getClusterNodesAndCriticalServicesOut"/>
+    </operation>
+    <operation name="getSubClusterHAStatus">
+      <input message="s0:getSubClusterHAStatusIn"/>
+      <output message="s0:getSubClusterHAStatusOut"/>
+    </operation>
+    <operation name="processHAOperations">
+      <input message="s0:processHAOperationsIn"/>
+      <output message="s0:processHAOperationsOut"/>
+    </operation>
+    <operation name="addContact">
+      <input message="s0:addContactIn"/>
+      <output message="s0:addContactOut"/>
+    </operation>
+    <operation name="updateContact">
+      <input message="s0:updateContactIn"/>
+      <output message="s0:updateContactOut"/>
+    </operation>
+    <operation name="getContactList">
+      <input message="s0:getContactListIn"/>
+      <output message="s0:getContactListOut"/>
+    </operation>
+    <operation name="removeContact">
+      <input message="s0:removeContactIn"/>
+      <output message="s0:removeContactOut"/>
+    </operation>
+  </portType>
+  <binding name="AXLAPIBinding" type="s0:AXLPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="listCallManagerNode">
+      <soap:operation soapAction="CUCM:DB ver=12.5 listCallManagerNode" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="listUser">
+      <soap:operation soapAction="CUCM:DB ver=12.5 listUser" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateDeskphoneControlUserSettings">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateDeskphoneControlUserSettings" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getDeskphoneControlUserSettings">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getDeskphoneControlUserSettings" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="listDeskphoneControlUserSettings">
+      <soap:operation soapAction="CUCM:DB ver=12.5 listDeskphoneControlUserSettings" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="addICSubcluster">
+      <soap:operation soapAction="CUCM:DB ver=12.5 addICSubcluster" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateICSubcluster">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateICSubcluster" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="removeICSubcluster">
+      <soap:operation soapAction="CUCM:DB ver=12.5 removeICSubcluster" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="addICNode">
+      <soap:operation soapAction="CUCM:DB ver=12.5 addICNode" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateICNode">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateICNode" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="removeICNode">
+      <soap:operation soapAction="CUCM:DB ver=12.5 removeICNode" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateICUser">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateICUser" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateICUserGroupWatcherList">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateICUserGroupWatcherList" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateICTcAlias">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateICTcAlias" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateICMaFeatureConfig">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateICMaFeatureConfig" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="executeSQLQuery">
+      <soap:operation soapAction="CUCM:DB ver=12.5 executeSQLQuery" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="executeSQLUpdate">
+      <soap:operation soapAction="CUCM:DB ver=12.5 executeSQLUpdate" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getCUPVersion">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getCUPVersion" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getClusterInfo">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getClusterInfo" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="processInterclusterCertCN">
+      <soap:operation soapAction="CUCM:DB ver=12.5 processInterclusterCertCN" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getCertificateSummary">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getCertificateSummary" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getCertificates">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getCertificates" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getUser">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getUser" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="processInterclusterUserCN">
+      <soap:operation soapAction="CUCM:DB ver=12.5 processInterclusterUserCN" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getSyslogConfiguration">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getSyslogConfiguration" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="addSNMPCommunityString">
+      <soap:operation soapAction="CUCM:DB ver=12.5 addSNMPCommunityString" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="removeSNMPCommunityString">
+      <soap:operation soapAction="CUCM:DB ver=12.5 removeSNMPCommunityString" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getSNMPCommunityString">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getSNMPCommunityString" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateSNMPCommunityString">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateSNMPCommunityString" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="addSNMPUser">
+      <soap:operation soapAction="CUCM:DB ver=12.5 addSNMPUser" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getSNMPUser">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getSNMPUser" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="removeSNMPUser">
+      <soap:operation soapAction="CUCM:DB ver=12.5 removeSNMPUser" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateSNMPUser">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateSNMPUser" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getSNMPMIB2List">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getSNMPMIB2List" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateSNMPMIB2List">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateSNMPMIB2List" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getPresenceViewer">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getPresenceViewer" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getClusterNodesAndCriticalServices">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getClusterNodesAndCriticalServices" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getSubClusterHAStatus">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getSubClusterHAStatus" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="processHAOperations">
+      <soap:operation soapAction="CUCM:DB ver=12.5 processHAOperations" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="addContact">
+      <soap:operation soapAction="CUCM:DB ver=12.5 addContact" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateContact">
+      <soap:operation soapAction="CUCM:DB ver=12.5 updateContact" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getContactList">
+      <soap:operation soapAction="CUCM:DB ver=12.5 getContactList" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="removeContact">
+      <soap:operation soapAction="CUCM:DB ver=12.5 removeContact" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="AXLAPIService">
+    <port binding="s0:AXLAPIBinding" name="AXLPort">
+      <soap:address location="https://CCMSERVERNAME:8443/axl/"/>
+    </port>
+  </service>
+</definitions>
