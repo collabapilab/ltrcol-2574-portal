@@ -1,0 +1,38 @@
+{% extends "core_base.html" %}
+{% block content %}
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    $('.display-0').html('Summary').hide();
+    $('#DT').html('Summary Table');
+
+    $('#download').on('click', function () {
+        window.location = 'getDB';
+    });
+
+    $('#empty').on('click', function () {
+        window.location = 'emptyDB';
+    });
+
+    $('#import').on('click', function () {
+        window.location = 'importDB';
+    });
+
+    $('#update').on('click', function () {
+        $.getJSON("/api/v1/results/update_schema_results", function (json) {
+            //showDatatable(json)
+        });
+    });
+
+    $('#update_locations').on('click', function () {
+        $.getJSON("/api/v1/locations/update_schema_locations", function (json) {
+            //showDatatable(json)
+        });
+    });
+});
+
+</script>
+
+{% endblock content %}

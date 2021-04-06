@@ -1,0 +1,1414 @@
+{
+	"info": {
+		"_postman_id": "047c77b0-e7f7-4b35-95a6-25afc173e24e",
+		"name": "HOLCOL-2574",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Direct to Server",
+			"item": [
+				{
+					"name": "CUC",
+					"item": [
+						{
+							"name": "Get CUC Version",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/version/product/",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"version",
+										"product",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get CUC Users",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/users",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get LDAP Users to import",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/import/users/ldap",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"import",
+										"users",
+										"ldap"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get LDAP User",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/import/users/ldap?query=(alias%20is%20pod{{pod_num}}user1)",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"import",
+										"users",
+										"ldap"
+									],
+									"query": [
+										{
+											"key": "query",
+											"value": "(alias%20is%20pod{{pod_num}}user1)"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Import LDAP User with new VM",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"dtmfAccessId\": \"12345\",\n    \"pkid\": \"dbc37047-7565-6b29-3327-18850f64d406\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/import/users/ldap?templateAlias=voicemailusertemplate",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"import",
+										"users",
+										"ldap"
+									],
+									"query": [
+										{
+											"key": "templateAlias",
+											"value": "voicemailusertemplate"
+										}
+									]
+								},
+								"description": "When successful, returns 201 Created with:\n/vmrest/users/61a5a8ee-5ba6-4b94-ad92-3e032e0ccebb"
+							},
+							"response": []
+						},
+						{
+							"name": "Get user",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/users?query=(alias%20is%20pod{{pod_num}}user1)",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"users"
+									],
+									"query": [
+										{
+											"key": "query",
+											"value": "(alias%20is%20pod{{pod_num}}user1)"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modify CUC user",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"DisplayName\": \"Updated User\",\n    \"ListInDirectory\": \"false\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/users/3967c91f-30ee-4656-83ac-3bc4600ee0dd",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"users",
+										"3967c91f-30ee-4656-83ac-3bc4600ee0dd"
+									]
+								},
+								"description": "When successful, returns 204 No Content"
+							},
+							"response": []
+						},
+						{
+							"name": "Modify CUC user Credentials",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Credentials\": \"14235834\",\n    \"HackCount\": 0,\n\t\"TimeHacked\": []\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/users/3967c91f-30ee-4656-83ac-3bc4600ee0dd/credential/pin",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"users",
+										"3967c91f-30ee-4656-83ac-3bc4600ee0dd",
+										"credential",
+										"pin"
+									]
+								},
+								"description": "When successful, returns 204 No Content"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete CUC user",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"alias\":\"pod31user1\",\"firstName\":\"Pod31\",\"lastName\":\"User1\",\"dtmfAccessId\":\"12345\",\"pkid\":\"dbc37047-7565-6b29-3327-18850f64d406\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{cuc}}/vmrest/users/3967c91f-30ee-4656-83ac-3bc4600ee0dd",
+									"protocol": "https",
+									"host": [
+										"{{cuc}}"
+									],
+									"path": [
+										"vmrest",
+										"users",
+										"3967c91f-30ee-4656-83ac-3bc4600ee0dd"
+									]
+								},
+								"description": "When successful, returns 204 No Content"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "878c12a7-e315-4168-b783-760355f08e0d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ced353c0-e70e-469c-84fc-a6b6590f4bb0",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "CMS",
+					"item": [
+						{
+							"name": "Get system_status",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{cms}}:8443/api/v1/system/status",
+									"protocol": "https",
+									"host": [
+										"{{cms}}"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"system",
+										"status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create coSpace",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "name",
+											"value": "New Space",
+											"type": "text"
+										},
+										{
+											"key": "uri",
+											"value": "space",
+											"type": "text"
+										},
+										{
+											"key": "secondaryuri",
+											"value": "5555",
+											"type": "text"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{cms}}:8443/api/v1/coSpaces",
+									"protocol": "https",
+									"host": [
+										"{{cms}}"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"coSpaces"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modify coSpace",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "name",
+											"value": "Modified Space",
+											"type": "text"
+										},
+										{
+											"key": "uri",
+											"value": "newspace",
+											"type": "text"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://{{cms}}:8443/api/v1/coSpaces/362dc6ec-8fa3-4ad1-96a2-2ea02b40db67",
+									"protocol": "https",
+									"host": [
+										"{{cms}}"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"coSpaces",
+										"362dc6ec-8fa3-4ad1-96a2-2ea02b40db67"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get coSpaces",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://{{cms}}:8443/api/v1/coSpaces",
+									"protocol": "https",
+									"host": [
+										"{{cms}}"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"coSpaces"
+									]
+								},
+								"description": "Filter/limit by alias/uri using:  ?filter=blah&limit=2"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete coSpace",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "https://{{cms}}:8443/api/v1/coSpaces/2cb3a80a-51a4-4086-9487-fc06087e78ed",
+									"protocol": "https",
+									"host": [
+										"{{cms}}"
+									],
+									"port": "8443",
+									"path": [
+										"api",
+										"v1",
+										"coSpaces",
+										"2cb3a80a-51a4-4086-9487-fc06087e78ed"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Webex Teams",
+					"item": [
+						{
+							"name": "List Rooms",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json;charset=utf-8",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://api.ciscospark.com/v1/rooms",
+									"protocol": "https",
+									"host": [
+										"api",
+										"ciscospark",
+										"com"
+									],
+									"path": [
+										"v1",
+										"rooms"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a Message",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"roomId\": \"Y2lzY29zcGFyazovL3VzL1JPT00vMmQ1ODU1YTAtMTNkZi0xMWVhLWEzZjYtYjFmODVhNjU5MWMz\",\n  \"text\": \"Test message\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://api.ciscospark.com/v1/messages",
+									"protocol": "https",
+									"host": [
+										"api",
+										"ciscospark",
+										"com"
+									],
+									"path": [
+										"v1",
+										"messages"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{webexteams_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "490f0204-2ba3-41da-b251-778aa1f9a954",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "49bd3abb-9361-4a58-bdef-662f9f0f0340",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"description": "These requests are for products, such as CUC, CMS, and Webex Teams, which already have REST APIs.  We will simply use these examples to test operations directly to those servers/services.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "cebe0540-434c-4892-ac28-213b02a449da",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a34aa4da-499f-45ae-9b83-bda02df88a8a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Via Portal API",
+			"item": [
+				{
+					"name": "CUCM",
+					"item": [],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "CUC",
+					"item": [
+						{
+							"name": "Get CUC Version",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/version",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"version"
+									]
+								},
+								"description": "Filter with:  ?column=alias&match_type=startswith&search=pod"
+							},
+							"response": []
+						},
+						{
+							"name": "List LDAP Users to Import",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/ldap_users",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"ldap_users"
+									]
+								},
+								"description": "Filter with:  ?column=alias&match_type=startswith&search=pod"
+							},
+							"response": []
+						},
+						{
+							"name": "Import LDAP User with new VM",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"users",
+										"pod{{pod_num}}user1"
+									]
+								},
+								"description": "?templateAlias=voicemailusertemplate&pkid=816d3743-d1dd-2861-e394-e23a3b912fa2\n\nOther options: \n &IsVmEnrolled=true\n &ListInDirectory=true"
+							},
+							"response": []
+						},
+						{
+							"name": "Get User by ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"users",
+										"pod{{pod_num}}user1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Modify CUC user",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1?ListInDirectory=false&IsVmEnrolled=false&PIN=31232121&ResetMailbox=true",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"users",
+										"pod{{pod_num}}user1"
+									],
+									"query": [
+										{
+											"key": "ListInDirectory",
+											"value": "false"
+										},
+										{
+											"key": "IsVmEnrolled",
+											"value": "false"
+										},
+										{
+											"key": "PIN",
+											"value": "31232121"
+										},
+										{
+											"key": "ResetMailbox",
+											"value": "true"
+										}
+									]
+								},
+								"description": "Options:\nListInDirectory=true\nIsVmEnrolled=true"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete CUC User",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cuc/users/pod{{pod_num}}user1",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cuc",
+										"users",
+										"pod{{pod_num}}user1"
+									]
+								},
+								"description": "Filter with:  ?query=(alias%20is%20operator)"
+							},
+							"response": []
+						}
+					],
+					"description": "Cisco Unity Connection",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b438388b-99c7-4c79-bcb7-7f78a79dfe57",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "be334d67-8936-4964-ad79-472f4b9bcd3f",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "CMS",
+					"item": [
+						{
+							"name": "Get system_status",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/system_status",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cms",
+										"system_status"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get version",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/version",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cms",
+										"version"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Spaces",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cms",
+										"spaces"
+									]
+								},
+								"description": "Filter with:\n?filter=pod&limit=10&offset=0"
+							},
+							"response": []
+						},
+						{
+							"name": "Create User Space",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cms",
+										"spaces",
+										"pod{{pod_num}}user1"
+									]
+								},
+								"description": "Parameters:\nname=MySpace\nuri=primuri\nsecondaryUri=otheruri\npasscode=5434\ndefaultLayout=automatic"
+							},
+							"response": []
+						},
+						{
+							"name": "Modify User Space",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1?name=Personal Space&passcode=4324&defaultLayout=automatic",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cms",
+										"spaces",
+										"pod{{pod_num}}user1"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "Personal Space"
+										},
+										{
+											"key": "passcode",
+											"value": "4324"
+										},
+										{
+											"key": "defaultLayout",
+											"value": "automatic"
+										}
+									]
+								},
+								"description": "Parameters:\nname=MySpace\nuri=primuri\nsecondaryUri=otheruri\npasscode=5434\ndefaultLayout=automatic"
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Space",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cms",
+										"spaces",
+										"pod{{pod_num}}user1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User Space",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/cms/spaces/pod{{pod_num}}user1",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"cms",
+										"spaces",
+										"pod{{pod_num}}user1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Cisco Meeting Server",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e435132b-fb7b-416c-8415-5b57ffff0fb8",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "bdcc0768-a97b-41a8-be16-31e7f1eec942",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Webex Teams",
+					"item": [
+						{
+							"name": "List Rooms",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json;charset=utf-8",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/wbxt/rooms",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"wbxt",
+										"rooms"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create a Message",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json;charset=utf-8",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/v1/wbxt/messages",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"wbxt",
+										"messages"
+									]
+								},
+								"description": "Parameters:\nroomId=Y2lzY29zcGFyazovL3VzL1JPT00vMmQ1ODU1YTAtMTNkZi0xMWVhLWEzZjYtYjFmODVhNjU5MWMz\ntext=Test Message\nmarkdown="
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{webexteams_access_token}}",
+								"type": "string"
+							}
+						]
+					},
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"description": "These requests will be directed to the host running our Portal, which will the perform the requested API operation, be it CUCM AXL, CUPI REST API, etc.  It may also implement operations that leverage multiple different requests and/or API types to the backend servers/services.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "433e9afd-e751-4771-bcc1-bfa733d4cd0f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "0ce7f768-8996-495f-8242-0e21058dc465",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Get CMS system status - Sample Query",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{cms}}:8443/api/v1/system/status",
+					"protocol": "https",
+					"host": [
+						"{{cms}}"
+					],
+					"port": "8443",
+					"path": [
+						"api",
+						"v1",
+						"system",
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "c1sco123",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "admin",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "2e67dcba-1738-44fc-87a2-bf613b0a40b0",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "64f65335-8a89-4850-b5e1-8baf3f3f4bbf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "18b5d9a3-7405-4d45-8c8f-0ea4b142b826",
+			"key": "pod_num",
+			"value": "31",
+			"type": "string"
+		},
+		{
+			"id": "9451f303-02db-41aa-b071-ab33aaf5e01b",
+			"key": "cuc",
+			"value": "cuc1a.pod{{pod_num}}.col.lab",
+			"type": "string"
+		},
+		{
+			"id": "e64703e3-c3d7-4b11-88e1-a4757c983e9e",
+			"key": "cms",
+			"value": "cms1a.pod{{pod_num}}.col.lab",
+			"type": "string"
+		},
+		{
+			"id": "8b572d9a-7036-41ec-8488-ff6820910c71",
+			"key": "webexteams_access_token",
+			"value": "ZDg2NDU1MDUtOWY0Mi00YmM5LTgxNGItOGY5NzE4YWQyZGNjNDRhZTFlOGUtOGUw_PF84_d28d283c-6ebb-4988-88bd-1272ee4dbff8",
+			"type": "string"
+		},
+		{
+			"id": "e2c6d824-8771-45ca-9289-d2ea6f821ec2",
+			"key": "host",
+			"value": "dev1.pod{{pod_num}}.col.lab",
+			"type": "string"
+		},
+		{
+			"id": "70b89fc4-8f3b-4776-851c-482b2b9b49b9",
+			"key": "port",
+			"value": "5000",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
