@@ -1,0 +1,794 @@
+/*
+Variables:
+ */
+/*
+Changes using the new CUI body HTML css tag
+ */
+/*
+  Primary body modifications
+ */
+html.cui body {
+  overflow: visible;
+  overflow-x: hidden;
+  font-weight: 400;
+  font-size: 12pt;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.015em;
+  word-spacing: 0.001em;
+  color: #696969;
+  z-index: 1;
+  font-family: "CiscoRegular", sans-serif; }
+  html.cui body pre[class*="language-"] {
+    font-family: "Inconsolata", monospace;
+    font-weight: bold;
+    font-size: .7em;
+    letter-spacing: 0em;
+    word-spacing: 0em; }
+    @media (min-width: 576px) {
+      html.cui body pre[class*="language-"] {
+        font-size: .8em; } }
+    @media (min-width: 768px) {
+      html.cui body pre[class*="language-"] {
+        font-size: .9em; } }
+    @media (min-width: 992px) {
+      html.cui body pre[class*="language-"] {
+        font-size: 1.0em; } }
+    @media (min-width: 1200px) {
+      html.cui body pre[class*="language-"] {
+        font-size: 1.1em; } }
+  html.cui body code[class*="language-"] {
+    font-family: "Inconsolata", monospace;
+    font-weight: 600;
+    font-size: .7em;
+    color: #39393b;
+    letter-spacing: 0em;
+    word-spacing: 0em; }
+    @media (min-width: 576px) {
+      html.cui body code[class*="language-"] {
+        font-size: .8em; } }
+    @media (min-width: 768px) {
+      html.cui body code[class*="language-"] {
+        font-size: .9em; } }
+    @media (min-width: 992px) {
+      html.cui body code[class*="language-"] {
+        font-size: 1.0em; } }
+    @media (min-width: 1200px) {
+      html.cui body code[class*="language-"] {
+        font-size: 1.1em; } }
+  html.cui body #block-content {
+    padding-top: 120px;
+    padding-bottom: 100px; }
+
+html.cui img {
+  margin-top: 20px; }
+
+strong {
+  color: #017cad; }
+
+b {
+  color: #017cad; }
+
+code {
+  background: none; }
+
+ul.no_bullet {
+  list-style-type: none; }
+
+ol {
+  margin: 20px 0px 20px 30px;
+  font-weight: 400; }
+
+html.cui ul,
+html.cui ol {
+  margin: 0px 20px;
+  font-weight: 400; }
+
+html.cui ul.fix_ul {
+  margin: 20px 0px 20px 50px;
+  font-weight: 400; }
+
+html.cui ol.fix_ol {
+  margin: 20px 0px 20px 50px;
+  font-weight: 400; }
+
+html.cui body #block-content {
+  padding-top: 120px;
+  padding-bottom: 100px;
+  z-index: 1; }
+
+html.cui p {
+  padding-left: 10px;
+  padding-right: 10px; }
+
+/*
+Fonts for header fields
+ */
+html.cui h3 {
+  font-family: 'CiscoHeavy', sans-serif;
+  font-size: 1.2em;
+  padding-top: 20px; }
+  @media (min-width: 768px) {
+    html.cui h3 {
+      font-size: 2em; } }
+
+html.cui h2 {
+  font-family: 'CiscoHeavy', sans-serif;
+  font-size: 1.3em;
+  padding-top: 20px; }
+  @media (min-width: 768px) {
+    html.cui h2 {
+      font-size: 2.2em; } }
+
+html.cui h1 {
+  font-family: 'CiscoHeavy', sans-serif;
+  font-size: 1.4em;
+  padding-top: 20px; }
+  @media (min-width: 768px) {
+    html.cui h1 {
+      font-size: 2.5em; } }
+
+html.cui .table td {
+  white-space: normal; }
+
+html.cui .table td.nowrap {
+  white-space: nowrap; }
+
+/*
+Section Header
+ */
+.section_header .title {
+  font-family: "LatoHairline", sans-serif;
+  /* font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+  /* font-weight: 100; */
+  text-align: right;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  line-height: 0.8;
+  font-size: 30px; }
+  @media (min-width: 768px) {
+    .section_header .title {
+      font-size: 50px; } }
+  @media (min-width: 992px) {
+    .section_header .title {
+      font-size: 100px; } }
+  @media (min-width: 1200px) {
+    .section_header .title {
+      font-size: 150px; } }
+
+.section_header .title_section {
+  font-family: "LatoLight", sans-serif;
+  text-align: right;
+  line-height: 0.8;
+  margin-bottom: 50px;
+  font-size: 12px;
+  letter-spacing: 3px; }
+  @media (min-width: 768px) {
+    .section_header .title_section {
+      font-size: 14px;
+      letter-spacing: 5px; } }
+  @media (min-width: 992px) {
+    .section_header .title_section {
+      font-size: 20px;
+      letter-spacing: 10px; } }
+  @media (min-width: 1200px) {
+    .section_header .title_section {
+      font-size: 30px;
+      letter-spacing: 20px; } }
+
+@media (min-width: 768px) {
+  .front_page_clid {
+    font-size: 32px; } }
+
+/*
+Progress step section
+ */
+.progress_step {
+  display: none; }
+
+@media (min-width: 768px) {
+  .progress_step {
+    display: block;
+    margin: 20px 10px 20px 10px;
+    /*overflow:hidden;*/ }
+    .progress_step .step_title {
+      font-size: 16px;
+      font-family: "LatoLight", sans-serif;
+      text-align: right;
+      line-height: 0.8;
+      letter-spacing: 20px;
+      /* transform-origin left bottom 0; */ }
+    .progress_step .step_list {
+      float: right; } }
+
+/*
+Cisco Live APP specific CSS entities
+ */
+.copyseqnumber {
+  float: right;
+  color: #f2f2f2;
+  margin-right: 5px;
+  margin-top: 6px;
+  font-size: .7em; }
+
+.commandblock {
+  margin: 0px 20px 14px 20px;
+  display: block; }
+
+.ciscohl2 {
+  background-color: #fafafa;
+  border: 1px solid #e1e1e8;
+  border-radius: 0px 0px 4px 4px;
+  padding: 9px 14px; }
+  .ciscohl2 button {
+    float: right; }
+  .ciscohl2 pre {
+    background-color: #fafafa;
+    border: 0 none;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding: 0;
+    white-space: nowrap;
+    word-break: normal; }
+    .ciscohl2 pre code {
+      background-color: #fafafa;
+      font-size: inherit; }
+    .ciscohl2 pre code:first-child {
+      display: inline-block;
+      padding-right: 45px; }
+
+html.cui .modal {
+  z-index: 9999;
+  pointer-events: auto; }
+
+/*
+Heading style modifications for the lab.
+ */
+html.cui h1 {
+  page-break-before: always; }
+
+html.cui h2 {
+  margin-top: 50px;
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 20px; }
+
+html.cui h3 {
+  /*border-bottom: 1px solid #e0e0e0;*/
+  margin-bottom: 5px;
+  margin-top: 20px; }
+
+/*
+Header modifications from Atlantic UI interface
+ */
+html.cui .header {
+  position: fixed;
+  width: 100%;
+  background-color: #017cad;
+  border: none; }
+  @media (min-width: 768px) {
+    html.cui .header .header_inside_image {
+      /* background: no-repeat url("/static/images/market/CL-action-figure-3-to-left.png"); */
+      /*background: no-repeat url("/static/images/market/CL-EU-header-trans.png"); */
+      background: no-repeat url("/core/static/images/logo/clus-2019-ciscologo-trans.png");
+      background-position: right center;
+      margin-right: 20px;
+      background-size: 255px; } }
+  html.cui .header .icon-ciscolive {
+    color: white; }
+  html.cui .header .icon-list-menu {
+    color: #017cad; }
+  html.cui .header .breadcrumb {
+    background-color: #017cad;
+    color: white;
+    padding: 0; }
+    html.cui .header .breadcrumb a {
+      color: white; }
+
+html.cui .header-heading .page-title {
+  font-size: 1.2em;
+  color: white; }
+
+@media (min-width: 768px) {
+  html.cui .header-bar {
+    height: 80px; }
+  html.cui .header-heading .page-title {
+    padding-top: 15px;
+    font-size: 2.0em; }
+  html.cui .header-breadcrumbs {
+    margin: 15px 0px 0px 0px; }
+  html.cui .header-breadcrumbs ul {
+    margin: 0px 0px 0px 2px; } }
+
+html.cui.btn {
+  min-width: 0px;
+  padding: 0 20px; }
+
+/*
+Sidebar toggle
+ */
+#wrapper {
+  padding-left: 0;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease; }
+
+#wrapper.toggled {
+  padding-left: 300px; }
+  #wrapper.toggled #sidebar-wrapper {
+    width: 300px; }
+  #wrapper.toggled #page-content-wrapper {
+    position: absolute;
+    margin-right: -300px; }
+
+#page-content-wrapper {
+  width: 100%;
+  position: absolute;
+  padding: 15px; }
+
+#sidebar-wrapper {
+  z-index: 2;
+  position: fixed;
+  left: 300px;
+  width: 0;
+  height: 100%;
+  margin-left: -300px;
+  overflow-y: auto;
+  background: #049fd9;
+  -webkit-box-shadow: inset -10px 0px 10px 0px rgba(50, 50, 50, 0.4);
+  -moz-box-shadow: inset -10px 0px 10px 0px rgba(50, 50, 50, 0.4);
+  box-shadow: inset -10px 0px 10px 0px rgba(50, 50, 50, 0.4);
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease; }
+
+/*
+Sidebar
+ */
+html.cui .sidebar-nav {
+  position: absolute;
+  top: 0;
+  width: 320px;
+  margin: 0;
+  padding: 0; }
+  html.cui .sidebar-nav li {
+    clear: both;
+    text-indent: 10px;
+    line-height: 40px;
+    list-style: none;
+    margin-bottom: 5px; }
+    html.cui .sidebar-nav li ul.sub-menu {
+      font-size: .8em;
+      line-height: 30px; }
+      html.cui .sidebar-nav li ul.sub-menu li {
+        line-height: 30px;
+        margin-left: 10px;
+        margin-bottom: 0px;
+        text-indent: 0;
+        padding-left: 0;
+        list-style: none;
+        border-bottom: none; }
+        html.cui .sidebar-nav li ul.sub-menu li i.fas {
+          line-height: 30px;
+          float: left;
+          margin: 0px 4px 0px 4px; }
+        html.cui .sidebar-nav li ul.sub-menu li a {
+          border-bottom: none; }
+        html.cui .sidebar-nav li ul.sub-menu li a:hover {
+          /* color:$dark-grey1; */
+          /*background-color: $light-grey; */
+          color: white;
+          background: none; }
+        html.cui .sidebar-nav li ul.sub-menu li a:hover:after {
+          float: right;
+          /* font-family: Font Awesome\ 5 Free;*/
+          margin-right: 20px;
+          content: ">";
+          /*content: "\f0a9";*/
+          font-size: 1.4em;
+          line-height: 30px; }
+      html.cui .sidebar-nav li ul.sub-menu li:hover {
+        background-color: unset; }
+      html.cui .sidebar-nav li ul.sub-menu li.at_this_location a {
+        background: white;
+        font-weight: 600;
+        color: #696969;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin-right: 0px;
+        -webkit-border-radius: 4px 0px 0px 4px;
+        -moz-border-radius: 4px 0px 0px 4px;
+        border-radius: 4px 0px 0px 4px;
+        -webkit-box-shadow: -7px 7px 10px 0px rgba(50, 50, 50, 0.4);
+        -moz-box-shadow: -7px 7px 10px 0px rgba(50, 50, 50, 0.4);
+        box-shadow: -7px 7px 10px 0px rgba(50, 50, 50, 0.4); }
+    html.cui .sidebar-nav li a {
+      display: block;
+      text-decoration: none;
+      color: white;
+      margin-left: 0; }
+    html.cui .sidebar-nav li a:hover {
+      text-decoration: none;
+      color: white;
+      background: rgba(255, 255, 255, 0.2); }
+    html.cui .sidebar-nav li a:active {
+      text-decoration: none; }
+    html.cui .sidebar-nav li a:focus {
+      text-decoration: none;
+      color: white; }
+    html.cui .sidebar-nav li i.fas {
+      line-height: 40px;
+      float: left;
+      opacity: 0.5; }
+  html.cui .sidebar-nav .menudivisor {
+    margin-left: 37px;
+    margin-right: 45px;
+    border-bottom: 1px solid white;
+    opacity: 0.5; }
+
+.sidebar-header__divisor {
+  padding: 20px 20px 0px 20px;
+  border-bottom: 1px solid white;
+  opacity: 0.5; }
+
+/*
+Bootstrap callouts. These are cool boxes that bootstrap had in it's site years back.
+ */
+.bs-callout {
+  -moz-border-bottom-colors: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  border-color: #eee;
+  border-image: none;
+  border-radius: 3px;
+  border-style: solid;
+  border-width: 1px 1px 1px 5px;
+  margin: 20px 20px 20px 20px;
+  padding: 5px 15px 15px 15px; }
+  .bs-callout .bs-callout-info {
+    border-left-color: #005073; }
+  .bs-callout .bs-callout-success {
+    border-left-color: #64bbe3; }
+  .bs-callout .bs-callout-warn {
+    border-left-color: #E2231A; }
+
+/*
+Terminal window type window for Unix CLI commands.
+ */
+/*
+File indicator for code:
+ */
+html.cui .code_file_indicator {
+  font-size: 14px;
+  background: #a0a0a0;
+  font-family: "Inconsolata", monospace;
+  border-radius: 6px 6px 0px 0px;
+  background-image: linear-gradient(#e0e0e0 0, #ccc 25px, #ccc 35px); }
+  html.cui .code_file_indicator p {
+    color: #393939;
+    padding: 10px;
+    margin: 0px 0px; }
+  html.cui .code_file_indicator p:before {
+    color: #ff7300;
+    font-size: 1.2em;
+    font-family: Font Awesome\ 5 Free;
+    content: attr(data-value);
+    margin-right: 10px; }
+  html.cui .code_file_indicator nav {
+    position: relative;
+    z-index: 1;
+    white-space: nowrap; }
+  html.cui .code_file_indicator nav p {
+    position: relative;
+    display: inline-block;
+    padding: 1.0em 1.5em 1em 3em;
+    color: inherit;
+    text-decoration: none;
+    margin: 0 20px 0px 20px; }
+  html.cui .code_file_indicator nav p::before {
+    content: attr(data-value);
+    /* To generate the box */
+    font-size: 1.5em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    background: #eee;
+    box-shadow: 0 2px rgba(255, 255, 255, 0.5) inset;
+    transform: perspective(5px) rotateX(0.5deg);
+    transform-origin: bottom;
+    padding: 10px 10px; }
+  html.cui .code_file_indicator nav.left p {
+    padding: 1.5em 2em 1em 1em; }
+  html.cui .code_file_indicator nav.left p::before {
+    transform-origin: bottom left; }
+  html.cui .code_file_indicator nav.right p {
+    padding: 1.5em 1em 1em 2em; }
+  html.cui .code_file_indicator nav.right p::before {
+    transform-origin: bottom right; }
+  html.cui .code_file_indicator nav p.selected {
+    z-index: 2; }
+  html.cui .code_file_indicator nav p.selected::before {
+    margin-bottom: -1px;
+    border-top-width: 1px; }
+
+/*
+Better terminal
+ */
+html.cui .fancy-terminal {
+  margin: 20px 0;
+  padding: 30px 10px 10px;
+  background: #333;
+  font-family: "Inconsolata", monospace;
+  border-radius: 6px;
+  background-image: linear-gradient(#ddd 0, #aaa 20px, #333 20px);
+  box-shadow: 0 4px 10px -4px;
+  display: block;
+  position: relative; }
+  html.cui .fancy-terminal .copy-button {
+    position: absolute;
+    top: 20px;
+    right: 0px;
+    background: orange;
+    padding: 5px;
+    color: white;
+    border: none;
+    min-height: 30px;
+    min-width: 60px;
+    background-image: url("/core/static/images/symbols/copy-button-text.png");
+    background-size: 54px 24px;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: inline; }
+  html.cui .fancy-terminal .copy-button:active {
+    -webkit-box-shadow: inset 1px 1px 10px #333;
+    -moz-box-shadow: inset 1px 1px 10px #333;
+    box-shadow: inset 1px 1px 10px #333; }
+  html.cui .fancy-terminal p {
+    color: #FFB42C;
+    font-weight: bold;
+    font-size: 10px;
+    animation-fill-mode: forward;
+    margin: 0px 10px 1px 10px;
+    animation: fadeIn 1s;
+    overflow-x: auto; }
+    @media (min-width: 576px) {
+      html.cui .fancy-terminal p {
+        font-size: .6em; } }
+    @media (min-width: 768px) {
+      html.cui .fancy-terminal p {
+        font-size: .8em; } }
+    @media (min-width: 992px) {
+      html.cui .fancy-terminal p {
+        font-size: 1.0em; } }
+    @media (min-width: 1200px) {
+      html.cui .fancy-terminal p {
+        font-size: 1.2em; } }
+  html.cui .fancy-terminal pre[class*="language-"] {
+    border: none;
+    background-color: #333;
+    border-left: none;
+    box-shadow: none;
+    font-family: "Inconsolata", monospace; }
+  html.cui .fancy-terminal code[class*="language-"] {
+    background-color: #333;
+    font-family: "Inconsolata", monospace;
+    border: none;
+    box-shadow: none; }
+    html.cui .fancy-terminal code[class*="language-"] .command-line-prompt span {
+      color: cyan; }
+    html.cui .fancy-terminal code[class*="language-"] .operator {
+      color: white;
+      background: none; }
+    html.cui .fancy-terminal code[class*="language-"] .token {
+      color: #fbff00;
+      background: none; }
+  html.cui .fancy-terminal pre code {
+    color: #FFB42C;
+    font-family: "Inconsolata", monospace;
+    background-color: #333;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    font-weight: bold;
+    margin: 5px;
+    animation-fill-mode: forward;
+    animation: fadeIn 1s;
+    overflow-x: auto; }
+    html.cui .fancy-terminal pre code .command-line-prompt span:before {
+      color: cyan;
+      letter-spacing: 0px; }
+  html.cui .fancy-terminal p:before {
+    content: attr(data-value);
+    color: cyan;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
+  html.cui .fancy-terminal .copy-complete {
+    position: absolute;
+    top: 20px;
+    right: 60px;
+    min-height: 30px;
+    min-width: 30px;
+    border: none;
+    background-color: #333;
+    background-image: url("/core/static/images/symbols/copy-ok.png");
+    background-size: 30px 30px;
+    background-position: bottom right;
+    background-repeat: no-repeat; }
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+/*
+Image manipulation variables
+ */
+html.cui .img-indent {
+  padding-left: 20px; }
+
+/*
+  UL for command list
+ */
+html.cui ul.command_list {
+  margin-left: 10px;
+  border: 1px solid #f0f0f0;
+  border-left: 50px solid #f0f0f0; }
+  html.cui ul.command_list li {
+    list-style-type: none;
+    margin: 10px 0px 10px 0px;
+    font-family: "Inconsolata", monospace; }
+
+/*
+Additions to the atlantic UI
+ */
+.step__icon--raf {
+  clear: both;
+  padding-left: 25px; }
+
+/*
+Footer modifications
+*/
+/*
+Media side adjustments
+ */
+@media (min-width: 768px) {
+  #wrapper {
+    padding-left: 0; }
+  #wrapper.toggled {
+    padding-left: 300px; }
+  #sidebar-wrapper {
+    width: 0; }
+  #wrapper.toggled #sidebar-wrapper {
+    width: 300px; }
+  #page-content-wrapper {
+    padding: 20px;
+    position: relative; }
+  #wrapper.toggled #page-content-wrapper {
+    position: relative;
+    margin-right: 0; } }
+
+/*
+Some modifications to the Prism CSS to highlight things better
+ */
+pre .line-highlight {
+  background: rgba(241, 231, 103, 0.2);
+  border: 3px solid rgba(255, 0, 0, 0.2); }
+
+html.cui .nextsection {
+  padding-top: 20px; }
+  html.cui .nextsection .button-text {
+    display: none; }
+
+@media (min-width: 576px) {
+  html.cui .nextsection .button-text {
+    display: block; } }
+
+@media (min-width: 768px) {
+  html.cui .nextsection .button-text {
+    font-size: .7em; } }
+
+@media (min-width: 992px) {
+  html.cui .nextsection .button-text {
+    font-size: 1.0em; } }
+
+@media (min-width: 1200px) {
+  html.cui .nextsection .button-text {
+    font-size: 1.0em; } }
+
+/*
+Fix Popover's from bootstrap inside Cisco UI toolkit
+*/
+html.cui body .popover {
+  min-width: 330px;
+  background-color: white; }
+  html.cui body .popover h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-size: 2.0em;
+    color: #696969; }
+  html.cui body .popover h4 {
+    background-color: #f7f7f7;
+    margin-top: 5px;
+    padding: 5px 0px 5px 5px;
+    border-bottom: 1px solid #e0e0e0; }
+  html.cui body .popover .popover-content {
+    max-height: none;
+    max-width: none;
+    min-width: 325px;
+    color: #696969;
+    margin: none;
+    padding: 0px 0px 0px 0px; }
+    html.cui body .popover .popover-content li {
+      list-style-type: none;
+      color: #393939;
+      font-family: "Inconsolata", monospace;
+      font-size: 1.2em; }
+    html.cui body .popover .popover-content i {
+      color: #2fa4e7;
+      font-size: .6em; }
+
+html.cui body .credentials {
+  position: fixed;
+  padding: 80px 0px 0px 120px;
+  z-index: 1020; }
+  html.cui body .credentials .btn {
+    border-radius: 0px 0px 5px 5px;
+    border-color: #FBAB18;
+    background-color: #FBAB18;
+    font-weight: 600; }
+    html.cui body .credentials .btn i {
+      color: #E2231A; }
+  html.cui body .credentials .btn :hover {
+    background-color: #005073; }
+
+.popover-body li {
+  display: block;
+  font-size: 16px;
+  font-family: "Inconsolata", monospace;
+  height: 25px;
+  line-height: 25px; }
+  .popover-body li a img {
+    margin-top: 0px;
+    height: 25px;
+    vertical-align: middle; }
+
+.popover-body h4 {
+  height: 50px;
+  line-height: 50px; }
+  .popover-body h4 a img {
+    margin-top: 0px;
+    height: 25px;
+    line-height: 25px;
+    vertical-align: middle; }
+
+/*
+Adding borders and shadows to images to better represent in doc 
+*/
+.cui .img-shadow {
+  box-shadow: 0 15px 10px -10px #c0c0c0;
+  border: 1px solid #e0e0e0; }
+
+/*
+ fix button for nice copy 
+*/
+.cui .nice-copy .input-group-button .btn--small {
+  background-color: #e0e0e0;
+  border-radius: 1px; }
+
+.cui .footer {
+  background-color: #017cad;
+  color: white; }
+
+/*# sourceMappingURL=ciscolive.css.map */

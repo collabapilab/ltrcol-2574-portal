@@ -1,0 +1,95 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.2",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Actions",
+            "wrap": true,
+            "horizontalAlignment": "Center",
+            "color": "Dark",
+            "id": "title_tb",
+            "size": "Large",
+            "weight": "Bolder"
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.ShowCard",
+                    "title": "Unified CM",
+                    "card": {
+                        "type": "AdaptiveCard",
+                        "backgroundImage": {
+                            "url": "https://collabapilab.ciscolive.com/lab/static/images/wbx/wbx_adaptivecard_backgroundImage_blue.jpg"
+                        },
+                        "actions": [
+                            {
+                                "type": "Action.Submit",
+                                "title": "Version",
+                                "id": "UCM_Version",
+                                "data": {
+                                    "action": "get_ucm_version"
+                                }
+                            },
+                            {
+                                "type": "Action.Submit",
+                                "title": "Registered Phones",
+                                "id": "UCM_Reg_Phones",
+                                "data": {
+                                    "action": "get_ucm_reg_phones"
+                                }
+                            }
+                        ],
+                        "id": "ucm_get_ac"
+                    },
+                    "id": "UCM_showcard"
+                }
+            ],
+            "id": "ucm_as"
+        },
+        {
+            "type": "ActionSet",
+            "id": "user_lookup_as",
+            "actions": [
+                {
+                    "type": "Action.ShowCard",
+                    "title": "User Lookup",
+                    "card": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                            {
+                                "type": "Input.Toggle",
+                                "title": "All Details",
+                                "value": "true",
+                                "id": "user_details"
+                            },
+                            {
+                                "type": "Input.Text",
+                                "placeholder": "Enter User Name",
+                                "id": "user",
+                                "inlineAction": {
+                                    "type": "Action.Submit",
+                                    "id": "user_search_sub",
+                                    "title": "Search",
+                                    "data": {
+                                        "action": "user_search"
+                                    }
+                                }
+                            }
+                        ],
+                        "backgroundImage": {
+                            "url": "https://collabapilab.ciscolive.com/lab/static/images/wbx/wbx_adaptivecard_backgroundImage_blue.jpg"
+                        }
+                    },
+                    "id": "user_lookup_show"
+                }
+            ]
+        }
+    ],
+    "backgroundImage": {
+        "url": "https://collabapilab.ciscolive.com/lab/static/images/wbx/wbx_adaptivecard_backgroundImage_blue.jpg"
+    },
+    "id": "root_ac"
+}
