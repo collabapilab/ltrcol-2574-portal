@@ -27,7 +27,7 @@ mccabe==0.6.1
 more-itertools==8.7.0
 platformdirs==2.5.2
 pycodestyle==2.8.0
-PyJWT==2.3.0
+PyJWT==2.4.0
 pylint==2.13.7
 pyrsistent==0.17.3
 pytz==2022.1
