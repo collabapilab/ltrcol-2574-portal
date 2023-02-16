@@ -43,7 +43,7 @@ typing_extensions==4.2.0
 urllib3==1.26.9
 wxc-sdk==1.11.0
 # git+https://github.com/jeokrohn/wxc_sdk.git@5c5ceda0ecf9faa0de1bce60596ed0455a8eaccf#egg=wxc-sdk
-Werkzeug==2.1.1
+Werkzeug==2.2.3
 wrapt==1.12.1
 xmltodict==0.13.0
 zeep==4.2.1
