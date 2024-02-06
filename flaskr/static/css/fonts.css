@@ -1,0 +1,57 @@
+@font-face {
+    font-family: "CiscoRegular";
+    src: url("/core/static/fonts/CiscoSans/CiscoSansTTRegular.woff2") format("woff2"),
+        url("/core/static/fonts/CiscoSans/CiscoSansTTRegular.woff") format("woff"),
+}
+
+@font-face {
+    font-family: "CiscoFontExtraLight";
+    src: url("/core/static/fonts/CiscoSans/CiscoSansTTExtraLight.woff2") format("woff2"),
+        url("/core/static/fonts/CiscoSans/CiscoSansTTExtraLight.woff") format("woff"),
+}
+
+@font-face {
+    font-family: "CiscoHeavy";
+    src: url("/core/static/fonts/CiscoSans/CiscoSansTTHeavy.woff2") format("woff2"),
+        url("/core/static/fonts/CiscoSans/CiscoSansTTHeavy.woff") format("woff"),
+}
+
+@font-face {
+    font-family: "CiscoFontLight";
+    src: url("/core/static/fonts/CiscoSans/CiscoSansTTLight.woff2") format("woff2"),
+        url("/core/static/fonts/CiscoSans/CiscoSansTTLight.woff") format("woff"),
+}
+
+@font-face {
+    font-family: "CiscoFontThin";
+    src: url("/core/static/fonts/CiscoSans/CiscoSansTTThin.woff2") format("woff2"),
+        url("/core/static/fonts/CiscoSans/CiscoSansTTThin.woff") format("woff"),
+}
+
+@font-face {
+    font-family: "LatoHairline";
+    src: url('https://fonts.googleapis.com/css?family=Lato&display=swap'),
+        url("/core/static/fonts/Lato/Lato-Hairline.woff") format("woff"),
+        url("/core/static/fonts/Lato/Lato-Hairline.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "LatoLight";
+    src: url('https://fonts.googleapis.com/css?family=Lato&display=swap'),
+        url("/core/static/fonts/Lato/Lato-Light.woff") format("woff"),
+        url("/core/static/fonts/Lato/Lato-Light.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "LatoReg";
+    src: url('https://fonts.googleapis.com/css?family=Lato&display=swap'),
+        url("/core/static/fonts/Lato/Lato-Regular.woff") format("woff"),
+        url("/core/static/fonts/Lato/Lato-Regular.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Inconsolata";
+    src: url('https://fonts.googleapis.com/css?family=Inconsolata|Lato&display=swap'),
+        url("/core/static/fonts/inconsolata/inconsolata-v18-latin-regular.woff") format("woff"),
+        url("/core/static/fonts/incosnolata/inconsolata-v18-latin-regular.woff2") format("woff2");
+}

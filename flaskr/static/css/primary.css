@@ -1,0 +1,73 @@
+/*
+Variables:
+ */
+@font-face {
+  font-family: "LatoHairline";
+  src: url("/static/fonts/Lato/Lato-Hairline.woff") format("woff"), url("/static/fonts/Lato/Lato-Hairline.woff2") format("woff2"); }
+
+@font-face {
+  font-family: "LatoLight";
+  src: url("/static/fonts/Lato/Lato-Light.woff") format("woff"), url("/static/fonts/Lato/Lato-Light.woff2") format("woff2"); }
+
+@font-face {
+  font-family: "LatoReg";
+  src: url("/static/fonts/Lato/Lato-Regular.woff") format("woff"), url("/static/fonts/Lato/Lato-Regular.woff2") format("woff2"); }
+
+@font-face {
+  font-family: "MindBlue";
+  src: url("/static/fonts/MindBlue/MindBlue_light_demo.otf"); }
+
+@font-face {
+  font-family: "HighSanSerif7";
+  src: url("/static/fonts/HighSansSerif7/high_sans_serif_7.ttf"); }
+
+/*
+Changes using the new CUI body HTML css tag
+ */
+.row {
+  margin-top: 20px; }
+
+.content {
+  min-height: 80vh; }
+
+.slider-to-right .slider {
+  float: right; }
+
+.tooltip.in {
+  opacity: .8; }
+
+/*
+Responsive markers to change font sizes and other components across drip
+*/
+.metadata .display-3 {
+  font-size: 14px !important; }
+
+@media (min-width: 576px) {
+  .metadata .display-3 {
+    font-size: 18px !important; }
+  .drip-sec-divider {
+    margin: 2px 0px 20px 0px; } }
+
+@media (min-width: 768px) {
+  .metadata .display-3 {
+    font-size: 24px !important; }
+  .drip-sec-divider {
+    margin: 20px 0px 20px 0px; } }
+
+@media (min-width: 992px) {
+  .metadata .display-3 {
+    font-size: 32px !important; }
+  .drip-sec-divider {
+    margin: 40px 0px 40px 0px; } }
+
+@media (min-width: 1200px) {
+  .metadata .display-3 {
+    font-size: 48px !important; }
+  .drip-sec-divider {
+    margin: 40px 0px 40px 0px; } }
+
+h1.display-0 {
+  font-family: "LatoHairline";
+  font-size: 10rem !important; }
+
+/*# sourceMappingURL=primary.css.map */

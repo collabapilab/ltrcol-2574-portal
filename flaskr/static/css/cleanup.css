@@ -1,0 +1,286 @@
+.js-console {
+    margin: 20px 0;
+    padding: 30px 10px 10px 80px;
+    background: white;
+    font-family: "Menlo", "Monaco", "Source Code Pro", monospace;
+    border: 1px solid #f0f0f0;
+    border-radius: 6px;
+    background-image: url("/static/images/logos/chrome-256.png");
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-size: 64px;
+    /*background-image: linear-gradient(#ddd 0, #aaa 20px,white 20px);*/
+    box-shadow: 0 4px 10px -4px;
+
+    p {
+        color: #696969;
+        font-weight: bold;
+        margin: 10px;
+        margin-left: 100px;
+        animation-fill-mode: forward;
+        animation: fadeIn 1s;
+    }
+
+    pre {
+        color: #696969;
+        font-family: "Menlo", "Monaco", "Source Code Pro", monospace;
+        background: white;
+        border: none;
+        font-weight: bold;
+        margin: 10px;
+        animation-fill-mode: forward;
+        animation: fadeIn 1s;
+    }
+
+    p:before {
+        content: attr(data-value);
+        color: red;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+}
+
+
+
+
+#front_page {
+    width: 100%;
+    height: 100%;
+    /*
+    background-image: url("/static/images/frontpage/fp-ciscolive-logo.png");
+    background-position: bottom left;
+    background-repeat: no-repeat;
+    background-size: 200px;
+    */
+
+    .front_top_page {
+        height: 500px;
+
+        //background-color: white;
+        .front_top_page_image {
+            margin: 0px 20px 0px 20px;
+            height: 100%;
+
+            /*
+        background-image: url("/static/images/frontpage/imagine.png");
+        background-position: bottom center;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        */
+            .row:before,
+            .row:after {
+                content: normal;
+            }
+        }
+    }
+
+    .form-group {
+        margin: 10px 0px 0px 0px;
+        box-shadow: none;
+
+        .btn {
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border-color: white;
+            color: white;
+            background: $front-page-bottom-color;
+        }
+    }
+
+    .front_bottom_page {
+        //background-color: $front-page-bottom-color;
+        height: 500px;
+
+        .front_bottom_page_image {
+            //margin:0px 100px 0px 100px;
+            /*
+        background-image: url("/static/images/frontpage/you-make-possible.png");
+        background-position: top center;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        height:100%;
+        */
+        }
+
+        /*
+      .front_bottom_page_cl_image{
+        background-image: url("/static/images/frontpage/ciscolive_orlando.png");
+        background-position: bottom center;
+        background-repeat: no-repeat;
+        background-size: 400px;
+        height:50%;
+   
+      }
+      */
+    }
+
+    img.front_page_cllogo {
+        float: left;
+        width: 200px;
+    }
+
+    .front_page_clid {
+        margin: 0px 0px 0px 0px;
+        //margin: 20px 0px 20px 0px;
+        font-family: "LatoHairline";
+        color: white;
+        height: 100%;
+        line-height: 100%;
+        text-align: left;
+        font-size: 40px;
+
+        @media(min-width:768px) {
+            font-size: 80px;
+        }
+
+        @media(min-width:992px) {
+            font-size: 100px;
+        }
+
+        @media(min-width:1200px) {
+            font-size: 120px;
+        }
+
+    }
+
+    .front_page_cltitle {
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: left;
+        margin-left: 10px;
+        margin-right: 20px;
+        font-size: 18px;
+
+        @media(min-width:768px) {
+            font-size: 22px;
+        }
+
+        @media(min-width:992px) {
+            font-size: 24px;
+        }
+
+        @media(min-width:1200px) {
+            font-size: 28px;
+        }
+
+        line-height: normal;
+    }
+
+    .front_page_abstract {
+        @media(min-width:768px) {
+            font-size: 16px;
+        }
+
+        @media(min-width:992px) {
+            font-size: 18px;
+        }
+
+        @media(min-width:1200px) {
+            font-size: 20px;
+        }
+
+        font-size:14px;
+        font-family: Arial,
+        Helvetica,
+        sans-serif;
+        margin:10px 20px 10px 20px;
+        line-height: normal;
+    }
+}
+
+
+ul.tree {
+    list-style-type: none;
+    background: url('/static/image/symbols/line.png') repeat-y;
+    margin: 0;
+    padding: 0;
+    margin-left: 10px;
+    font-size: 10px;
+
+    @media(min-width:768px) {
+        font-size: 14px;
+    }
+
+    li {
+        margin: 0;
+        padding: 0 12px;
+        line-height: 20px;
+        background: url('/static/images/symbols/node.png') no-repeat;
+        color: #369;
+        font-weight: bold;
+    }
+
+    li.last {
+        background: #fff url('/static/images/symbols/lastnode.png') no-repeat;
+    }
+}
+
+
+
+.easy-tree {
+    font-size: 12px;
+    font-family: "Source Code Pro", "Menlo", "Monaco", monospace;
+
+    @media(min-width:768px) {
+        font-size: 14px;
+    }
+}
+
+
+
+
+.topbar {
+    line-height: 14px;
+    margin: 10px 20px 0px 20px;
+    height: 40px;
+    background: gray;
+    border-radius: 5px 5px 0 0;
+
+    background: #cfcfcf;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, #54b4eb 0%, #2fa4e7 100%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #54b4eb), color-stop(100%, #2fa4e7));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #54b4eb 0%, #2fa4e7 100%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #54b4eb 0%, #2fa4e7 100%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #54b4eb 0%, #2fa4e7 100%);
+    /* IE10+ */
+    background: linear-gradient(top, #54b4eb 0%, #2fa4e7 100);
+    /* W3C */
+
+    -webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 0px #515151;
+    -moz-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 0px #515151;
+    box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5) inset, 0px 1px 0px #515151;
+
+    .topbartitle {
+        float: left;
+        position: relative;
+        top: 12px;
+        width: 80%;
+        left: 1%;
+        font-family: 'Cantarell', sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+    }
+
+    .topbarbutton {
+        float: right;
+        width: 14px;
+        height: 14px;
+        margin: 10px 10px 0px 0px;
+        border-radius: 14px;
+        background-color: #049fd9;
+        -webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5), 0px 0px 3px #000 inset;
+        -moz-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5), 0px 0px 3px #000 inset;
+        box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5), 0px 0px 3px #000 inset;
+        overflow: hidden;
+    }
+}
