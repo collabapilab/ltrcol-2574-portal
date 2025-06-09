@@ -1,0 +1,9 @@
+[tool.ruff]
+line-length = 120
+ignore = [
+    "F401",  # imported but unused
+    "E402",  # module level import not at top of file
+    "F541",  # f-string is missing placeholders
+]
+# Assume Python 3.10
+target-version = "py310"
