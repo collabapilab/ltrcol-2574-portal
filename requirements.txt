@@ -44,15 +44,15 @@ propcache==0.2.1
 pycodestyle==2.12.1
 pydantic==2.7.1
 pydantic_core==2.18.2
-PyJWT==1.7.1
+PyJWT==2.12.0
 pylint==3.3.4
 pyrsistent==0.20.0
 python-dateutil==2.9.0.post0
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 pytz==2025.1
 PyYAML==6.0.2
 referencing==0.36.2
-requests==2.32.4
+requests==2.33.0
 requests-file==2.1.0
 requests-toolbelt==1.0.0
 rpds-py==0.22.3
@@ -64,7 +64,7 @@ tomlkit==0.12.5
 typed-ast==1.5.5
 typing_extensions==4.11.0
 urllib3==2.7.0
-Werkzeug==3.1.5
+Werkzeug==3.1.6
 wrapt==1.16.0
 wxc_sdk==1.25.0
 xmltodict==0.13.0
