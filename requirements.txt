@@ -48,7 +48,7 @@ PyJWT==1.7.1
 pylint==3.3.4
 pyrsistent==0.20.0
 python-dateutil==2.9.0.post0
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 pytz==2025.1
 PyYAML==6.0.2
 referencing==0.36.2
