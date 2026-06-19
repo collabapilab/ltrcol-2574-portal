@@ -69,5 +69,5 @@ wrapt==1.16.0
 wxc_sdk==1.25.0
 xmltodict==0.13.0
 yarl==1.18.3
-zeep==4.3.1
+zeep==4.3.3
 zipp==3.21.0
